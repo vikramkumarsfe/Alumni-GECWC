@@ -2,6 +2,10 @@ import { models } from "mongoose";
 import { model, Schema } from "mongoose";
 import bcrypt from "bcrypt"
 const UserSchema = new Schema({
+    image : {
+        type : String,
+        default : null
+    },
     fullname : {
         type : String,
         required : true
@@ -20,6 +24,11 @@ const UserSchema = new Schema({
         type : String,
         required  : true
     },
+    role : {
+        type: String,
+        enum: ["admin", "alumni", "student"],
+        default : null
+    },
     resetPasswordToken : {
         type: String,
         default : null
@@ -35,6 +44,10 @@ UserSchema.pre("save", async function(next){
     this.password = await bcrypt.hash(this.password, 12)
 })
 
+
+UserSchema.pre("save", async function(next){
+    this.role = "alumni"
+})
 const UserModel =models.User || model("User", UserSchema)
 
 export default UserModel

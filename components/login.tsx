@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const  Login =  () =>{
@@ -11,9 +11,9 @@ const  Login =  () =>{
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const session = useSession()
+  // const session = useSession()
 
-  console.log(session)
+  // console.log(session)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,14 +25,17 @@ const  Login =  () =>{
       password,
       redirect: false,
     });
+    
+    console.log(res)
 
     setLoading(false);
 
-    if (res?.error) {
-      setError("Invalid email or password");
-    } else {
-      router.push("/dashboard");
-    }
+    // if (res?.error) {
+    //   setError("Invalid email or password");
+    // } 
+    // else {
+    //   router.push("/dashboard");
+    // }
   };
 
   return (
