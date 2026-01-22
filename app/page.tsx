@@ -1,11 +1,11 @@
-import React from 'react'
+import Home from '@/components/Home'
 
-const page = () => {
-  return (
-    <div>
-      <h1>Welcome to homepage</h1>
-    </div>
-  )
+export const metadata = {
+  title: 'Homepage'
 }
 
-export default page
+const Homepage = () => {
+  return <Home />
+}
+
+export default Homepage

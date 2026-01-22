@@ -4,6 +4,7 @@ import "./globals.css";
 import MainLayout from "@/components/MainLayout";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,7 +32,7 @@ export default function RootLayout({
       >
         <AntdRegistry>
           <MainLayout>
-            {children}
+              {children}
           </MainLayout>
         </AntdRegistry>
       </body>
