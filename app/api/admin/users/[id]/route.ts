@@ -1,0 +1,102 @@
+import UserModel from "@/models/user.model"
+import ServerCatchError from "@/utils/serverCatchError"
+import mongoose from "mongoose"
+import { NextRequest, NextResponse as res} from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import ContextInterface from "@/Interfaces/context.interface"
+const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
+if (mongoose.connection.readyState === 0) {
+  mongoose.connect(DB)
+}
+
+
+export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
+    try 
+    {
+        const session = await getServerSession(authOptions)
+
+        if(!session)
+            return res.json({ message : "Unauthorized User"}, { status : 404})
+
+        if( session.user.role !== "admin")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
+
+        const id = params.id
+        const body = await req.json()
+
+        if(!id)
+            return res.json({message : "Id is required"})
+
+        if(!body)
+            return res.json({ message : "body is required"}, { status : 404})
+
+        const payload = {
+            role : body.role
+        }
+
+        const user = await UserModel.findByIdAndUpdate(id, { $set : payload})
+
+        return res.json(user)
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}
+
+export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
+    try {
+        const session = await getServerSession(authOptions)
+
+        if(!session)
+            return res.json({ message : "Unauthorized User"}, { status : 404})
+
+        if( session.user.role !== "admin")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
+
+        const id = params.id
+
+        if(!id)
+             return res.json({ message : "id not found"}, { status : 404})
+
+        const user = await UserModel.findByIdAndDelete(id)
+
+        if(!user)
+            return res.json({ message : "Failed to delete the user"}, { status : 404})
+        
+        return res.json({ message : "deleted Succesfully"})
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}
+
+export const GET = async(req: NextRequest, {params} : ContextInterface) => {
+    try {
+        const session = await getServerSession(authOptions)
+
+        if(!session)
+            return res.json({ message : "Unauthorized User"}, { status : 404})
+
+        if( session.user.role !== "admin")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
+
+        const id = params.id
+
+        if(!id)
+             return res.json({ message : "id not found"}, { status : 404})
+
+        const user = await UserModel.findById(id)
+
+        if(!user)
+            return res.json({ message : "Failed to delete the user"}, { status : 404})
+
+        return res.json(user)
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}
