@@ -32,8 +32,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             return res.json({ message : "body is required"}, { status : 404})
 
         const payload = {
-            role : body.role,
-            isActive : body.isActive
+            role : body.role
         }
 
         const user = await UserModel.findByIdAndUpdate(id, { $set : payload})
@@ -53,6 +52,8 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
         if(!session)
             return res.json({ message : "Unauthorized User"}, { status : 404})
 
+        if( session.user.role !== "admin")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
 
         const id = params.id
 
@@ -87,7 +88,7 @@ export const GET = async(req: NextRequest, {params} : ContextInterface) => {
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})
 
-        const user = await UserModel.findById(id)
+        const user = await UserModel.findById(id,{ fullname : 1, image : 1, email : 1, createdAt : 1 })
 
         if(!user)
             return res.json({ message : "Failed to delete the user"}, { status : 404})

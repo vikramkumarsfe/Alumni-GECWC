@@ -45,3 +45,31 @@ export const GET = async(req: NextRequest, { params }: ContextInterface) => {
         return ServerCatchError(err)
     }
 }
+
+export const PUT = async( req: NextRequest) => {
+    try 
+    {
+        const session = await getServerSession(authOptions)
+
+        if(!session )
+            return res.json({ message :  "Unauthorized User"}, { status : 401})
+
+        const body = await req.json()
+
+        const payload = {
+            fullname : body.payload,
+            mobile : body.mobile,
+        }
+
+        const user = await UserModel.findByIdAndUpdate({ _id : session.user.id}, { $set : payload}, { new : true})
+
+        if(!user)
+            return res.json({ message : "Update failed"})
+
+        return res.json({ message : "Profile updated"})
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}
