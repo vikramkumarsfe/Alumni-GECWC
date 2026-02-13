@@ -1,5 +1,4 @@
-import ResetPassword from '@/components/resetPassword'
-import React from 'react'
+import ResetPassword from '@/components/ResetPassword'
 
 const ResetPasswordRouter = () => {
   return (

@@ -1,154 +1,111 @@
 'use client'
 
+import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
+
 export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-
-      
-      <aside className="w-64 bg-white border-r border-gray-200 px-6 py-6">
-        <h2 className="text-lg font-semibold mb-8">Alumni Management</h2>
-
-        <nav className="space-y-6 text-sm text-gray-700">
-
-          <div>
-            <p className="text-xs text-gray-400 uppercase mb-2">Home</p>
-            <ul className="space-y-2">
-              <li className="font-medium text-violet-600">Dashboard</li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs text-gray-400 uppercase mb-2">Application</p>
-            <ul className="space-y-2">
-              <li>Registered Alumni</li>
-              <li>Verified Alumni</li>
-              <li>Rejected Alumni</li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs text-gray-400 uppercase mb-2">Membership</p>
-            <ul className="space-y-2">
-              <li>Membership</li>
-              <li>Membership Fee</li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="text-xs text-gray-400 uppercase mb-2">Settings</p>
-            <ul className="space-y-2">
-              <li>Exports</li>
-              <li>Settings</li>
-            </ul>
-          </div>
-
-        </nav>
-      </aside>
-
-     
-      <main className="flex-1 px-10 py-8">
-
+    <div className="min-h-screen bg-appBg flex font-sans">
+      {/* Main Content */}
+      <main className="flex-1 max-w-7xl mx-auto px-6 lg:px-12 py-6">
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <header className="mb-10">
+          <h1 className="text-3xl font-semibold text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-500 mt-1">Monitor alumni registrations and membership metrics.</p>
+        </header>
 
-          <div className="bg-white p-6 rounded-lg border">
-            <p className="text-sm text-gray-500">Alumni : Total Count</p>
-            <h2 className="text-2xl font-semibold mt-2">229</h2>
+        {/* Top Stats Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <StatCard title="Alumni : Total Count" value="229" />
+          <StatCard 
+            title="Alumni : Accounts Created" 
+            value="81" 
+            showButton 
+            badge="Active" 
+          />
+          <StatCard 
+            title="Alumni : Pending" 
+            value="138" 
+            showButton 
+            variant="warning" 
+          />
+        </section>
+
+        {/* Data Overview Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-semibold text-gray-800">Alumni Data Overview</h3>
           </div>
-
-          <div className="bg-white p-6 rounded-lg border">
-            <p className="text-sm text-gray-500">Alumni : Accounts Created</p>
-            <h2 className="text-2xl font-semibold mt-2">81</h2>
-            <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-              View Details
-            </button>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg border">
-            <p className="text-sm text-gray-500">Alumni : Accounts Creation Pending</p>
-            <h2 className="text-2xl font-semibold mt-2">138</h2>
-            <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-              View Details
-            </button>
-          </div>
-
-        </div>
-
-        
-        <div className="mb-10">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">
-            Alumni Data Overview
-          </h3>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <div className="bg-white p-6 rounded-lg border">
-              <p className="text-sm text-gray-500">Registered Alumni</p>
-              <h2 className="text-2xl font-semibold mt-2">6</h2>
-              <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-                View Details
-              </button>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border">
-              <p className="text-sm text-gray-500">Verified Alumni</p>
-              <h2 className="text-2xl font-semibold mt-2">217</h2>
-              <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-                View Details
-              </button>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border">
-              <p className="text-sm text-gray-500">Rejected Alumni</p>
-              <h2 className="text-2xl font-semibold mt-2">4</h2>
-              <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-                View Details
-              </button>
-            </div>
-
+            <DataCard label="Registered Alumni" count="6" />
+            <DataCard label="Verified Alumni" count="217" status="success" />
+            <DataCard label="Rejected Alumni" count="4" status="error" />
           </div>
-        </div>
-
-        
-        <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">
-            Alumni Membership Data Overview
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <div className="bg-white p-6 rounded-lg border">
-              <p className="text-sm text-gray-500">Total Membership Type</p>
-              <h2 className="text-2xl font-semibold mt-2">8</h2>
-              <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-                View Details
-              </button>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border">
-              <p className="text-sm text-gray-500">
-                Total Amount of Membership Fees Collected
-              </p>
-              <h2 className="text-2xl font-semibold mt-2">₹ 10244.00</h2>
-              <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-                View Details
-              </button>
-            </div>
-
-            <div className="bg-white p-6 rounded-lg border">
-              <p className="text-sm text-gray-500">
-                Count of Alumni Who Paid For At Least One Membership Type
-              </p>
-              <h2 className="text-2xl font-semibold mt-2">13</h2>
-              <button className="mt-3 text-xs text-violet-600 border px-3 py-1 rounded">
-                View Details
-              </button>
-            </div>
-
-          </div>
-        </div>
+        </section>
 
       </main>
     </div>
+  )
+}
+
+/** * Sub-components for cleaner structure
+ */
+
+function SidebarItem({ icon, label }: { icon: React.ReactNode, label: string }) {
+  return (
+    <li className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md transition-colors cursor-pointer group">
+      <span className="text-gray-400 group-hover:text-primary transition-colors">{icon}</span>
+      <span className="text-sm font-medium">{label}</span>
+    </li>
+  )
+}
+
+function StatCard({ title, value, showButton, badge, variant }: any) {
+  return (
+    <Card className="rounded-xl shadow-sm border-gray-200 hover:shadow-md transition-shadow">
+      <CardContent className="p-6">
+        <div className="flex justify-between items-start">
+          <p className="text-sm font-medium text-gray-500 uppercase tracking-tight">{title}</p>
+          {badge && <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100"> {badge} </Badge>}
+        </div>
+        <h2 className="text-3xl font-bold mt-3 text-gray-900">{value}</h2>
+        {showButton && (
+          <Button variant="outline" size="sm" className="mt-4 border-gray-300 text-primary hover:text-primaryDark hover:bg-primaryLight border-none shadow-none p-0 h-auto font-semibold">
+            View Details →
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function DataCard({ label, count, status, isCurrency }: any) {
+  const getStatusColor = () => {
+    if (status === 'success') return 'text-green-600';
+    if (status === 'error') return 'text-red-600';
+    return 'text-gray-900';
+  }
+
+  return (
+    <Card className="rounded-xl border-gray-200 shadow-sm overflow-hidden group">
+      <div className="h-1 w-full bg-transparent group-hover:bg-primary transition-colors" />
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-500">{label}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className={`text-2xl font-bold ${getStatusColor()}`}>
+          {count}
+        </div>
+        <Button 
+          variant="outline" 
+          className="mt-4 w-full border-gray-200 text-gray-600 hover:bg-primary hover:text-white transition-all rounded-md"
+        >
+          View Details
+        </Button>
+      </CardContent>
+    </Card>
   )
 }

@@ -1,9 +1,4 @@
 'use client'
-<<<<<<< HEAD
-import ChildrenInterface from '@/Interfaces/children.interface'
-import { SessionProvider } from 'next-auth/react'
-import React, { FC } from 'react'
-=======
 import React from 'react'
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
@@ -38,15 +33,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   if (isBlacklist) {
     return <>{children}</>
   }
->>>>>>> b22961ae1548439c769823e461da91de2c146253
 
   return (
     <div>
-<<<<<<< HEAD
-      <SessionProvider>
-        {children}
-      </SessionProvider>
-=======
 
       <nav className="px-[10%] bg-white shadow-lg sticky top-0 z-50 py-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -177,7 +166,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
       </footer>
->>>>>>> b22961ae1548439c769823e461da91de2c146253
     </div>
   )
 }

@@ -20,7 +20,7 @@ export const POST = async(req : NextRequest) => {
             return res.json({ message : "Failed to create user"})
         }
 
-        return res.json(user)
+        return res.json({ message : "SignUp successfull!!"})
     }
     catch(err)
     {
