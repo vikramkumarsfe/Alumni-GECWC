@@ -71,7 +71,7 @@ const ResetPassword = () => {
             />
           </Form.Item>
 
-          {/* Confirm Password */}
+          {/* Confirm Password */} 
           <Form.Item
             label="Confirm Password"
             name="confirmPassword"

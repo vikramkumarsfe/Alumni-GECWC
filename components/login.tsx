@@ -52,7 +52,7 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item
-            label='Password'
+            label='Password' 
             name='password'
             rules={[{ required: true, message: "Password is required" }]}
           >
