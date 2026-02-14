@@ -1,3 +1,50 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: User authentication and password recovery APIs
+ */
+
+/**
+ * @swagger
+ * /api/user/forgot-password:
+ *   post:
+ *     summary: Request password reset
+ *     tags: [Authentication]
+ *     description: Sends a password reset link or token to the registered email address.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Password reset email sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Reset link sent to your email
+ *       400:
+ *         description: Email is required
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+
+
 import ServerCatchError from "@/utils/serverCatchError"
 import mongoose from "mongoose"
 import { NextRequest, NextResponse as res} from "next/server"

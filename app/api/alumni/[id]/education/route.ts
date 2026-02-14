@@ -1,3 +1,103 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: Academics
+ *     description: Alumni academic records management
+ */
+
+/**
+ * @swagger
+ * /api/alumni/{id}/education:
+ *   post:
+ *     summary: Add academic record for alumni (Owner only)
+ *     tags: [Academics]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Alumni User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - degreeName
+ *               - universityName
+ *               - completionYear
+ *             properties:
+ *               degreeName:
+ *                 type: string
+ *                 example: B.Tech Computer Science
+ *               universityName:
+ *                 type: string
+ *                 example: IIT Delhi
+ *               score:
+ *                 type: string
+ *                 example: 8.5 CGPA
+ *               completionYear:
+ *                 type: integer
+ *                 example: 2024
+ *     responses:
+ *       200:
+ *         description: Course added successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (User ID mismatch)
+ *       404:
+ *         description: Alumni not found
+ *       500:
+ *         description: Server error
+ *
+ *   get:
+ *     summary: Get academic records of an alumni
+ *     tags: [Academics]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Alumni User ID
+ *     responses:
+ *       200:
+ *         description: Academic records fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   user:
+ *                     type: string
+ *                   degreeName:
+ *                     type: string
+ *                   universityName:
+ *                     type: string
+ *                   score:
+ *                     type: string
+ *                   completionYear:
+ *                     type: integer
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Alumni not found
+ *       500:
+ *         description: Server error
+ */
+
+
 import { NextRequest, NextResponse as res } from "next/server";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";

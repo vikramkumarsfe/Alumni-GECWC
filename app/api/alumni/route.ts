@@ -1,8 +1,105 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: User
+ *     description: User profile and alumni listing APIs
+ */
+
+/**
+ * @swagger
+ * /api/alumni:
+ *   get:
+ *     summary: Get paginated list of alumni users (Authenticated users only)
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           example: 10
+ *         description: Number of records per page (max 100)
+ *     responses:
+ *       200:
+ *         description: Alumni list fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       fullname:
+ *                         type: string
+ *                       image:
+ *                         type: string
+ *                       email:
+ *                         type: string
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     total:
+ *                       type: integer
+ *                     totalPages:
+ *                       type: integer
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ *
+ *   put:
+ *     summary: Update logged-in user's profile
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fullname:
+ *                 type: string
+ *                 example: Vikram Kumar
+ *               mobile:
+ *                 type: string
+ *                 example: "9876543210"
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       400:
+ *         description: Update failed
+ *       500:
+ *         description: Server error
+ */
+
+
 import UserModel from "@/models/user.model"
 import ServerCatchError from "@/utils/serverCatchError"
 import mongoose from "mongoose"
 import { NextRequest, NextResponse as res} from "next/server"
-import bcrypt from 'bcrypt'
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 import ContextInterface from "@/Interfaces/context.interface"
@@ -57,7 +154,7 @@ export const PUT = async( req: NextRequest) => {
         const body = await req.json()
 
         const payload = {
-            fullname : body.payload,
+            fullname : body.fullname,
             mobile : body.mobile,
         }
 
