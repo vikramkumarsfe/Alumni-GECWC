@@ -7,19 +7,12 @@
 
 /**
  * @swagger
- * /api/alumni/{id}/education:
+ * /api/alumni/education:
  *   post:
  *     summary: Add academic record for alumni (Owner only)
  *     tags: [Academics]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Alumni User ID
  *     requestBody:
  *       required: true
  *       content:
@@ -60,13 +53,6 @@
  *     tags: [Academics]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Alumni User ID
  *     responses:
  *       200:
  *         description: Academic records fetched successfully
@@ -120,22 +106,23 @@ export const POST = async(req: NextRequest, context : ContextInterface) => {
 
         if(!session)
             return res.json({ message : "Unauthorized user"}, { status : 401})
-        const { params } = context
 
-        if ( session.user.id !== params.id) 
+        const id = session.user.id
+
+        if ( !session.user.id) 
         {
             return res.json({ message: "Forbidden" }, { status: 403 })
         }
 
         const body = await req.json()
 
-        const alumni = await UserModel.findById(params.id)
+        const alumni = await UserModel.findById(id)
 
         if(!alumni)
             return res.json({message : "Alumni not found"})
 
         const payload = {
-            user : params.id,
+            user : id,
             degreeName : body.degreeName,
             universityName : body.universityName,
             score : body.score,
@@ -155,7 +142,6 @@ export const POST = async(req: NextRequest, context : ContextInterface) => {
     }
 }
 
-
 export const GET = async(req: NextRequest, context : ContextInterface) => {
     try 
     {
@@ -164,15 +150,15 @@ export const GET = async(req: NextRequest, context : ContextInterface) => {
         if(!session)
             return res.json({ message : "Unauthorized user"}, { status : 401})
 
-        const { params } = context
+        const id = session.user.id
 
-        const alumni = await UserModel.findById(params.id)
+        const alumni = await UserModel.findById(id)
 
         if(!alumni)
             return res.json({message : "Alumni not found"})
 
 
-        const data = await AcademicModel.find({ user : params.id})
+        const data = await AcademicModel.find({ user : id})
 
         if(!data)
             return res.json({ message : "failed to fetch course"})

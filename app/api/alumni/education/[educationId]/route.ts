@@ -7,19 +7,13 @@
 
 /**
  * @swagger
- * /api/alumni/{id}/education/{educationId}:
+ * /api/alumni/education/{educationId}:
  *   put:
  *     summary: Update specific education record (Owner only)
  *     tags: [Academics]
  *     security:
  *       - bearerAuth: []
  *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Alumni User ID
  *       - in: path
  *         name: educationId
  *         required: true
@@ -64,12 +58,6 @@
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Alumni User ID
- *       - in: path
  *         name: educationId
  *         required: true
  *         schema:
@@ -107,10 +95,8 @@ export const PUT = async (
       return res.json({ message: "Unauthorized user" }, { status: 401 });
 
     const { params } = context;
-    const { id, educationId } = params;
-
-    if (session.user.id !== id)
-      return res.json({ message: "Forbidden" }, { status: 403 });
+    const { educationId } = await params;
+    const id = session.user.id
 
     const body = await req.json();
 
@@ -148,10 +134,9 @@ export const DELETE = async (
       return res.json({ message: "Unauthorized user" }, { status: 401 });
 
     const { params } = context;
-    const { id, educationId } = params;
+    const {educationId } = await params;
 
-    if (session.user.id !== id)
-      return res.json({ message: "Forbidden" }, { status: 403 });
+    const id = session.user.id 
 
     const education = await AcademicModel.findOneAndDelete({
       _id: educationId,
