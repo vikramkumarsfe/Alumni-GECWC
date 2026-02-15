@@ -59,9 +59,9 @@ export default function AlumniSearchFilter({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Batches</SelectItem>
-          <SelectItem value="2024">Class of 2024</SelectItem>
-          <SelectItem value="2023">Class of 2023</SelectItem>
-          <SelectItem value="2022">Class of 2022</SelectItem>
+          <SelectItem value="2024">Batch of 2019</SelectItem>
+          <SelectItem value="2023">Batch of 2020</SelectItem>
+          <SelectItem value="2022">Batch of 2021</SelectItem>
         </SelectContent>
       </Select>
     </div>

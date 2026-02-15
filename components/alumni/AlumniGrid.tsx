@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react"
 import AlumniCard from "./AlumniCard"
 import AlumniSearchFilter from "./AlumniSearchFilter"
-import { Pagination } from "antd"
+import { Pagination, Skeleton } from "antd"
+import useSWR from "swr"
+import ErrorState from "../shared/Errorstate"
+import { fetcher } from "@/utils/fetcher"
 
 interface Alumni {
   _id: string
@@ -46,24 +49,20 @@ function generateRandomAlumni(count: number): Alumni[] {
 }
 
 export default function AlumniGrid() {
-  const [data, setData] = useState<Alumni[]>([])
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
-
   const pageSize = 12
+  const { data: SwrData, isLoading, error } = useSWR(
+    `/api/alumni?page=${page}&limit=${pageSize}`,
+    fetcher
+  )
 
-  useEffect(() => {
-    const allData = generateRandomAlumni(30)
+if (isLoading) return <Skeleton active />
+if (error) return <ErrorState />
 
-    const filtered = allData.filter((item) =>
-      item.fullname.toLowerCase().includes(search.toLowerCase())
-    )
+const data = SwrData?.data || []
 
-    const start = (page - 1) * pageSize
-    const paginated = filtered.slice(start, start + pageSize)
-
-    setData(paginated)
-  }, [page, search])
+const total = SwrData?.pagination.total || 12
 
   return (
     <>
@@ -73,7 +72,7 @@ export default function AlumniGrid() {
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-        {data.map((item) => (
+        {data.map((item : any) => (
           <AlumniCard key={item._id} alumni={item} />
         ))}
       </div>
@@ -81,7 +80,7 @@ export default function AlumniGrid() {
       <div className="mt-16 flex justify-center">
         <Pagination
           current={page}
-          total={30}
+          total={total}
           pageSize={pageSize}
           onChange={(p) => setPage(p)}
         />

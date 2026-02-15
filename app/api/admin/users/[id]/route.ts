@@ -169,15 +169,16 @@ export const GET = async(req: NextRequest, {params} : ContextInterface) => {
         if(!session)
             return res.json({ message : "Unauthorized User"}, { status : 404})
 
-        if( session.user.role !== "admin")
-            return res.json({ message : "Unauthorized user"}, { status : 404})
+        // if( session.user.role !== "admin")
+        //     return res.json({ message : "Unauthorized user"}, { status : 404})
+        const param = await params
 
-        const id = params.id
+        const id  = param.id
 
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})
 
-        const user = await UserModel.findById(id)
+        const user = await UserModel.findById(id).select("-password ")
 
         if(!user)
             return res.json({ message : "Failed to delete the user"}, { status : 404})
