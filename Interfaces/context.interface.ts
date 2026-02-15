@@ -1,7 +1,8 @@
 interface ContextInterface {
     params : {
 
-        id : string
+        id : string,
+        educationId ?: string
     }
 }
 export default ContextInterface

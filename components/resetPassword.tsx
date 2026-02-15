@@ -1,110 +1,130 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import axios from 'axios';
+import Link from "next/link";
+import { Form, Input, Button, message, Spin } from "antd";
+import clientCatchError from "@/utils/clientCatchError";
+import { usePathname, useSearchParams } from "next/navigation";
+import { LoadingOutlined } from '@ant-design/icons';
+import axios from "axios";
+import { useState } from "react";
 
 const ResetPassword = () => {
+  const [form] = Form.useForm();
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const token = searchParams.get('token');
+  const [ loading, setLoading] = useState(false)
 
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const setPassword = async(values : any) => {
+    try 
+    {
+      setLoading(true)
+      const token = searchParams.get("token")
+      const payload = {
+        token,
+        password : values.password
+      }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+      const { data } = await axios.post('/api/user/set-password', payload)
 
-    if (!token) {
-      setError('Invalid or missing reset token');
-      return;
+      message.success("Password updated successfully")
+
+
     }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
+    catch(err)
+    {
+      clientCatchError(err)
     }
-
-    setLoading(true);
-    setError(null);
-
-    const payload = {
-      token,
-      password
+    finally{
+      setLoading(false)
     }
-    
-    try {
-      const res = await axios.post('/api/user/set-password', payload )
-
-      console.log(res)
-
-      setSuccess(true);
-
-      setTimeout(() => router.push('/login'), 2500);
-      
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-semibold mb-2">Reset Password</h1>
-        <p className="text-gray-600 mb-6">
-          Enter your new password below.
+    <div className="flex items-center justify-center  px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
+        <h1 className="text-2xl font-semibold text-gray-800 text-center mb-2">
+          Reset Password
+        </h1>
+
+        <p className="text-gray-500 text-center mb-6">
+          Create a new password for your account.
+          Make sure it is strong and secure.
         </p>
-        {error && (
-          <div className="mb-4 text-sm text-red-600 bg-red-50 p-2 rounded">
-            {error}
-          </div>
-        )}
 
-        {success ? (
-          <div className="text-green-600 text-sm">
-            Password reset successful. Redirecting to login…
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm mb-1">New Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-                required
-              />
-            </div>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={setPassword}
+          className="space-y-2"
+        >
+          {/* New Password */}
+          <Form.Item
+            label="New Password"
+            name="password"
+            rules={[
+              { required: true, message: "Please enter new password" },
+              { min: 6, message: "Password must be at least 6 characters" },
+            ]}
+          >
+            <Input.Password
+              placeholder="Enter new password"
+              className="py-2"
+            />
+          </Form.Item>
 
-            <div>
-              <label className="block text-sm mb-1">Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-500"
-                required
-              />
-            </div>
+          {/* Confirm Password */} 
+          <Form.Item
+            label="Confirm Password"
+            name="confirmPassword"
+            dependencies={["password"]}
+            rules={[
+              { required: true, message: "Please confirm your password" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("Passwords do not match")
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              placeholder="Confirm new password"
+              className="py-2"
+            />
+          </Form.Item>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-60"
-            >
-              {loading ? 'Resetting...' : 'Reset Password'}
-            </button>
-          </form>
-        )}
+          <Form.Item>
+            {
+              loading ? 
+                <Spin indicator={<LoadingOutlined spin />} size="small" />
+                :
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                className="!bg-[#6C63FF] hover:!bg-[#5a52d6] h-11 rounded-md"
+              >
+                Reset Password
+              </Button>
+            }
+          </Form.Item>
+        </Form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Remembered your password?{" "}
+          <Link
+            href="/login"
+            className="text-blue-600 font-medium underline"
+          >
+            SignIn
+          </Link>
+        </p>
       </div>
     </div>
   );
-}
+};
 
-export default ResetPassword
+export default ResetPassword;

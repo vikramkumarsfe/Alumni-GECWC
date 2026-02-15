@@ -1,9 +1,10 @@
-import Login from '@/components/login'
+import Login from '@/components/Login'
 
-const LoginRouter = () => {
-  return (
-    <Login />
-  )
+export const metadata = {
+  title:'Login'
+}
+const LoginRoute = () => {
+  return <Login />
 }
 
-export default LoginRouter
+export default LoginRoute 

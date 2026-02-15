@@ -36,6 +36,10 @@ const UserSchema = new Schema({
     expiryResetLink : {
         type : String,
         default : null
+    },
+    isActive : {
+        type : Boolean,
+        default : false
     }
 
 },{timestamps :  true})
@@ -48,6 +52,11 @@ UserSchema.pre("save", async function(next){
 UserSchema.pre("save", async function(next){
     this.role = "alumni"
 })
-const UserModel =models.User || model("User", UserSchema)
+
+UserSchema.pre("save", async function (next){
+    this.isActive = false
+})
+
+const UserModel = models.User || model("User", UserSchema)
 
 export default UserModel

@@ -43,9 +43,11 @@ export const setPassword = async (password : string, token : string) :Promise<an
     if(!user)
         throw new Error("User does not exist or link expired")
     
-    user.password = bcrypt.hash(password, 12)
+    user.password = await bcrypt.hash(password, 12)
     user.resetPasswordToken = null
     user.expiryResetLink = null
 
-    return "Password reste successfully"
+    user.save()
+
+    return "Password reset successfully"
 }

@@ -1,3 +1,49 @@
+/**
+ * @swagger
+ * tags:
+ *   - name: Authentication
+ *     description: User authentication and security APIs
+ */
+
+/**
+ * @swagger
+ * /api/user/change-password:
+ *   post:
+ *     summary: Change password (Alumni only)
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Allows an authenticated alumni user to change their password after verifying the old password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - password
+ *               - newPassword
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 example: oldPassword123
+ *               newPassword:
+ *                 type: string
+ *                 example: newStrongPassword456
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (User is not alumni)
+ *       400:
+ *         description: Old password is incorrect
+ *       500:
+ *         description: Server error
+ */
+
+
 import UserModel from "@/models/user.model"
 import ServerCatchError from "@/utils/serverCatchError"
 import mongoose from "mongoose"
