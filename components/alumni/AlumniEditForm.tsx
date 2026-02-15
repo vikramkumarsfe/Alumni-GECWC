@@ -1,10 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { message } from "antd"
+import { message, Skeleton } from "antd"
+import { useSession } from "next-auth/react"
+import axios from "axios"
+
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -19,7 +22,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import ProfileImageUpload from "./ProfileImageUpload"
 
-// 1. Define Validation Schema
 const profileSchema = z.object({
   fullname: z.string().min(2, "Name must be at least 2 characters."),
   mobile: z.string().regex(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number."),
@@ -29,29 +31,46 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>
 
 export default function AlumniEditForm() {
+  const { data: session, status } = useSession()
   const [isLoading, setIsLoading] = useState(false)
 
-  // 2. Initialize Form
+  console.log(session)
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      fullname: "Vikram Kumar",
-      mobile: "9876543210",
-      bio: "Software Engineer passionate about scalable systems.",
+      fullname: "",
+      mobile: "",
+      bio: "",
     },
   })
 
-  // 3. Handle Submit
+  // ✅ Prefill form when session loads
+  useEffect(() => {
+    if (session?.user) {
+      form.reset({
+        fullname: session.user.name || "",
+        mobile: session.user.mobile || "", // fetch from DB if stored separately
+        bio: session.user.bio || "",    // fetch from DB if stored separately
+      })
+    }
+  }, [session, form])
+
+  if (status === "loading") {
+    return <Skeleton active />
+  }
+
   async function onSubmit(data: ProfileFormValues) {
     setIsLoading(true)
+
     try {
-      // Simulate API Call
-      console.log("Form Data:", data)
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      
+
+      console.log(data)
+      await axios.put("/api/alumni", data)
+
       message.success("Profile updated successfully!")
-    } catch (error) {
-      message.error("Something went wrong.")
+    } catch (error: any) {
+      message.error(error?.response?.data?.message || "Update failed")
     } finally {
       setIsLoading(false)
     }
@@ -64,21 +83,22 @@ export default function AlumniEditForm() {
           Edit Profile
         </CardTitle>
       </CardHeader>
+
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            
-            {/* Profile Image Section */}
+
+            {/* Profile Image */}
             <div className="flex justify-center pb-4">
               <ProfileImageUpload
-                image="https://i.pravatar.cc/300?img=10"
-                name={form.getValues("fullname")}
+                image={session?.user?.image || ""}
+                name={form.watch("fullname")}
                 onChange={(file) => console.log("New File:", file)}
               />
             </div>
 
             <div className="grid gap-6">
-              {/* Full Name */}
+
               <FormField
                 control={form.control}
                 name="fullname"
@@ -93,7 +113,6 @@ export default function AlumniEditForm() {
                 )}
               />
 
-              {/* Mobile */}
               <FormField
                 control={form.control}
                 name="mobile"
@@ -108,7 +127,6 @@ export default function AlumniEditForm() {
                 )}
               />
 
-              {/* Bio */}
               <FormField
                 control={form.control}
                 name="bio"
@@ -117,7 +135,7 @@ export default function AlumniEditForm() {
                     <FormLabel>Bio</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Tell us a little about yourself"
+                        placeholder="Tell us about yourself"
                         className="resize-none"
                         {...field}
                       />
@@ -128,19 +146,20 @@ export default function AlumniEditForm() {
               />
             </div>
 
-            {/* Form Actions */}
             <div className="flex justify-end gap-3 pt-4">
-              <Button 
-                variant="ghost" 
-                type="button" 
+              <Button
+                variant="ghost"
+                type="button"
                 onClick={() => form.reset()}
               >
                 Reset
               </Button>
-              <Button type="submit">
-                Save Changes
+
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Saving..." : "Save Changes"}
               </Button>
             </div>
+
           </form>
         </Form>
       </CardContent>

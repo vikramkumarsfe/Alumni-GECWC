@@ -156,8 +156,9 @@ export const PUT = async( req: NextRequest) => {
         const payload = {
             fullname : body.fullname,
             mobile : body.mobile,
+            bio : body.bio
         }
-
+        console.log(payload)
         const user = await UserModel.findByIdAndUpdate({ _id : session.user.id}, { $set : payload}, { new : true})
 
         if(!user)

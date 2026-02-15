@@ -40,6 +40,9 @@ const UserSchema = new Schema({
     isActive : {
         type : Boolean,
         default : false
+    },
+    bio : {
+        type : String,
     }
 
 },{timestamps :  true})

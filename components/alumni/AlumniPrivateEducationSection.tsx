@@ -208,7 +208,6 @@ export default function AlumniPrivateEducationSection({
         centered
         title={isEditing ? "Edit Education" : "Add Education"}
       >
-
         <Form
           form={form}
           layout="vertical"
