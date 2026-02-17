@@ -1,42 +1,45 @@
 import AlumniProfileHeader from "@/components/alumni/AlumniProfileHeader"
 import AlumniAboutSection from "@/components/alumni/AlumniAboutSection"
 import AlumniEducationSection from "@/components/alumni/AlumniEducationSection"
+import { cookies } from "next/headers"
 
-export default function AlumniPublicProfile() {
-  const user = {
-    fullname: "Vikram Kumar",
-    image: "https://i.pravatar.cc/300?img=12",
-    department: "Computer Science",
-    batch: "2022",
-    company: "Google",
-    position: "Software Engineer",
+interface PageProps {
+  params: {
+    id: string
   }
+}
 
-  const education = [
-    {
-      _id: "1",
-      degreeName: "B.Tech Computer Science",
-      universityName: "IIT Delhi",
-      completionYear: 2022,
-      score: "8.9 CGPA",
-    },
-    {
-      _id: "2",
-      degreeName: "M.Tech Artificial Intelligence",
-      universityName: "IISc Bangalore",
-      completionYear: 2024,
-      score: "9.2 CGPA",
-    },
-  ]
+export default async function AlumniPublicProfile({ params }: PageProps) {
+
+  const { id } = await params
+
+  const cookieStore = await cookies()
+
+  const cookieString = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ")
+
+    const resUser = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/users/${id}`,
+      {
+        headers: {
+          Cookie: cookieString,
+        },
+        cache: "no-store",
+      }
+    )
+
+  const data = await resUser.json();
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-5xl mx-auto px-6 lg:px-12 py-12">
-        <AlumniProfileHeader user={user} />
+        <AlumniProfileHeader user={data.user} />
 
-        <AlumniAboutSection bio="Passionate about scalable systems and distributed architecture. Currently building cloud-native applications.Passionate about scalable systems and distributed architecture. Currently building cloud-native applicatioPassionate about scalable systems and distributed architecture. Currently building cloud-native applicatioPassionate about scalable systems and distributed architecture. Currently building cloud-native applicatio" />
+        <AlumniAboutSection bio={data.user.bio} />
 
-        <AlumniEducationSection education={education} />
+        <AlumniEducationSection education={data.education} />
       </div>
     </div>
   )

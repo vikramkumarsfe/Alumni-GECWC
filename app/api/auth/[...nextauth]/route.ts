@@ -102,10 +102,23 @@ export const authOptions: NextAuthOptions = {
       if (session.image) 
       {
         token.image = session.image;
+        
       }
       if (session.provider) 
       {
         token.provider = session.provider;
+      }
+      if(session.bio)
+      {
+        token.bio = session.bio
+      }
+      if(session.name)
+      {
+        token.name = session.name
+      }
+      if(session.mobile)
+      {
+        token.mobile = session.mobile
       }
     }
       return token

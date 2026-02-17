@@ -17,6 +17,9 @@ export default function AlumniPrivateHeader() {
 
   const authUser = session?.user
 
+  if(!authUser)
+    return <Skeleton active />
+
   const fullname = authUser?.name || "User"
 
   const image = authUser?.image || undefined

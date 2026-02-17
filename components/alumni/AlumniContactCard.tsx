@@ -9,13 +9,11 @@ import {
   TooltipProvider, 
   TooltipTrigger 
 } from "@/components/ui/tooltip";
+import { useSession } from "next-auth/react";
+import { Skeleton } from "antd";
 
-interface Props {
-  email: string;
-  mobile?: string;
-}
 
-export default function AlumniContactCard({ email, mobile }: Props) {
+export default function AlumniContactCard() {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = (text: string) => {
@@ -23,6 +21,17 @@ export default function AlumniContactCard({ email, mobile }: Props) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const { data: session, status } = useSession()
+  
+    if (status === "loading") {
+      return <Skeleton active />
+    }
+
+    const authUser = session?.user
+  
+    const email = authUser?.email
+    const mobile = authUser?.mobile
 
   return (
     <div className="mt-12">
@@ -51,6 +60,8 @@ export default function AlumniContactCard({ email, mobile }: Props) {
             
             <TooltipProvider>
               <Tooltip>
+                {
+                  email && 
                 <TooltipTrigger asChild>
                   <Button 
                     variant="ghost" 
@@ -61,6 +72,7 @@ export default function AlumniContactCard({ email, mobile }: Props) {
                     {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </TooltipTrigger>
+                }
                 <TooltipContent>Copy Email</TooltipContent>
               </Tooltip>
             </TooltipProvider>

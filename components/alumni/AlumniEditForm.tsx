@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { message, Skeleton } from "antd"
-import { useSession } from "next-auth/react"
-import axios from "axios"
+import { useState, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { message, Skeleton } from "antd";
+import { useSession } from "next-auth/react";
+import axios from "axios";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,25 +16,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import ProfileImageUpload from "./ProfileImageUpload"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import ProfileImageUpload from "./ProfileImageUpload";
 
 const profileSchema = z.object({
   fullname: z.string().min(2, "Name must be at least 2 characters."),
   mobile: z.string().regex(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number."),
   bio: z.string().max(160, "Bio must be under 160 characters.").optional(),
-})
+});
 
-type ProfileFormValues = z.infer<typeof profileSchema>
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function AlumniEditForm() {
-  const { data: session, status } = useSession()
-  const [isLoading, setIsLoading] = useState(false)
-
-  console.log(session)
+  const { data: session, status, update } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -43,36 +42,40 @@ export default function AlumniEditForm() {
       mobile: "",
       bio: "",
     },
-  })
+  });
 
-  // ✅ Prefill form when session loads
+  // Prefill form when session loads
   useEffect(() => {
     if (session?.user) {
       form.reset({
         fullname: session.user.name || "",
-        mobile: session.user.mobile || "", // fetch from DB if stored separately
-        bio: session.user.bio || "",    // fetch from DB if stored separately
-      })
+        mobile: (session.user as any).mobile || "",
+        bio: (session.user as any).bio || "",
+      });
     }
-  }, [session, form])
+  }, [session, form]);
 
   if (status === "loading") {
-    return <Skeleton active />
+    return <Skeleton active />;
   }
 
   async function onSubmit(data: ProfileFormValues) {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
+      await axios.put("/api/alumni", data);
 
-      console.log(data)
-      await axios.put("/api/alumni", data)
+      await update({
+        name: data.fullname,
+        bio: data.bio,
+        mobile: data.mobile,
+      });
 
-      message.success("Profile updated successfully!")
+      message.success("Profile updated successfully!");
     } catch (error: any) {
-      message.error(error?.response?.data?.message || "Update failed")
+      message.error(error?.response?.data?.message || "Update failed");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -88,13 +91,13 @@ export default function AlumniEditForm() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
-            {/* Profile Image */}
+            {/* Profile Image Upload */}
             <div className="flex justify-center pb-4">
               <ProfileImageUpload
-                image={session?.user?.image || ""}
-                name={form.watch("fullname")}
-                onChange={(file) => console.log("New File:", file)}
-              />
+                  image={session?.user?.image ?? undefined}
+                  name={form.watch("fullname")}
+                />
+
             </div>
 
             <div className="grid gap-6">
@@ -144,6 +147,7 @@ export default function AlumniEditForm() {
                   </FormItem>
                 )}
               />
+
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
@@ -164,5 +168,5 @@ export default function AlumniEditForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }
