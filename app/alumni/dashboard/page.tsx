@@ -1,17 +1,9 @@
-import AlumniPrivateHeader from "@/components/alumni/AlumniPrivateHeader"
-import AlumniContactCard from "@/components/alumni/AlumniContactCard"
-import AlumniPrivateEducationSection from "@/components/alumni/AlumniPrivateEducationSection"
+import AlumniDashboard from '@/components/alumni/AlumniDashboard'
 
-export default function AlumniPrivateProfile() {
+const AlumniDashboardRouter = () => {
   return (
-    <div className="bg-slate-100 min-h-screen">
-      <div className="max-w-5xl mx-auto px-6 lg:px-12 py-12">
-        <AlumniPrivateHeader/>
-
-        <AlumniContactCard />
-
-        <AlumniPrivateEducationSection />
-      </div>
-    </div>
+    <AlumniDashboard />
   )
 }
+
+export default AlumniDashboardRouter
