@@ -95,6 +95,7 @@ import { NextRequest, NextResponse as res} from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import ContextInterface from "@/Interfaces/context.interface"
+import AcademicModel from "@/models/academics.model"
 const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
 if (mongoose.connection.readyState === 0) {
   mongoose.connect(DB)
@@ -112,7 +113,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = params.id
+        const id = await params.id
         const body = await req.json()
 
         if(!id)
@@ -175,15 +176,18 @@ export const GET = async(req: NextRequest, {params} : ContextInterface) => {
 
         const id  = param.id
 
+
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})
 
         const user = await UserModel.findById(id).select("-password ")
 
+        const education = await  AcademicModel.find({ user : id})
+
         if(!user)
             return res.json({ message : "Failed to delete the user"}, { status : 404})
 
-        return res.json(user)
+        return res.json({ user , education})
     }
     catch(err)
     {

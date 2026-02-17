@@ -22,13 +22,7 @@ interface Education {
   score?: number
 }
 
-interface Props {
-  education: Education[]
-}
-
-export default function AlumniPrivateEducationSection({
-  education,
-}: Props) {
+export default function AlumniPrivateEducationSection() {
   const [open, setOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [selectedEducation, setSelectedEducation] = useState<Education | null>(null)
@@ -41,7 +35,7 @@ export default function AlumniPrivateEducationSection({
   if(error)
     return <ErrorState />
 
-  education = data
+  const education = data
 
   const handleSubmit = async (values: any) => {
     try {
@@ -208,7 +202,6 @@ export default function AlumniPrivateEducationSection({
         centered
         title={isEditing ? "Edit Education" : "Add Education"}
       >
-
         <Form
           form={form}
           layout="vertical"

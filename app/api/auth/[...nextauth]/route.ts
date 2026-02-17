@@ -37,6 +37,8 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           image: user.image,       
           provider: user.provider,
+          mobile : user.mobile,
+          bio : user.bio
         }
       }
     }),
@@ -72,10 +74,14 @@ export const authOptions: NextAuthOptions = {
           user.id = newUser._id.toString()
           user.role = newUser.role
           user.address = newUser.address
+          user.mobile = newUser.mobile
+          user.bio = newUser.bio
         } else {
           user.id = existingUser._id.toString()
           user.role = existingUser.role
           user.address = existingUser.address
+          user.bio = existingUser.bio
+          user.mobile = existingUser.mobile
         }
       }
       return true
@@ -88,16 +94,31 @@ export const authOptions: NextAuthOptions = {
         token.address = user.address
         token.image  = user.image,       
         token.provider = user.provider
+        token.mobile = user.mobile
+        token.bio = user.bio
       }
 
       if (trigger === "update" && session) {
       if (session.image) 
       {
         token.image = session.image;
+        
       }
       if (session.provider) 
       {
         token.provider = session.provider;
+      }
+      if(session.bio)
+      {
+        token.bio = session.bio
+      }
+      if(session.name)
+      {
+        token.name = session.name
+      }
+      if(session.mobile)
+      {
+        token.mobile = session.mobile
       }
     }
       return token
@@ -108,6 +129,8 @@ export const authOptions: NextAuthOptions = {
       session.user.role = token.role as string
       session.user.address = token.address as any
       session.user.image = token.picture as any
+      session.user.mobile = token.mobile as any
+      session.user.bio = token.bio as any
       return session
     }
   },
