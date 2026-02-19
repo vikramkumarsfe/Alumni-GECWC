@@ -1,13 +1,6 @@
 import React from "react";
-import { 
-  Calendar, 
-  MapPin, 
-  Clock, 
-  UserCircle, 
-  ArrowLeft, 
-} from "lucide-react";
+import {  Calendar, MapPin, Clock, UserCircle, ArrowLeft} from "lucide-react";
 
-// Shadcn UI Primitives
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
