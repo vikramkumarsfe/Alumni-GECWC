@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
 
 const UPCOMING_EVENTS = [
   {
@@ -140,7 +141,9 @@ export default function AlumniEvents() {
             </CardContent>
             <CardFooter className="gap-3">
               <Button className="flex-1">RSVP Now</Button>
-              <Button variant="outline" className="flex-1">Details</Button>
+              <Link href="/alumni/events/123">
+                <Button variant="outline" className="flex-1">Details</Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}
