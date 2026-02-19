@@ -11,7 +11,6 @@ const items = [
   { title: "My Profile", url: "/alumni/profile", icon: UserCircle },
   { title: "Alumni Directory", url: "/alumni", icon: Users },
   { title: "Events", url: "/alumni/events", icon: Calendar },
-  { title: "Jobs", url: "/alumni/jobs", icon: Briefcase },
   { title: "Announcements", url: "/alumni/announcements", icon: Bell },
 ]
 
