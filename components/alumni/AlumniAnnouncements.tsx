@@ -1,14 +1,19 @@
-import React from "react";
+'use client'
+import React, { useEffect, useState } from "react";
 import { Search, Clock } from "lucide-react";
-import { Pagination } from "antd"; // Import Ant Design Pagination
+import { Pagination, Skeleton } from "antd"; // Import Ant Design Pagination
 
 // shadcn/ui components
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
+import ErrorState from "../shared/Errorstate";
+import moment from 'moment'
 
-const announcements = [
+let announcements = [
   {
     title: "Fall 2025 Alumni Meet Registration Open",
     date: "Posted 2 hours ago",
@@ -33,9 +38,39 @@ const announcements = [
     isNew: false,
     content: "The main sports complex will be closed for renovation from May to July. Alternative arrangements have been made at the city stadium for regular practice sessions.",
   },
-];
+]
 
-export default function AnnouncementFeed() {
+const AnnouncementFeed = () => {
+  const [ isExpanded, setIsExpanded ] = useState({expanded : false, index : 0})
+  const pageSize = 10
+  const [page, setPage] = useState(1)
+  const { data , isLoading, error } = useSWR(`/api/announcement?page=${page}&limit=${pageSize}`, fetcher)
+  const [announcements, setAnnouncements] = useState<any[]>([])
+
+  useEffect(()=>{
+    if(data)
+    {
+      setAnnouncements(data.announcements)
+    }
+  },[data])
+
+
+  if(error)
+    return <ErrorState />
+
+  if(isLoading)
+    return <Skeleton active />
+  console.log(data.announcements)
+
+  
+
+  const getContent = (content : string, index : number) => {
+    if(isExpanded.expanded === true && index === isExpanded.index)
+    {
+      return content
+    }
+    return `${content.slice(0,100)}...`
+  }
   return (
     <div className="mx-auto space-y-8 p-6 md:p-8">
       <div className="space-y-1">
@@ -54,16 +89,16 @@ export default function AnnouncementFeed() {
         />
       </div>
       <div className="grid gap-4">
-        {announcements.map((item, idx) => (
-          <Card key={idx} className="transition-all hover:shadow-md border-slate-200">
+        {announcements.map((item, index) => (
+          <Card key={index} className="transition-all hover:shadow-md border-slate-200">
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
               <div className="space-y-1">
-                <CardTitle className="text-lg font-semibold text-slate-800 leading-tight">
+                <CardTitle className="text-lg font-semibold text-slate-800 leading-tight mb-2">
                   {item.title}
                 </CardTitle>
                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
                   <Clock size={14} />
-                  <span>{item.date}</span>
+                  <span>{moment().format('MMMM Do YYYY, h:mm:ss a')}</span>
                 </div>
               </div>
               {item.isNew && (
@@ -77,29 +112,38 @@ export default function AnnouncementFeed() {
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed text-slate-600 max-w-[95%]">
-                {item.content}
+                { getContent(item.content, index) }
               </p>
             </CardContent>
             <CardFooter>
               <Button 
-                variant="outline" 
+                variant="default" // Changed from outline to default for solid background
                 size="sm" 
-                className="h-8 text-xs font-medium border-slate-200 hover:bg-slate-50 text-slate-700"
+                className={`
+                  h-8 text-xs font-semibold px-4
+                  bg-slate-900 text-slate-50 hover:bg-slate-800 
+                  dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-200
+                  transition-all duration-200 active:scale-95
+                  border border-slate-800 shadow-sm
+                `}
+                onClick={() => setIsExpanded({
+                  expanded: !(isExpanded.expanded && isExpanded.index === index), 
+                  index: index 
+                })}
               >
-                Read More
+                { (isExpanded.expanded && isExpanded.index === index) ? "Show Less" : "Show More" }
               </Button>
             </CardFooter>
           </Card>
         ))}
       </div>
 
-      {/* 4. Ant Design Pagination */}
       <div className="flex justify-center pt-6 pb-10">
-        <Pagination 
-          defaultCurrent={1} 
-          total={50} 
-          showSizeChanger={false}
-          className="custom-antd-pagination"
+        <Pagination
+          current={page}
+          total={data.total}
+          pageSize={pageSize}
+          onChange={(p) => setPage(p)}
         />
       </div>
 
@@ -122,3 +166,5 @@ export default function AnnouncementFeed() {
     </div>
   )
 }
+
+export default AnnouncementFeed

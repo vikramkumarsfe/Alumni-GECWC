@@ -25,8 +25,6 @@ const AlumniEventDetails = () => {
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Events
             </Button>
         </Link>
-
-        {/* Hero Section */}
         <div className="relative h-64 md:h-80 w-full overflow-hidden rounded-2xl shadow-lg">
           <img
             src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop"
@@ -43,10 +41,7 @@ const AlumniEventDetails = () => {
           </div>
         </div>
 
-        {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left: Description & Schedule */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="border-none shadow-sm">
               <CardHeader>
