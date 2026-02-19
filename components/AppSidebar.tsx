@@ -67,14 +67,6 @@ export function AppSidebar() {
       <SidebarFooter className="pb-6">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-                <Link href="/alumni/settings">
-                    <Settings className="size-4" />
-                    <span>Settings</span>
-                </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
             <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10">
               <LogOut className="size-4" />
               <span>Logout</span>
