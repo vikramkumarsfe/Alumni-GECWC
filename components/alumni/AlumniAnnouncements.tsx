@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { Search, Clock } from "lucide-react";
-import { Pagination, Skeleton } from "antd"; // Import Ant Design Pagination
+import { Empty, Pagination, Skeleton } from "antd"; // Import Ant Design Pagination
 
 // shadcn/ui components
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,7 +60,9 @@ const AnnouncementFeed = () => {
 
   if(isLoading)
     return <Skeleton active />
-  console.log(data.announcements)
+
+  if(data.announcements.length === 0)
+    return <Empty />
 
   
 
