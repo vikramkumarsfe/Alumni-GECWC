@@ -13,56 +13,6 @@ import ErrorState from "../shared/Errorstate"
 import { useEffect, useState } from "react"
 import moment from "moment"
 
-const UPCOMING_EVENTS = [
-  {
-    id: 1,
-    type: "Conference",
-    title: "Annual Technology Symposium 2026",
-    date: "Oct 15, 2026",
-    time: "09:00 AM",
-    location: "University Grand Auditorium",
-    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800",
-    desc: "Join us for a day of innovation and networking with top industry leaders and alumni tech founders."
-  },
-  {
-    id: 2,
-    type: "Reunion",
-    title: "Golden Jubilee Alumni Gala Dinner",
-    date: "Nov 20, 2026",
-    time: "07:00 PM",
-    location: "The Royal Hotel Ballroom",
-    image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800",
-    desc: "Celebrating 50 years of excellence. A night of nostalgia, fine dining, and reconnecting with old friends."
-  },
-  {
-    id: 3,
-    type: "Workshop",
-    title: "Career Growth & Leadership Workshop",
-    date: "Dec 05, 2026",
-    time: "10:00 AM",
-    location: "Online (Zoom)",
-    isOnline: true,
-    image: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=800",
-    desc: "Interactive session on navigating mid-career transitions and developing leadership skills."
-  }
-]
-
-const PAST_EVENTS = [
-  {
-    id: 4,
-    type: "Hackathon",
-    title: "Fall 2025 Hackathon",
-    date: "Sep 10, 2025",
-    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=800"
-  },
-  {
-    id: 5,
-    type: "Webinar",
-    title: "AI in Healthcare Webinar",
-    date: "Aug 05, 2025",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800"
-  }
-]
 
 const AlumniEvents = () => {
   const [pastEvents, setPastEvents] = useState<any[]>([])
@@ -104,7 +54,6 @@ const AlumniEvents = () => {
         </p>
       </div>
 
-      {/* --- FILTER TOOLBAR --- */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border shadow-sm">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -205,7 +154,7 @@ const AlumniEvents = () => {
                 <CardDescription className="text-xs">{moment(event.date).format('MMMM Do YYYY, h:mm:ss a')}</CardDescription>
               </CardHeader>
               <CardFooter className="p-4 pt-0">
-                <Button variant="ghost" size="sm" className="w-full text-xs gap-2">
+                <Button variant="ghost" size="sm" className="w-full text-xs gap-2" >
                    <ImageIcon className="h-3 w-3" /> View Gallery
                 </Button>
               </CardFooter>

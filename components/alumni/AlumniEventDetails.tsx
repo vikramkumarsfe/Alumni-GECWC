@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import {  Calendar, MapPin, Clock, UserCircle, ArrowLeft} from "lucide-react";
 
@@ -7,8 +8,28 @@ import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
+import ErrorState from "../shared/Errorstate";
+import { Skeleton } from "antd";
+import moment from "moment";
 
 const AlumniEventDetails = () => {
+  const pathname = usePathname()
+
+  const id = pathname.split('/').pop()
+
+  const { data , error, isLoading } = useSWR(`/api/event/${id}`, fetcher)
+  
+  if(error)
+    return <ErrorState />
+
+  if(isLoading)
+    return <Skeleton active />
+
+  console.log(data)
+
   return (
     <main className="flex-1 overflow-y-auto p-4 md:px-8  md:py-6 bg-slate-50">
       <div className="mx-auto space-y-6">
@@ -25,11 +46,11 @@ const AlumniEventDetails = () => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-6 md:p-8 flex flex-col justify-end">
-            <Badge className="w-fit mb-3 bg-slate-50 text-black">Annual Reunion</Badge>
-            <h1 className="text-2xl md:text-4xl font-bold text-white mb-3">Grand Alumni Homecoming 2024</h1>
+            <Badge className="w-fit mb-3 bg-slate-50 text-black">{data.category}</Badge>
+            <h1 className="text-2xl md:text-4xl font-bold text-white mb-3">{data.title}</h1>
             <div className="flex flex-wrap gap-4 md:gap-8 text-white/90 text-sm font-medium">
-              <span className="flex items-center gap-2"><Calendar size={18} /> Oct 15, 2024</span>
-              <span className="flex items-center gap-2"><MapPin size={18} /> University Auditorium</span>
+              <span className="flex items-center gap-2"><Calendar size={18} />{moment(data.date).format('MMMM Do YYYY, h:mm:ss a')}</span>
+              <span className="flex items-center gap-2"><MapPin size={18} /> {data.venueName}</span>
             </div>
           </div>
         </div>
@@ -42,8 +63,7 @@ const AlumniEventDetails = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="text-slate-600 leading-relaxed text-[15px] space-y-4">
-                  <p>Reconnect with old classmates, share your professional journey, and see how much the campus has changed. This homecoming features networking sessions, department tours, and a special address from the Dean.</p>
-                  <p>Whether you graduated last year or 40 years ago, there is a place for you at this celebration of our shared heritage.</p>
+                  <p>{data.description}</p>
                 </div>
 
                 <Separator className="bg-slate-100" />
@@ -51,30 +71,29 @@ const AlumniEventDetails = () => {
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-slate-800">Event Schedule</h3>
                   <div className="space-y-4">
-                    <AgendaRow time="09:00 AM" event="Registration & Networking" />
-                    <AgendaRow time="11:30 AM" event="Main Hall Keynote" />
-                    <AgendaRow time="01:00 PM" event="Alumni Buffet Lunch" />
-                    <AgendaRow time="03:30 PM" event="Department Breakout Sessions" />
+                    {
+                      data && data.agenda.map((item: any, index: number)=>(
+                        <AgendaRow time={item.time} event={item.title} key={index}/>
+                      ))
+                    }
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-
-          {/* Right: Registration Card */}
           <div className="space-y-6">
             <Card className="sticky top-8 border-none shadow-xl">
               <CardContent className="pt-8 space-y-6">
                 <div className="space-y-5">
-                  <DetailItem icon={<Clock />} label="Date & Time" value="Oct 15, 2024 • 9AM - 5PM" />
-                  <DetailItem icon={<MapPin />} label="Venue" value="Main Hall, Block A" />
-                  <DetailItem icon={<UserCircle />} label="Organizer" value="Alumni Relations Office" />
+                  <DetailItem icon={<Clock />} label="Date & Time" value={`${moment(data.date).format('MMMM Do YYYY')} • ${data.startTime} - ${data.endTime}`} />
+                  <DetailItem icon={<MapPin />} label="Venue" value={data.venueAddress} />
+                  <DetailItem icon={<UserCircle />} label="Organizer" value={data.organizerName}/>
                 </div>
 
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-xs font-bold uppercase tracking-wider">Availability</span>
-                    <span className="text-sm font-bold">45 / 200</span>
+                    <span className="text-sm font-bold">{data.attendees.length} / {data.capacity}</span>
                   </div>
                 </div>
 
@@ -85,14 +104,14 @@ const AlumniEventDetails = () => {
                 <div className="pt-4 border-t border-slate-100 text-center">
                   <p className="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest">Attending Alumni</p>
                   <div className="flex justify-center -space-x-2">
-                    {[1, 2, 3, 4, 5].map((i) => (
+                    {data.attendees.map((i: any) => (
                       <Avatar key={i} className="border-2 border-white h-10 w-10">
                         <AvatarImage src={`https://i.pravatar.cc/100?u=${i + 10}`} />
                         <AvatarFallback>A</AvatarFallback>
                       </Avatar>
                     ))}
                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-slate-100 border-2 border-white text-[10px] font-bold text-slate-600">
-                      +123
+                      {data.attendees.length > 10 ? data.attendees.length - 10 : data.attendees.length }
                     </div>
                   </div>
                 </div>
