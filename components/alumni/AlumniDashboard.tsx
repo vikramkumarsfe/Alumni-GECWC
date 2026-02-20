@@ -1,10 +1,18 @@
 'use client'
 import {  Users, Calendar, Briefcase, Megaphone, Edit3, Search, MapPin, ChevronRight, Clock, FileText, BellRing } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import useSWR, { mutate } from "swr"
+import { fetcher } from "@/utils/fetcher"
+import { message, Skeleton } from "antd"
+import ErrorState from "../shared/Errorstate"
+import { useEffect, useState } from "react"
+import moment from "moment"
+import axios from "axios"
+import clientCatchError from "@/utils/clientCatchError"
+import { useSession } from "next-auth/react"
 
 
 const STATS = [
@@ -39,6 +47,71 @@ const EVENTS = [
 ]
 
 export default function AlumniDashboard() {
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([])
+  const { data : Event, isLoading, error } = useSWR('/api/event', fetcher)
+  const { data: session, status, update } = useSession()
+  const userId = session?.user.id
+
+  useEffect(() => {
+      if (Event?.events) {
+        const upcoming = Event.events.filter(
+          (event: any) => event.status === "upcoming"
+        )
+
+        setUpcomingEvents(upcoming)
+      }
+    }, [Event])
+
+  if(isLoading)
+    return <Skeleton active />
+
+  if(error)
+    return <ErrorState />
+
+  console.log(upcomingEvents)
+
+    const rsvpNow = async( id : string) => {
+    try {
+      const payload = {
+        eventId : id
+      }
+
+      const { data } = await axios.put('/api/event/add-rsvp', payload)
+
+      message.success("You are now attending the Event")
+      mutate(`/api/event/${id}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+  }
+
+  const getUser = () => {
+
+    if(data.attendees.includes(userId))
+    {
+      return true
+    }
+    return false
+  }
+
+  const cancelRSVP = async(id : string) => {
+    try {
+      const payload = {
+        eventId : id
+      }
+
+      const { data } = await axios.put('/api/event/remove-rsvp', payload)
+
+      message.success("Event schedule is updated!!")
+      mutate(`/api/event/${id}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+  }
   return (
     <div className="space-y-8 animate-in fade-in duration-500 p-8 bg-slate-100 min-h-screen">
       
@@ -64,8 +137,6 @@ export default function AlumniDashboard() {
         {/* Subtle decorative background blob */}
         <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-violet-50/50 blur-3xl" />
       </section>
-
-      {/* --- STATS GRID --- */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {STATS.map((stat) => (
           <Card key={stat.label} className="border-none shadow-sm ring-1 ring-slate-100">
@@ -115,11 +186,11 @@ export default function AlumniDashboard() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {EVENTS.slice(0, 2).map((event) => (
+            {upcomingEvents.slice(0, 2).map((event: any) => (
               <div key={event.title} className="group relative overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md">
                 <div className="aspect-video overflow-hidden">
                   <img 
-                    src={event.image} 
+                    src={event.bannerImage} 
                     alt={event.title} 
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
                   />
@@ -130,12 +201,12 @@ export default function AlumniDashboard() {
                       {event.title}
                     </h3>
                     <div className="flex items-center text-sm text-slate-500 gap-3">
-                      <span className="flex items-center gap-1"><Calendar size={14} /> {event.date}</span>
-                      <span className="flex items-center gap-1"><Clock size={14} /> {event.time}</span>
+                      <span className="flex items-center gap-1"><Calendar size={14} /> {`${moment(event.date).format('MMMM Do YYYY')}`}</span>
+                      <span className="flex items-center gap-1"><Clock size={14} /> {`${event.startTime} - ${event.endTime}`}</span>
                     </div>
-                    <p className="flex items-center text-sm text-slate-500 gap-1"><MapPin size={14} /> {event.location}</p>
+                    <p className="flex items-center text-sm text-slate-500 gap-1"><MapPin size={14} /> {event.venueName}</p>
                   </div>
-                  <Button className="w-full bg-slate-900 hover:bg-violet-600 transition-colors">Register Interest</Button>
+                  <Button className="w-full bg-slate-900 hover:bg-violet-600 transition-colors" onClick={()=>}>Register Interest</Button>
                 </div>
               </div>
             ))}
