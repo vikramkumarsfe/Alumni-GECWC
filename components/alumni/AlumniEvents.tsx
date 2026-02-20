@@ -42,8 +42,6 @@ const AlumniEvents = () => {
   if(error)
     return <ErrorState />
 
-  console.log(data)
-
   
   return (
     <div className="flex flex-col gap-8 lg:py-8 lg:px-12 p-4 bg-slate-100 min-h-screen">

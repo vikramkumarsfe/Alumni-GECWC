@@ -23,13 +23,12 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/alumni">
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-violet-600 text-white">
                   <GraduationCap className="size-5" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-bold text-lg">AlumniConnect</span>
-                  <span className="text-xs text-muted-foreground">Portal v1.0</span>
+                  <span className="font-bold text-lg">Alumni-GECWC</span>
                 </div>
               </Link>
             </SidebarMenuButton>
