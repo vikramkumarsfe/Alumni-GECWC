@@ -4,21 +4,11 @@ import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import Image from "next/image";
 import logoImage from '@/public/images/logo.jpeg'
-
-// Shadcn & Icon Imports
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { 
-  Twitter, 
-  Linkedin, 
-  Mail, 
-} from "lucide-react";
 import { SessionProvider } from 'next-auth/react';
-
-// --- NEW IMPORTS FOR DASHBOARD ---
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from './AppSidebar';
-import { DashboardHeader } from './DashboardHeader';
+import DashboardHeader from './DashboardHeader';
 
 const menus = [
   { label: 'Home', href: '/' },

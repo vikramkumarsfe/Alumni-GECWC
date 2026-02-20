@@ -1,25 +1,27 @@
 'use client'
-import React from "react";
+import React, { useEffect } from "react";
 import {  Calendar, MapPin, Clock, UserCircle, ArrowLeft} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { fetcher } from "@/utils/fetcher";
 import ErrorState from "../shared/Errorstate";
-import { Skeleton } from "antd";
+import { message, Skeleton } from "antd";
 import moment from "moment";
+import clientCatchError from "@/utils/clientCatchError";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 const AlumniEventDetails = () => {
   const pathname = usePathname()
-
   const id = pathname.split('/').pop()
-
+  const { data: session, status, update } = useSession();
+  const userId = session?.user.id
   const { data , error, isLoading } = useSWR(`/api/event/${id}`, fetcher)
   
   if(error)
@@ -28,7 +30,48 @@ const AlumniEventDetails = () => {
   if(isLoading)
     return <Skeleton active />
 
-  console.log(data)
+  const rsvpNow = async( id : string) => {
+    try {
+      const payload = {
+        eventId : id
+      }
+
+      const { data } = await axios.put('/api/event/add-rsvp', payload)
+
+      message.success("You are now attending the Event")
+      mutate(`/api/event/${id}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+  }
+
+  const getUser = () => {
+
+    if(data.attendees.includes(userId))
+    {
+      return true
+    }
+    return false
+  }
+
+  const cancelRSVP = async(id : string) => {
+    try {
+      const payload = {
+        eventId : id
+      }
+
+      const { data } = await axios.put('/api/event/remove-rsvp', payload)
+
+      message.success("Event schedule is updated!!")
+      mutate(`/api/event/${id}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+  }
 
   return (
     <main className="flex-1 overflow-y-auto p-4 md:px-8  md:py-6 bg-slate-50">
@@ -95,23 +138,23 @@ const AlumniEventDetails = () => {
                     <span className="text-xs font-bold uppercase tracking-wider">Availability</span>
                     <span className="text-sm font-bold">{data.attendees.length} / {data.capacity}</span>
                   </div>
-                </div>
-
-                <Button className="w-full h-12 text-base font-bold shadow-lg cursor-pointer" variant="ghost">
-                  RSVP for Event
-                </Button>
+                </div> 
+                {
+                  data && getUser() ? 
+                  <Button className="w-full h-12 text-base font-bold shadow-lg cursor-pointer bg-rose-400 hover:bg-rose-600" variant="ghost" onClick={()=>cancelRSVP(data._id)}>
+                    Cancel the RSVP
+                  </Button>
+                  :
+                  <Button className="w-full h-12 text-base font-bold shadow-lg cursor-pointer" variant="ghost" onClick={()=>rsvpNow(data._id)}>
+                    RSVP for Event
+                  </Button>
+                }
 
                 <div className="pt-4 border-t border-slate-100 text-center">
                   <p className="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-widest">Attending Alumni</p>
                   <div className="flex justify-center -space-x-2">
-                    {data.attendees.map((i: any) => (
-                      <Avatar key={i} className="border-2 border-white h-10 w-10">
-                        <AvatarImage src={`https://i.pravatar.cc/100?u=${i + 10}`} />
-                        <AvatarFallback>A</AvatarFallback>
-                      </Avatar>
-                    ))}
                     <div className="flex items-center justify-center h-10 w-10 rounded-full bg-slate-100 border-2 border-white text-[10px] font-bold text-slate-600">
-                      {data.attendees.length > 10 ? data.attendees.length - 10 : data.attendees.length }
+                      {data.attendees.length }
                     </div>
                   </div>
                 </div>

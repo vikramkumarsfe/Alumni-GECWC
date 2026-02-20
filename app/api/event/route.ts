@@ -14,13 +14,13 @@ if (mongoose.connection.readyState === 0) {
 
 export const POST = async (req: NextRequest) => {
   try {
-    // const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions)
 
-    // if (!session)
-    //   return res.json({ message: "Unauthorized User" }, { status: 401 })
+    if (!session)
+      return res.json({ message: "Unauthorized User" }, { status: 401 })
 
-    // if (session.user.role !== "admin")
-    //   return res.json({ message: "Unauthorized User" }, { status: 403 })
+    if (session.user.role !== "admin")
+      return res.json({ message: "Unauthorized User" }, { status: 403 })
 
     const body = await req.json()
 
@@ -100,4 +100,6 @@ export const GET = async (req: NextRequest) => {
     return ServerCatchError(err)
   }
 }
+
+
 

@@ -22,7 +22,6 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
         const param = await params
-
         const id = param.id
         const body = await req.json()
 
