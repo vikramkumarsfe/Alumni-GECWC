@@ -9,6 +9,8 @@ import { SessionProvider } from 'next-auth/react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from './AppSidebar';
 import DashboardHeader from './DashboardHeader';
+import AdminAppSidebar from './adminAppSidebar';
+import AdminDashboardHeader from './adminDashboardHeader';
 
 const menus = [
   { label: 'Home', href: '/' },
@@ -23,13 +25,33 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const blacklists = ['/login', '/signup']
   const isBlacklist = blacklists.includes(pathname)
 
-  // --- LOGIC: Check if we are in the Alumni System ---
+  // --- LOGIC: Check for Admin or Alumni System ---
   const isAlumniSystem = pathname.startsWith('/alumni')
+  const isAdminSystem = pathname.startsWith('/admin')
 
   if (isBlacklist) {
     return <>{children}</>
   }
 
+  // --- RENDER: ADMIN DASHBOARD (Matches Alumni structure) ---
+  if (isAdminSystem) {
+    return (
+      <SessionProvider>
+        <SidebarProvider>
+          {/* You can use the same Sidebar or a custom AdminSidebar here */}
+          <AdminAppSidebar /> 
+          <SidebarInset className="flex flex-col bg-zinc-50/50">
+            <AdminDashboardHeader />
+            <main className="flex-1 p-6">
+              {children}
+            </main>
+          </SidebarInset>
+        </SidebarProvider>
+      </SessionProvider>
+    )
+  }
+
+  // --- RENDER: ALUMNI SYSTEM ---
   if (isAlumniSystem) {
     return (
       <SessionProvider>
@@ -87,9 +109,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         </main>
 
         <footer className="border-t bg-slate-50/50">
-          {/* ... existing footer code ... */}
           <div className="container px-4 py-12 md:px-8">
-             <div className="flex flex-col items-center justify-between gap-4 md:row">
+             <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                <p className="text-xs text-muted-foreground">© 2026 Alumni Data Management.</p>
              </div>
           </div>
