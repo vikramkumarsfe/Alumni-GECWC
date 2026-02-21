@@ -108,12 +108,13 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         const session = await getServerSession(authOptions)
 
         if(!session)
-            return res.json({ message : "Unauthorized User"}, { status : 404})
+            return res.json({ message : "Unauthorized session"}, { status : 404})
 
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = await params.id
+        const param = await params
+        const { id } = param
         const body = await req.json()
 
         if(!id)
@@ -143,9 +144,12 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
 
         if(!session)
             return res.json({ message : "Unauthorized User"}, { status : 404})
+        
+        if( session.user.role !== "admin")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
 
-
-        const id = params.id
+        const param = await params
+        const { id } = param
 
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})

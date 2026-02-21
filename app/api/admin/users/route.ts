@@ -97,7 +97,7 @@ export const GET = async(req: NextRequest, { params }: ContextInterface ) => {
 
         const skip = limit*(page-1)
 
-        const users = await UserModel.find({ role : "alumni"},{ fullname : 1, image : 1, email : 1, createdAt : 1 }).sort({ createdAt : -1 }).skip(skip).limit(limit);
+        const users = await UserModel.find({ role : "alumni"}).sort({ createdAt : -1 }).skip(skip).limit(limit);
 
         const total = await UserModel.countDocuments({ role : "alumni"})
 
