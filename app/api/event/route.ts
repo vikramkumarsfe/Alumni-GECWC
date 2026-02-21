@@ -62,10 +62,10 @@ export const POST = async (req: NextRequest) => {
 
 export const GET = async (req: NextRequest) => {
   try {
-    // const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions)
 
-    // if (!session)
-    //   return res.json({ message: "Unauthorized User" }, { status: 401 })
+    if (!session)
+      return res.json({ message: "Unauthorized User" }, { status: 401 })
 
     const { searchParams } = new URL(req.url)
 

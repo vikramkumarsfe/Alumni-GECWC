@@ -1,24 +1,24 @@
 'use client'
-import React, { useState } from 'react';
-import { 
-  Plus, Search, Eye, Pencil, Trash2, MapPin, Video 
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Plus, Search, Eye, Pencil, Trash2, MapPin, Video } from 'lucide-react';
 import { Table, Space, Tooltip, Input, Button as AntButton, Popconfirm, message } from 'antd';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import AdminEventForm from './AdminEditEvent';
+import useSWR, { mutate } from 'swr';
+import { fetcher } from '@/utils/fetcher';
+import clientCatchError from '@/utils/clientCatchError';
+import axios from 'axios';
 
 const AdminEvents = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  // --- State for Drawer Control ---
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const [mode, setMode] = useState<'create' | 'update'>('create');
-
-  // Sample Data (Updated to match your Mongoose Model)
-  const [data, setData] = useState([
+  const [searchQuery, setSearchQuery] = useState('')
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState<any>(null)
+  const [mode, setMode] = useState<'create' | 'update'>('create')
+  const [loading, setLoading] = useState(false)
+  const { data : SWRdata, isLoading, error } = useSWR('/api/event', fetcher)
+    const [data, setData] = useState([
     {
       _id: '1',
       title: 'Annual Alumni Gala 2026',
@@ -34,26 +34,44 @@ const AdminEvents = () => {
       status: 'upcoming',
       description: 'A grand evening for all alumni.',
       agenda: [{ time: '07:00 PM', title: 'Welcome Drinks' }]
-    },
-  ]);
+    }
+  ])
+
+  useEffect(()=>{
+    if(SWRdata)
+    {
+      setData(SWRdata.events)
+
+    }
+  },[SWRdata])
+
+
 
   const openCreateDrawer = () => {
     setMode('create');
     setSelectedEvent(null);
     setIsDrawerOpen(true);
-  };
-
+  }
   const openEditDrawer = (record: any) => {
-    setMode('update');
-    setSelectedEvent(record);
-    setIsDrawerOpen(true);
-  };
-
-  const handleDelete = (id: string) => {
-    // API call logic here
-    setData(data.filter(item => item._id !== id));
-    message.success("Event deleted successfully");
-  };
+    setMode('update')
+    setSelectedEvent(record)
+    setIsDrawerOpen(true)
+  }
+  const handleDelete = async(id: string) => {
+    try {
+      setLoading(true)
+      const {data } = await axios.delete(`/api/event/${id}`)
+      message.success('Event delted successfully')
+      mutate('/api/event')
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+    finally {
+      setLoading(false)
+    }
+  }
 
   const columns = [
     {
@@ -131,11 +149,10 @@ const AdminEvents = () => {
         </Space>
       ),
     },
-  ];
+  ]
 
   return (
     <div className="bg-slate-50 min-h-screen p-6 space-y-6">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manage Events</h1>
@@ -146,7 +163,6 @@ const AdminEvents = () => {
         </Button>
       </div>
 
-      {/* Main Content Card */}
       <Card className="border-slate-200 shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center max-w-sm relative">
@@ -171,7 +187,6 @@ const AdminEvents = () => {
         </CardContent>
       </Card>
 
-      {/* --- FORM DRAWER COMPONENT --- */}
       <AdminEventForm 
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
