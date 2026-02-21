@@ -30,6 +30,11 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) 
             return null
 
+        const isVerified = (user.isActive === "approved" ? true : false)
+            
+        if(!isVerified)
+            return null
+
         return {
           id: user._id.toString(),
           email: user.email,

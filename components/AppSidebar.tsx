@@ -4,12 +4,13 @@ import { LayoutDashboard, UserCircle, Users, Calendar, Briefcase, Bell, LogOut, 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup} from "@/components/ui/sidebar"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
+import { Button } from "antd"
+import { signOut } from "next-auth/react"
 
 const items = [
-  { title: "Dashboard", url: "/alumni/dashboard", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/alumni", icon: LayoutDashboard },
   { title: "My Profile", url: "/alumni/profile", icon: UserCircle },
-  { title: "Alumni Directory", url: "/alumni", icon: Users },
+  { title: "Alumni Directory", url: "/alumni/directory", icon: Users },
   { title: "Events", url: "/alumni/events", icon: Calendar },
   { title: "Announcements", url: "/alumni/announcements", icon: Bell },
 ]
@@ -67,7 +68,9 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10">
-              <LogOut className="size-4" />
+              <Button onClick={()=>signOut()}>
+                <LogOut className="size-4" />
+              </Button>
               <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

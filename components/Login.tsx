@@ -21,12 +21,13 @@ const Signup = () => {
       })
 
       if (res?.error) {
-        message.error("Invalid email or password")
+        message.error("Invalid email or password invalid , OR may be your account is not Active")
         return
       }
 
       message.success("Login successful")
-      router.push("/dashboard") // change route if needed
+      console.log(res)
+      router.push('/')
 
     } catch (err) {
       clientCatchError(err)

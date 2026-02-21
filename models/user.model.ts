@@ -37,7 +37,7 @@ const UserSchema = new Schema({
         type: String,
         default : null
     },
-    status : {
+    isActive : {
         type: String,
         enum: ["inactive", "active", "pending"],
         default : "pending"
@@ -67,10 +67,6 @@ UserSchema.pre("save", async function(next){
 
 UserSchema.pre("save", async function(next){
     this.role = "alumni"
-})
-
-UserSchema.pre("save", async function (next){
-    this.status = "pending"
 })
 
 const UserModel = models.User || model("User", UserSchema)

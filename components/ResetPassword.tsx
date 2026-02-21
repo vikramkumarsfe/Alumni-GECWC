@@ -24,7 +24,7 @@ const ResetPassword = () => {
       }
 
       const { data } = await axios.post('/api/user/set-password', payload)
-
+      
       message.success("Password updated successfully")
 
 

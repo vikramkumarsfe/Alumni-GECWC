@@ -76,6 +76,12 @@ export const POST = async(req: NextRequest) => {
         {
             return res.json({message : "email or password is invalid"}, { status : 401})
         }
+
+        const isVerified = (user.isActive === "approved" ? true : false)
+    
+        if(!isVerified)
+            return res.json({ message : "Your account is not active , Please contact to admin. gecwc@gmail.com"})
+
         return res.json({message : "user logged In"})
     }
     catch(err) 
