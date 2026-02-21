@@ -34,18 +34,30 @@ const UserSchema = new Schema({
         default : null
     },
     expiryResetLink : {
-        type : String,
+        type: String,
         default : null
     },
-    isActive : {
-        type : Boolean,
-        default : false
+    status : {
+        type: String,
+        enum: ["inactive", "active", "pending"],
+        default : "pending"
     },
     bio : {
         type : String,
         default : "Welcome to Bio."
+    }, 
+    batch  :{
+        type : Number,
+        required : true
+    },
+    branch : {
+        type : String,
+        required : true
+    },
+    regNo : {
+        type : String,
+        required : true
     }
-
 },{timestamps :  true})
 
 UserSchema.pre("save", async function(next){
@@ -58,7 +70,7 @@ UserSchema.pre("save", async function(next){
 })
 
 UserSchema.pre("save", async function (next){
-    this.isActive = false
+    this.status = "pending"
 })
 
 const UserModel = models.User || model("User", UserSchema)
