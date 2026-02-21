@@ -9,7 +9,6 @@ const items = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { title: "Manage Alumni", href: "/admin/alumni", icon: Users },
   { title: "Manage Events", href: "/admin/events", icon: Calendar },
-  { title: "Manage Jobs", href: "/admin/jobs", icon: Briefcase },
   { title: "Manage Announcements", href: "/admin/announcements", icon: Megaphone },
   { title: "Reports", href: "/admin/reports", icon: BarChart3 },
 ]
