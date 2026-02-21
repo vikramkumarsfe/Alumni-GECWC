@@ -1,10 +1,12 @@
 "use client"
 
-import { Table, Button, Tag } from "antd"
+import { Table, Button, Tag, message } from "antd"
 import type { ColumnsType } from "antd/es/table"
 import { DownloadOutlined, FileExcelOutlined, PrinterOutlined, ShareAltOutlined } from "@ant-design/icons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileSpreadsheet } from "lucide-react"
+import useSWR from "swr"
+import { fetcher } from "@/utils/fetcher"
 
 interface Alumni {
   key: string
@@ -34,8 +36,16 @@ interface Job {
 }
 
 const AdminReports = () => {
-  // -------------------- Data --------------------
 
+  const { data : AlumniData , error : AlumniError, isLoading : AlumniIsLoading} = useSWR('/api/admin/all-users', fetcher)
+  const { data : EventData , error : EventError, isLoading : EventIsLoading} = useSWR('/api/event/all-events', fetcher)
+  const { 
+  data: AlumniPendingData, 
+  error: AlumniPendingError, 
+  isLoading: AlumniPendingIsLoading 
+} = useSWR('/api/admin/all-users?pending=true', fetcher);
+
+  console.log(AlumniData)
   const alumniData: Alumni[] = [
     {
       key: "1",
@@ -66,25 +76,6 @@ const AdminReports = () => {
     },
   ]
 
-  const jobData: Job[] = [
-    {
-      key: "1",
-      title: "Senior Frontend Developer",
-      company: "TechCorp Inc.",
-      date: "Jan 05, 2025",
-      applications: 42,
-      status: "Active",
-    },
-    {
-      key: "2",
-      title: "Product Manager",
-      company: "Innovate Ltd",
-      date: "Dec 20, 2024",
-      applications: 28,
-      status: "Closed",
-    },
-  ]
-
   // -------------------- Columns --------------------
 
   const alumniColumns: ColumnsType<Alumni> = [
@@ -111,25 +102,15 @@ const AdminReports = () => {
     { title: "Attended", dataIndex: "attended" },
   ]
 
-  const jobColumns: ColumnsType<Job> = [
-    { title: "Job Title", dataIndex: "title" },
-    { title: "Company", dataIndex: "company" },
-    { title: "Posted Date", dataIndex: "date" },
-    { title: "Applications", dataIndex: "applications" },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (status) => (
-        <Tag color={status === "Active" ? "green" : "red"}>
-          {status}
-        </Tag>
-      ),
-    },
-  ]
+  const handleAlumniDownload = () => {
+    message.warning("This section is in under construction and the data shown is dummy.")
+  }
 
+  const handleEventDownload =() => {
+    message.warning("This section is in under construction and the data shown is dummy.")
+  }
   return (
     <div className="p-8 space-y-8">
-
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -148,7 +129,7 @@ const AdminReports = () => {
             <CardTitle>Total Alumni</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">12,450</p>
+            <p className="text-3xl font-bold">{AlumniData && AlumniData.total}</p>
           </CardContent>
         </Card>
 
@@ -157,16 +138,16 @@ const AdminReports = () => {
             <CardTitle>Total Events</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">86</p>
+            <p className="text-3xl font-bold">{EventData && EventData.total}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Total Applications</CardTitle>
+            <CardTitle>Pending Alumni</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">1,204</p>
+            <p className="text-3xl font-bold">{AlumniPendingData && AlumniPendingData.total}</p>
           </CardContent>
         </Card>
       </div>
@@ -175,7 +156,7 @@ const AdminReports = () => {
       <Card>
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle>Alumni Directory Report</CardTitle>
-          <Button icon={<FileSpreadsheet />}>Export CSV</Button>
+          <Button icon={<FileSpreadsheet />} onClick={handleAlumniDownload}>Export CSV</Button>
         </CardHeader>
         <CardContent>
           <Table
@@ -190,27 +171,12 @@ const AdminReports = () => {
       <Card>
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle>Event Attendance Summary</CardTitle>
-          <Button icon={<PrinterOutlined />}>Print Report</Button>
+          <Button icon={<PrinterOutlined />} onClick={handleEventDownload}>Print Report</Button>
         </CardHeader>
         <CardContent>
           <Table
             columns={eventColumns}
             dataSource={eventData}
-            pagination={false}
-          />
-        </CardContent>
-      </Card>
-
-      {/* Job Report */}
-      <Card>
-        <CardHeader className="flex flex-row justify-between items-center">
-          <CardTitle>Job Application Insights</CardTitle>
-          <Button icon={<ShareAltOutlined />}>Share</Button>
-        </CardHeader>
-        <CardContent>
-          <Table
-            columns={jobColumns}
-            dataSource={jobData}
             pagination={false}
           />
         </CardContent>

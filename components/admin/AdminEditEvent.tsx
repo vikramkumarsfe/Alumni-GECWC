@@ -91,7 +91,6 @@ const AdminEventForm: FC<EventFormProps> = ({
       mutate('/api/event');
       onClose();
       form.resetFields();
-
     } catch (err) {
       clientCatchError(err);
     } finally {

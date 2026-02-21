@@ -2,7 +2,7 @@
 
 import React from "react"
 import Image from "next/image"
-import logoImage from '@/public/images/logo.jpeg'
+import logoImage from '@/public/images/logo.png'
 
 // Shadcn UI Components (Assuming standard install paths)
 import { Button } from "@/components/ui/button"

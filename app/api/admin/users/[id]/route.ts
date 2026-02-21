@@ -96,6 +96,11 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import ContextInterface from "@/Interfaces/context.interface"
 import AcademicModel from "@/models/academics.model"
+import { sendMail } from "@/utils/send-mail"
+import { forgotPasswordTemplate } from "@/utils/forgot.password.mail.template"
+import { accountApprovedTemplate } from "@/utils/accountApprove.mail.template"
+import { accountRejectedTemplate } from "@/utils/accountRejected.mail.template"
+import { accountDeactivatedTemplate } from "@/utils/accountDeavtived.mail.template"
 const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
 if (mongoose.connection.readyState === 0) {
   mongoose.connect(DB)
@@ -127,8 +132,28 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             role : body.role,
             isActive : body.isActive
         }
+        const user = await UserModel.findByIdAndUpdate(id, { $set : payload},{ new : true})
 
-        const user = await UserModel.findByIdAndUpdate(id, { $set : payload})
+        if(body.isActive === "approved")
+        {
+            const data = await sendMail({
+                email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+                sendTo: body.email,
+                subject: "Account Approved",
+                text: `Reset your password using this link: `,
+                html: accountApprovedTemplate( user.fullname, "")
+              })
+        }
+        else {
+             const data = await sendMail({
+                email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+                sendTo: body.email,
+                subject: "Account Approved",
+                text: `Reset your password using this link: `,
+                html: accountDeactivatedTemplate( user.fullname)
+              })
+        }
+
 
         return res.json(user)
     }
@@ -155,6 +180,14 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
              return res.json({ message : "id not found"}, { status : 404})
 
         const user = await UserModel.findByIdAndDelete(id)
+
+        const data = await sendMail({
+            email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+            sendTo: user.email,
+            subject: "Account Approved",
+            text: `Reset your password using this link: `,
+            html: accountRejectedTemplate( user.fullname)
+          })
 
         if(!user)
             return res.json({ message : "Failed to delete the user"}, { status : 404})

@@ -119,7 +119,7 @@ const AdminAlumni = () => {
                 size="small" 
                 icon={<Check size={14} />} 
                 className="flex items-center justify-center border-green-200 text-green-600 hover:bg-green-50"
-                onClick={()=>approveAlumni(_._id)}
+                onClick={()=>approveAlumni(_._id, _.email)}
                 disabled={loading}
               >
                 
@@ -133,7 +133,7 @@ const AdminAlumni = () => {
                 size="small" 
                 icon={<Ban size={14} />} 
                 className="flex items-center justify-center border-slate-200 text-slate-400"
-                onClick={()=>inActiveAlumni(_._id)}
+                onClick={()=>inActiveAlumni(_._id, _.email)}
               />
             </Tooltip>
           )}
@@ -153,11 +153,12 @@ const AdminAlumni = () => {
   ]
 
 
-  const approveAlumni = async (id: string) => {
+  const approveAlumni = async (id: string, email : string) => {
     try {
       setLoading(true)
       const payload = {
-        isActive : "approved"
+        isActive : "approved",
+        email
       }
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )
 
@@ -189,11 +190,12 @@ const AdminAlumni = () => {
     }
   }
 
-  const inActiveAlumni = async (id: string) => {
+  const inActiveAlumni = async (id: string, email : string) => {
     try {
       setLoading(true)
       const payload = {
-        isActive : "pending"
+        isActive : "pending",
+        email
       }
 
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )

@@ -61,6 +61,8 @@
 
 
 import UserModel from "@/models/user.model"
+import { registrationReceivedTemplate } from "@/utils/registrationReceived.template"
+import { sendMail } from "@/utils/send-mail"
 import ServerCatchError from "@/utils/serverCatchError"
 import mongoose from "mongoose"
 import { NextRequest, NextResponse as res } from "next/server"
@@ -82,6 +84,13 @@ export const POST = async(req : NextRequest) => {
             return res.json({ message : "Failed to create user"})
         }
 
+        const data = await sendMail({
+                        email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+                        sendTo: body.email,
+                        subject: "Account Approved",
+                        text: `Reset your password using this link: `,
+                        html: registrationReceivedTemplate(user.fullname)
+                      })
         return res.json({ message : "SignUp successfull!!"})
     }
     catch(err)

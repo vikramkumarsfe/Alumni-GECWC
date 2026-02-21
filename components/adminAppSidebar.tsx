@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
+import { Button } from "antd"
+import { signOut } from "next-auth/react"
 
 const items = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -63,8 +65,10 @@ const AdminAppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10">
-              <LogOut className="size-4" />
-              <span>Logout</span>
+              <Button onClick={()=>signOut()} className="bg-transparent">
+                <LogOut className="size-4" />
+                <span>Logout</span>
+              </Button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

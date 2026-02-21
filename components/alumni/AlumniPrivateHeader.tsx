@@ -88,7 +88,7 @@ export default function AlumniPrivateHeader() {
 
           <div className="flex items-center gap-3">
             <Button asChild className="shadow-sm gap-2">
-              <Link href="/alumni/dashboard/edit">
+              <Link href="/alumni/profile/edit">
                 <Edit2 className="w-4 h-4" />
                 Edit Profile
               </Link>
