@@ -1,7 +1,8 @@
 'use client'
 
 import { Button, Dropdown, Space } from "antd"
-import { LogoutOutlined, DashboardOutlined, UserOutlined } from "@ant-design/icons"
+import type { MenuProps } from "antd"
+import { LogoutOutlined, DashboardOutlined } from "@ant-design/icons"
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
@@ -11,7 +12,7 @@ const AuthSection = () => {
 
   if (!session) {
     return (
-      <Space className="space-x-3">
+      <Space>
         <Link href="/login">
           <Button className="bg-slate-500 hover:bg-slate-700 text-white shadow-md">
             Login
@@ -28,6 +29,7 @@ const AuthSection = () => {
   }
 
   const role = session.user?.role
+
   const dashboardRoute =
     role === "admin"
       ? "/admin"
@@ -35,13 +37,16 @@ const AuthSection = () => {
       ? "/alumni"
       : "/"
 
-  const items = [
+  // ✅ Proper typing here
+  const items: MenuProps["items"] = [
     {
       key: "profile",
       label: (
         <div className="px-2 py-1">
           <div className="font-semibold">{session.user?.name}</div>
-          <div className="text-xs text-gray-500">{session.user?.email}</div>
+          <div className="text-xs text-gray-500">
+            {session.user?.email}
+          </div>
         </div>
       ),
       disabled: true,
