@@ -97,7 +97,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import ContextInterface from "@/Interfaces/context.interface"
 import AcademicModel from "@/models/academics.model"
 import { sendMail } from "@/utils/send-mail"
-import { forgotPasswordTemplate } from "@/utils/forgot.password.mail.template"
 import { accountApprovedTemplate } from "@/utils/accountApprove.mail.template"
 import { accountRejectedTemplate } from "@/utils/accountRejected.mail.template"
 import { accountDeactivatedTemplate } from "@/utils/accountDeavtived.mail.template"
@@ -200,34 +199,32 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
     }
 }
 
-export const GET = async(req: NextRequest, {params} : ContextInterface) => {
-    try {
-        const session = await getServerSession(authOptions)
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
 
-        if(!session)
-            return res.json({ message : "Unauthorized User"}, { status : 404})
+    const session = await getServerSession(authOptions)
 
-        // if( session.user.role !== "admin")
-        //     return res.json({ message : "Unauthorized user"}, { status : 404})
-        const param = await params
+    if (!session)
+      return res.json({ message: "Unauthorized User" }, { status: 401 })
 
-        const id  = param.id
+    if (session.user.role !== "admin")
+      return res.json({ message: "Unauthorized user" }, { status: 403 })
 
+    if (!id)
+      return res.json({ message: "id not found" }, { status: 400 })
 
-        if(!id)
-             return res.json({ message : "id not found"}, { status : 404})
+    const user = await UserModel.findById(id).select("-password")
+    const education = await AcademicModel.find({ user: id })
 
-        const user = await UserModel.findById(id).select("-password ")
+    if (!user)
+      return res.json({ message: "User not found" }, { status: 404 })
 
-        const education = await  AcademicModel.find({ user : id})
-
-        if(!user)
-            return res.json({ message : "Failed to delete the user"}, { status : 404})
-
-        return res.json({ user , education})
-    }
-    catch(err)
-    {
-        return ServerCatchError(err)
-    }
+    return res.json({ user, education })
+  } catch (err) {
+    return ServerCatchError(err)
+  }
 }

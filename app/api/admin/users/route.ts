@@ -82,7 +82,7 @@ if (mongoose.connection.readyState === 0) {
   mongoose.connect(DB)
 }
 
-export const GET = async(req: NextRequest, { params }: ContextInterface ) => {
+export const GET = async(req: NextRequest) => {
     try 
     {
         const session = await getServerSession(authOptions)

@@ -1,33 +1,29 @@
 "use client";
-
 import Link from "next/link";
 import { Form, Input, Button, message, Spin } from "antd";
 import clientCatchError from "@/utils/clientCatchError";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LoadingOutlined } from '@ant-design/icons';
 import axios from "axios";
-import { useState } from "react";
+import { use, useState } from "react";
 
 const ResetPassword = () => {
   const [form] = Form.useForm();
-  const searchParams = useSearchParams();
   const [ loading, setLoading] = useState(false)
+  const pathname = usePathname()
 
   const setPassword = async(values : any) => {
     try 
     {
       setLoading(true)
-      const token = searchParams.get("token")
+      const token = pathname.split("/").pop()
       const payload = {
         token,
         password : values.password
       }
 
-      const { data } = await axios.post('/api/user/set-password', payload)
-      
+      await axios.post('/api/user/set-password', payload)
       message.success("Password updated successfully")
-
-
     }
     catch(err)
     {

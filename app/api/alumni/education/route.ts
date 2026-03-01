@@ -89,7 +89,6 @@ import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import ServerCatchError from "@/utils/serverCatchError";
-import ContextInterface from "@/Interfaces/context.interface";
 import AcademicModel from "@/models/academics.model";
 import UserModel from "@/models/user.model";
 
@@ -99,7 +98,7 @@ if (mongoose.connection.readyState === 0) {
   mongoose.connect(DB)
 }
 
-export const POST = async(req: NextRequest, context : ContextInterface) => {
+export const POST = async(req: NextRequest) => {
     try 
     {
         const session = await getServerSession(authOptions)
@@ -142,7 +141,7 @@ export const POST = async(req: NextRequest, context : ContextInterface) => {
     }
 }
 
-export const GET = async(req: NextRequest, context : ContextInterface) => {
+export const GET = async(req: NextRequest) => {
     try 
     {
         const session = await getServerSession(authOptions)

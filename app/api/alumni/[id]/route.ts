@@ -120,7 +120,8 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = params.id
+        const param = await params
+        const id = param.id
         const body = await req.json()
 
         if(!id)
@@ -153,7 +154,8 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = params.id
+        const param = await params
+        const id = param.id
 
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})
@@ -181,7 +183,8 @@ export const GET = async(req: NextRequest, {params} : ContextInterface) => {
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = params.id
+        const param = await params
+        const id = param.id
 
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})

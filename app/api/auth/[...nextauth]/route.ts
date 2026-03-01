@@ -43,7 +43,9 @@ export const authOptions: NextAuthOptions = {
           image: user.image,       
           provider: user.provider,
           mobile : user.mobile,
-          bio : user.bio
+          bio : user.bio,
+          batch : user.batch,
+          branch : user.branch
         }
       }
     }),
@@ -101,31 +103,19 @@ export const authOptions: NextAuthOptions = {
         token.provider = user.provider
         token.mobile = user.mobile
         token.bio = user.bio
+        token.batch = user.batch
+        token.branch = user.branch
       }
 
-      if (trigger === "update" && session) {
-      if (session.image) 
-      {
-        token.image = session.image;
-        
+       if (trigger === "update" && session) {
+        const allowedUpdates = ["image", "provider", "bio", "name", "mobile", "batch", "branch"]
+
+        allowedUpdates.forEach((key) => {
+          if (session[key]) {
+            token[key] = session[key];
+          }
+        })
       }
-      if (session.provider) 
-      {
-        token.provider = session.provider;
-      }
-      if(session.bio)
-      {
-        token.bio = session.bio
-      }
-      if(session.name)
-      {
-        token.name = session.name
-      }
-      if(session.mobile)
-      {
-        token.mobile = session.mobile
-      }
-    }
       return token
     },
 
@@ -136,6 +126,8 @@ export const authOptions: NextAuthOptions = {
       session.user.image = token.picture as any
       session.user.mobile = token.mobile as any
       session.user.bio = token.bio as any
+      session.user.batch = token.batch as any
+      session.user.branch = token.branch as any
       return session
     }
   },

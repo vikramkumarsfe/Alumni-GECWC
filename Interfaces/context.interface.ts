@@ -1,8 +1,7 @@
 interface ContextInterface {
-    params : {
-
-        id : string,
-        educationId ?: string
-    }
+  params: Promise<{
+    id: string
+  }>
 }
+
 export default ContextInterface

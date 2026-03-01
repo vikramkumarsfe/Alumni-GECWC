@@ -79,6 +79,7 @@
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import ContextInterface from "@/Interfaces/context.interface";
+import EducationInterface from "@/Interfaces/education.interface";
 import AcademicModel from "@/models/academics.model";
 import ServerCatchError from "@/utils/serverCatchError";
 import { getServerSession } from "next-auth";
@@ -86,7 +87,7 @@ import { NextRequest, NextResponse as res } from "next/server";
 
 export const PUT = async (
   req: NextRequest,
-  context: ContextInterface
+  { params } : EducationInterface
 ) => {
   try {
     const session = await getServerSession(authOptions);
@@ -94,8 +95,8 @@ export const PUT = async (
     if (!session)
       return res.json({ message: "Unauthorized user" }, { status: 401 });
 
-    const { params } = context;
-    const { educationId } = await params;
+    const param = await params;
+    const educationId = param.educationId
     const id = session.user.id
 
     const body = await req.json();
@@ -125,7 +126,7 @@ export const PUT = async (
 
 export const DELETE = async (
   req: NextRequest,
-  context: ContextInterface
+  context: EducationInterface
 ) => {
   try {
     const session = await getServerSession(authOptions);

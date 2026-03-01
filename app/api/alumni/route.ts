@@ -109,7 +109,7 @@ if (mongoose.connection.readyState === 0) {
   mongoose.connect(DB)
 }
 
-export const GET = async(req: NextRequest, { params }: ContextInterface) => {
+export const GET = async(req: NextRequest) => {
     try 
     {
         const session = await getServerSession(authOptions)
@@ -156,7 +156,9 @@ export const PUT = async( req: NextRequest) => {
         const payload = {
             fullname : body.fullname,
             mobile : body.mobile,
-            bio : body.bio
+            bio : body.bio,
+            branch : body.branch,
+            batch : body.batch
         }
         console.log(payload)
         const user = await UserModel.findByIdAndUpdate({ _id : session.user.id}, { $set : payload}, { new : true})
