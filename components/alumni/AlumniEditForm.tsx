@@ -27,6 +27,8 @@ const profileSchema = z.object({
   fullname: z.string().min(2, "Name must be at least 2 characters."),
   mobile: z.string().regex(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number."),
   bio: z.string().max(160, "Bio must be under 160 characters.").optional(),
+  batch : z.number().min(2019),
+  branch : z.string().min(2, "Branch at least 2 characters")
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -41,6 +43,8 @@ export default function AlumniEditForm() {
       fullname: "",
       mobile: "",
       bio: "",
+      batch : 2019,
+      branch : ""
     },
   });
 
@@ -51,6 +55,8 @@ export default function AlumniEditForm() {
         fullname: session.user.name || "",
         mobile: (session.user as any).mobile || "",
         bio: (session.user as any).bio || "",
+        batch : (session.user as any).batch || "",
+        branch : (session.user as any).branch || ""
       });
     }
   }, [session, form]);
@@ -69,6 +75,8 @@ export default function AlumniEditForm() {
         name: data.fullname,
         bio: data.bio,
         mobile: data.mobile,
+        batch : data.batch,
+        branch : data.branch
       });
 
       message.success("Profile updated successfully!");
@@ -101,6 +109,7 @@ export default function AlumniEditForm() {
             </div>
 
             <div className="grid gap-6">
+              <div className="grid md:grid-cols-2  gap-4 w-full">
 
               <FormField
                 control={form.control}
@@ -129,6 +138,7 @@ export default function AlumniEditForm() {
                   </FormItem>
                 )}
               />
+              </div>
 
               <FormField
                 control={form.control}
@@ -147,6 +157,36 @@ export default function AlumniEditForm() {
                   </FormItem>
                 )}
               />
+              <div className="grid md:grid-cols-2  gap-4 w-full">
+
+              <FormField
+                control={form.control}
+                name="batch"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Batch</FormLabel>
+                    <FormControl>
+                      <Input placeholder="2022" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="branch"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Branch</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Computer Science and Engineering(Cyber Security)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              </div>
 
             </div>
 

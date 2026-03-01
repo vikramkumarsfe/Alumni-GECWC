@@ -1,10 +1,8 @@
-import UserModel from "@/models/user.model"
 import ServerCatchError from "@/utils/serverCatchError"
 import mongoose from "mongoose"
 import { NextRequest, NextResponse as res} from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
-import ContextInterface from "@/Interfaces/context.interface"
 import AnnouncementsModel from "@/models/announcements"
 
 const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
@@ -47,7 +45,7 @@ export const POST = async(req: NextRequest,) => {
     }
 }
 
-export const GET = async(req: NextRequest,{ params }: ContextInterface) => {
+export const GET = async(req: NextRequest) => {
     try {
         const session = await getServerSession(authOptions)
 

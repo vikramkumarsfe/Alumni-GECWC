@@ -119,7 +119,7 @@ export default function AlumniPrivateEducationSection() {
 
       {/* Education List */}
       <div className="space-y-6">
-        {education.map((item, index) => (
+        {education.map((item :any, index : number) => (
           <Card key={index} className="border-slate-200/60">
             <CardContent className="p-6 flex gap-5">
               <div className="hidden sm:flex h-12 w-12 items-center justify-center rounded-lg bg-slate-50 text-slate-600 border">

@@ -51,11 +51,9 @@
 import UserModel from "@/models/user.model"
 import ServerCatchError from "@/utils/serverCatchError"
 import mongoose from "mongoose"
-import { NextRequest, NextResponse as res} from "next/server"
-import bcrypt from 'bcrypt'
+import {NextResponse as res} from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../../auth/[...nextauth]/route"
-import { useSession } from "next-auth/react"
 const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
 mongoose.connect(DB)
 

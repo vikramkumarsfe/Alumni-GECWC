@@ -27,6 +27,8 @@ export default function AlumniPrivateHeader() {
   const email = authUser?.email
   const role = authUser?.role
 
+  console.log(authUser)
+
   const initials = fullname
     .split(" ")
     .map((n) => n[0])
@@ -53,7 +55,7 @@ export default function AlumniPrivateHeader() {
               </h1>
 
               {/* Email + Role from Session */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-5">
 
                 {email && (
                   <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-3 py-1 rounded-full text-sm">
@@ -69,17 +71,17 @@ export default function AlumniPrivateHeader() {
                   </Badge>
                 )}
 
-                {authUser.department && (
+                {authUser.branch && (
                   <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-3 py-1 rounded-full text-sm">
-                    <Building2 className="w-4 h-4" />
-                    {authUser.department}
+                    <Badge />
+                    {authUser.branch}
                   </div>
                 )}
 
                 {authUser.batch && (
                   <Badge variant="secondary" className="flex items-center gap-1.5 px-3 py-1">
                     <GraduationCap className="w-4 h-4" />
-                    Class of {authUser.batch}
+                    Batch of {authUser.batch}
                   </Badge>
                 )}
               </div>
