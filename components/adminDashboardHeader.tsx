@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useSession } from "next-auth/react";
 import { Skeleton } from "antd";
 import Link from "next/link";
+import AuthSection from "./authSection";
 
 const AdminDashboardHeader = () =>  {
   const { data: session, status, update } = useSession()
@@ -37,10 +38,9 @@ const AdminDashboardHeader = () =>  {
           <Bell className="h-5 w-5 text-muted-foreground cursor-pointer" />
         </Link>
         <div className="flex items-center gap-2 cursor-pointer">
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={session?.user.image || "https://github.com/shadcn.png"} />
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
+          <div>
+            <AuthSection />
+          </div>
           <span className="text-sm font-medium hidden md:block">{session?.user.name?.toLocaleUpperCase()}</span>
         </div>
       </div>

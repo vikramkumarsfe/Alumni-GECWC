@@ -101,11 +101,22 @@ const Home = () => {
                 <Col xs={12} md={6} key={index}>
                   <Card className="text-center hover:shadow-lg transition-all border-none bg-white">
                     <CardContent className="pt-8 pb-6">
-                      <Statistic 
-                        title={<span className="uppercase tracking-[0.2em] text-[10px] text-slate-400 font-extrabold">{stat.label}</span>} 
-                        value={stat.value} 
-                        valueStyle={{ fontWeight: 800, color: '#0f172a', fontSize: '2rem', letterSpacing: '-0.05em' }}
+                      <Statistic
+                        title={
+                          <span className="uppercase tracking-[0.2em] text-[10px] text-slate-400 font-extrabold">
+                            {stat.label}
+                          </span>
+                        }
+                        value={stat.value}
                         suffix={stat.suffix}
+                        styles={{
+                          content: {
+                            fontWeight: 800,
+                            color: "#0f172a",
+                            fontSize: "2rem",
+                            letterSpacing: "-0.05em",
+                          },
+                        }}
                       />
                     </CardContent>
                   </Card>

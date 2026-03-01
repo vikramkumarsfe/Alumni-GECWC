@@ -9,10 +9,6 @@ const FeedbackSchema = new Schema({
         type : String,
         required : true
     },
-    role : {
-        enum : [ "student", "admin", "alumni"],
-        default : "student"
-    },
     message : {
         type: String,
         required : true

@@ -6,6 +6,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "antd"
 import { signOut } from "next-auth/react"
+import Logo from "./shared/Logo"
 
 const items = [
   { title: "Dashboard", url: "/alumni", icon: LayoutDashboard },
@@ -24,11 +25,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-bold text-lg">Alumni-GECWC</span>
-                </div>
-              </Link>
+                <Logo />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -64,10 +61,8 @@ export function AppSidebar() {
       <SidebarFooter className="pb-6">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10">
-              <Button onClick={()=>signOut()}>
+            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={()=>signOut()}>
                 <LogOut className="size-4" />
-              </Button>
               <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
