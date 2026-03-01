@@ -49,15 +49,13 @@
 
 import UserModel from "@/models/user.model"
 import ServerCatchError from "@/utils/serverCatchError"
-import mongoose from "mongoose"
 import { NextRequest, NextResponse as res} from "next/server"
 import bcrypt from 'bcrypt'
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-mongoose.connect(DB)
-
+import { connectDB } from "@/lib/mongodb"
 
 export const POST = async(req: NextRequest) => {
     try {
+        await connectDB();
         const { email, password } = await req.json()
         
         if(!email || !password)

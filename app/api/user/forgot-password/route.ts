@@ -46,15 +46,13 @@
 
 
 import ServerCatchError from "@/utils/serverCatchError"
-import mongoose from "mongoose"
 import { NextRequest, NextResponse as res} from "next/server"
 import { forgotPassword } from "@/controller/auth.controller"
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-mongoose.connect(DB)
-
+import { connectDB } from "@/lib/mongodb"
 
 export const POST =async (req : NextRequest) => {
     try {
+        await connectDB();
         const { email } = await req.json()
 
         if(!email)

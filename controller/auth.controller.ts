@@ -1,3 +1,4 @@
+import { connectDB } from "@/lib/mongodb";
 import UserModel from "@/models/user.model"
 import { forgotPasswordTemplate } from "@/utils/forgot.password.mail.template"
 import { sendMail } from "@/utils/send-mail"
@@ -6,7 +7,7 @@ import { v4 as uuid } from 'uuid';
 const FIFTEEN_MINUTES_IN_MS = 15 * 60 * 1000;
 
 export const forgotPassword = async (email :string) : Promise<String> => {
-
+    await connectDB();
     const token = uuid()
     const expirayTime = Date.now() + FIFTEEN_MINUTES_IN_MS
 
@@ -34,7 +35,7 @@ export const forgotPassword = async (email :string) : Promise<String> => {
 }
 
 export const setPassword = async (password : string, token : string) :Promise<any> => {
-
+    await connectDB();
     const user = await UserModel.findOne({
         resetPasswordToken: token,
         expiryResetLink : { $gt: Date.now() },

@@ -78,8 +78,8 @@
 
 
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import ContextInterface from "@/Interfaces/context.interface";
 import EducationInterface from "@/Interfaces/education.interface";
+import { connectDB } from "@/lib/mongodb";
 import AcademicModel from "@/models/academics.model";
 import ServerCatchError from "@/utils/serverCatchError";
 import { getServerSession } from "next-auth";
@@ -90,6 +90,7 @@ export const PUT = async (
   { params } : EducationInterface
 ) => {
   try {
+    await connectDB();
     const session = await getServerSession(authOptions);
 
     if (!session)
@@ -129,6 +130,7 @@ export const DELETE = async (
   context: EducationInterface
 ) => {
   try {
+    await connectDB();
     const session = await getServerSession(authOptions);
 
     if (!session)

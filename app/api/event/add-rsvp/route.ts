@@ -1,18 +1,14 @@
-import mongoose from "mongoose"
 import { NextRequest, NextResponse as res } from "next/server"
 import { getServerSession } from "next-auth"
 import ServerCatchError from "@/utils/serverCatchError"
 import EventModel from "@/models/events.model"
 import { authOptions } from "../../auth/[...nextauth]/route"
+import { connectDB } from "@/lib/mongodb"
 
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-
-if (mongoose.connection.readyState === 0) {
-  mongoose.connect(DB)
-}
 
 export const PUT = async (req: NextRequest) => {
   try {
+    await connectDB();
     const session = await getServerSession(authOptions)
 
     if (!session)
