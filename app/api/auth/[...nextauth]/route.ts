@@ -3,9 +3,9 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcrypt"
 import UserModel from "@/models/user.model"
-import mongoose from "mongoose"
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-mongoose.connect(DB)
+import { connectDB } from "@/lib/mongodb"
+
+await connectDB();
 
 export const authOptions: NextAuthOptions = {
   providers: [

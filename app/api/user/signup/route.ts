@@ -60,17 +60,16 @@
  */
 
 
+import { connectDB } from "@/lib/mongodb"
 import UserModel from "@/models/user.model"
 import { registrationReceivedTemplate } from "@/utils/registrationReceived.template"
 import { sendMail } from "@/utils/send-mail"
 import ServerCatchError from "@/utils/serverCatchError"
-import mongoose from "mongoose"
 import { NextRequest, NextResponse as res } from "next/server"
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-mongoose.connect(DB)
 
 export const POST = async(req : NextRequest) => {
     try {
+        await connectDB();
         const body = await req.json()
 
         if(!body)

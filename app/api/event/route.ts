@@ -1,19 +1,15 @@
-import mongoose from "mongoose"
 import { NextRequest, NextResponse as res } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 import ServerCatchError from "@/utils/serverCatchError"
 import EventModel from "@/models/events.model"
+import { connectDB } from "@/lib/mongodb"
 
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-
-if (mongoose.connection.readyState === 0) {
-  mongoose.connect(DB)
-}
 
 
 export const POST = async (req: NextRequest) => {
   try {
+    await connectDB();
     const session = await getServerSession(authOptions)
 
     if (!session)
@@ -62,6 +58,7 @@ export const POST = async (req: NextRequest) => {
 
 export const GET = async (req: NextRequest) => {
   try {
+    await connectDB();
     const session = await getServerSession(authOptions)
 
     if (!session)

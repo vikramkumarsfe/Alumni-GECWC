@@ -85,22 +85,17 @@
 
 
 import { NextRequest, NextResponse as res } from "next/server";
-import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import ServerCatchError from "@/utils/serverCatchError";
 import AcademicModel from "@/models/academics.model";
 import UserModel from "@/models/user.model";
-
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`;
-
-if (mongoose.connection.readyState === 0) {
-  mongoose.connect(DB)
-}
+import { connectDB } from "@/lib/mongodb";
 
 export const POST = async(req: NextRequest) => {
     try 
     {
+        await connectDB();
         const session = await getServerSession(authOptions)
 
         if(!session)
@@ -144,6 +139,7 @@ export const POST = async(req: NextRequest) => {
 export const GET = async(req: NextRequest) => {
     try 
     {
+        await connectDB();
         const session = await getServerSession(authOptions)
 
         if(!session)

@@ -98,20 +98,17 @@
 
 import UserModel from "@/models/user.model"
 import ServerCatchError from "@/utils/serverCatchError"
-import mongoose from "mongoose"
 import { NextRequest, NextResponse as res} from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import ContextInterface from "@/Interfaces/context.interface"
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-if (mongoose.connection.readyState === 0) {
-  mongoose.connect(DB)
-}
+import { connectDB } from "@/lib/mongodb"
 
 
 export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
     try 
     {
+        await connectDB();
         const session = await getServerSession(authOptions)
 
         if(!session)
@@ -146,6 +143,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
 
 export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
     try {
+        await connectDB();
         const session = await getServerSession(authOptions)
 
         if(!session)
@@ -175,6 +173,7 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
 
 export const GET = async(req: NextRequest, {params} : ContextInterface) => {
     try {
+        await connectDB();
         const session = await getServerSession(authOptions)
 
         if(!session)

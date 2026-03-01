@@ -115,19 +115,15 @@
 
 import FeedbackModal from "@/models/feedback.model"
 import ServerCatchError from "@/utils/serverCatchError"
-import mongoose from "mongoose"
 import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse as res} from "next/server"
 import { authOptions } from "../auth/[...nextauth]/route"
+import { connectDB } from "@/lib/mongodb"
 
-
-const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-if (mongoose.connection.readyState === 0) {
-  mongoose.connect(DB)
-}
 
 export const POST = async(req : NextRequest) => {
     try {
+        await connectDB();
         const { fullname , email, message, category, role} = await req.json()
 
         
