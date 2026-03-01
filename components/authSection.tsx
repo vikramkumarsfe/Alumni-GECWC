@@ -68,16 +68,18 @@ const AuthSection = () => {
   ]
 
   return (
-    <Dropdown menu={{ items }} placement="bottomRight" arrow>
-      <div className="cursor-pointer">
-        <Avatar>
-          <AvatarImage src={session.user?.image || ""} />
-          <AvatarFallback>
-            {session.user?.name?.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    </Dropdown>
+    <Link href={dashboardRoute}>
+      <Dropdown menu={{ items }} placement="bottomRight" arrow>
+        <div className="cursor-pointer">
+          <Avatar>
+            <AvatarImage src={session.user?.image || ""} />
+            <AvatarFallback>
+              {session.user?.name?.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+        </div>
+      </Dropdown>
+    </Link>
   )
 }
 

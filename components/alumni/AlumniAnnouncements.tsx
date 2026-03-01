@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { Search, Clock } from "lucide-react";
-import { Empty, Pagination, Skeleton } from "antd"; // Import Ant Design Pagination
+import { Empty, Pagination, Skeleton } from "antd";
+import DOMPurify from "dompurify";
 
-// shadcn/ui components
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,32 +13,6 @@ import { fetcher } from "@/utils/fetcher";
 import ErrorState from "../shared/Errorstate";
 import moment from 'moment'
 
-let announcements = [
-  {
-    title: "Fall 2025 Alumni Meet Registration Open",
-    date: "Posted 2 hours ago",
-    isNew: true,
-    content: "Registration for the annual Alumni Meet scheduled for October 2025 is now live. Early bird tickets are available until the end of August. We have an exciting lineup of speakers and networking sessions planned for this year.",
-  },
-  {
-    title: "New Campus Library Wing Inauguration",
-    date: "Posted on May 10, 2025",
-    isNew: false,
-    content: "We are proud to announce the opening of the new digital library wing, funded generously by the class of 1990. The facility features state-of-the-art research pods and 24/7 access for all students.",
-  },
-  {
-    title: "Alumni Achievement Awards 2024 - Nominations",
-    date: "Posted on April 22, 2025",
-    isNew: false,
-    content: "Do you know an alumnus who has made significant contributions to their field or society? Submit your nominations for the prestigious Alumni Achievement Awards. The deadline is June 30th.",
-  },
-  {
-    title: "University Sports Complex Renovation Update",
-    date: "Posted on April 05, 2025",
-    isNew: false,
-    content: "The main sports complex will be closed for renovation from May to July. Alternative arrangements have been made at the city stadium for regular practice sessions.",
-  },
-]
 
 const AnnouncementFeed = () => {
   const [ isExpanded, setIsExpanded ] = useState({expanded : false, index : 0})
@@ -103,7 +77,7 @@ const AnnouncementFeed = () => {
                   <span>{moment().format('MMMM Do YYYY, h:mm:ss a')}</span>
                 </div>
               </div>
-              {item.isNew && (
+              {item.newAnnouncement && (
                 <Badge 
                   variant="secondary" 
                   className="bg-blue-50 text-blue-600 hover:bg-blue-100 border-none uppercase text-[10px] tracking-wider px-2"
@@ -113,9 +87,13 @@ const AnnouncementFeed = () => {
               )}
             </CardHeader>
             <CardContent>
-              <p className="text-sm leading-relaxed text-slate-600 max-w-[95%]">
-                { getContent(item.content, index) }
-              </p>
+              <div 
+                className="text-sm leading-relaxed text-slate-600 max-w-[95%]"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getContent(item.description, index)) }}
+              />
+              {/* <p className="text-sm leading-relaxed text-slate-600 max-w-[95%]">
+                { getContent(item.description, index) }
+              </p> */}
             </CardContent>
             <CardFooter>
               <Button 

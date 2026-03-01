@@ -2,9 +2,12 @@
 import React from 'react'
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
-import Image from "next/image";
-import logoImage from '@/public/images/logo.jpeg'
-import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { SessionProvider, useSession } from 'next-auth/react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from './AppSidebar';
@@ -15,9 +18,11 @@ import { Separator } from "@/components/ui/separator"
 import { Typography } from "antd"
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></link>
 import { MailOutlined, PhoneOutlined, LinkedinOutlined, TwitterOutlined, InstagramOutlined } from "@ant-design/icons"
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import AuthSection from './authSection';
 import Logo from './shared/Logo';
+import { Button } from './ui/button';
+import { DialogTitle } from './ui/dialog';
 
 const { Text, Title } = Typography
 
@@ -80,9 +85,10 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <SessionProvider>
       <div className="flex min-h-screen flex-col bg-background font-sans antialiased">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <nav className="container flex h-20 items-center justify-between px-4 md:px-8">
+          <nav className="container flex h-20 items-center justify-between px-6 md:px-8">
             <Logo />
 
+            {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
               <div className="flex gap-6">
                 {menus.map((item) => (
@@ -90,7 +96,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                     key={item.href}
                     href={item.href}
                     className={`text-sm font-medium transition-colors hover:text-primary ${
-                      pathname === item.href ? 'text-violet-600' : 'text-muted-foreground'
+                      pathname === item.href
+                        ? "text-violet-600"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {item.label}
@@ -98,6 +106,41 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 ))}
               </div>
               <AuthSection />
+            </div>
+
+            {/* Mobile Hamburger */}
+            <div className="md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu size={22} />
+                  </Button>
+                </SheetTrigger>
+
+                <SheetContent side="right" className="w-[260px]">
+                  <VisuallyHidden>
+                    <DialogTitle>Mobile Navigation Menu</DialogTitle>
+                  </VisuallyHidden>
+                  <div className="mt-8 flex flex-col gap-6 px-6">
+                    <div className="pt-4">
+                      <AuthSection />
+                    </div>
+                    {menus.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`text-base font-medium ${
+                          pathname === item.href
+                            ? "text-violet-600"
+                            : "text-slate-700"
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
           </nav>
         </header>
@@ -114,33 +157,37 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           {/* Branding - Spans more columns for a modern look */}
           <div className="md:col-span-5 space-y-6">
             <div>
-              <Title level={4} className="!text-stone-800 !font-semibold !mb-2 tracking-tight">
-                Alumni<span className="text-stone-400 font-light">-GECWC</span>
-              </Title>
+              <Logo/>
               <Text className="text-stone-500 max-w-xs block leading-relaxed">
                 A natural bridge between our past and your future. Nurturing a professional ecosystem for every graduate.
               </Text>
             </div>
             
             <div className="flex gap-4 text-stone-400">
-              <TwitterOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
-              <InstagramOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
-              <LinkedinOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
+              <a href='https://x.com/gecwc' target="_blank">
+                <TwitterOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
+              </a>
+              <a href="https://www.instagram.com/gecwc19/" target='_blank'>
+                <InstagramOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
+              </a>
+              <a href="https://www.linkedin.com/school/government-engineering-college-west-champaran/posts/?feedView=all" target="_blank">
+                <LinkedinOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
+              </a>
             </div>
           </div>
 
           {/* Navigation Links */}
           <div className="md:col-span-2 space-y-5">
-            <h6 className="text-xs font-bold uppercase tracking-widest text-stone-400">Network</h6>
+            <h6 className="text-large font-bold uppercase tracking-widest text-black">Network</h6>
             <nav className="flex flex-col gap-3">
               <Link href="/alumni/directory" className="hover:text-stone-900 transition-colors">Directory</Link>
               <Link href="/alumni/events" className="hover:text-stone-900 transition-colors">Events</Link>
-              <Link href="/alumni/jobs" className="hover:text-stone-900 transition-colors">Opportunities</Link>
+              <Link href="/jobs" className="hover:text-stone-900 transition-colors">Opportunities</Link>
             </nav>
           </div>
 
           <div className="md:col-span-2 space-y-5">
-            <h6 className="text-xs font-bold uppercase tracking-widest text-stone-400">Legal</h6>
+            <h6 className="text-large font-bold uppercase tracking-widest text-black">Legal</h6>
             <nav className="flex flex-col gap-3">
               <Link href="/privacy" className="hover:text-stone-900 transition-colors">Privacy</Link>
               <Link href="/terms" className="hover:text-stone-900 transition-colors">Terms</Link>
@@ -150,7 +197,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
           {/* Contact Details */}
           <div className="md:col-span-3 space-y-3">
-            <h6 className="text-xs font-bold uppercase tracking-widest text-stone-400">Connect</h6>
+            <h6 className="text-large font-bold uppercase tracking-widest text-black">Connect</h6>
             <div className="space-y-3">
               <a href="mailto:support@gecwc.edu" className="flex items-center gap-2 hover:text-stone-900 transition-colors">
                 <MailOutlined className="text-stone-300" />

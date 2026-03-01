@@ -88,7 +88,7 @@ const ContactPage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
@@ -122,21 +122,6 @@ const ContactPage = () => {
                     placeholder="Your Email" 
                     className="focus:ring-primary h-11"
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
-                  <Select>
-                    <SelectTrigger className="h-11">
-                      <SelectValue placeholder="Select Your Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="alumni">Alumni</SelectItem>
-                      <SelectItem value="faculty">Faculty</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
 
                 <div className="md:col-span-2 space-y-2">

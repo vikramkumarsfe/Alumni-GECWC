@@ -8,19 +8,20 @@ import ContextInterface from "@/Interfaces/context.interface"
 import AnnouncementsModel from "@/models/announcements"
 
 const DB = `${process.env.DB_URL}/${process.env.DB_NAME}`
-if (mongoose.connection.readyState === 0) {
+if (mongoose.connection.readyState === 0) 
+{
   mongoose.connect(DB)
 }
 
 export const POST = async(req: NextRequest,) => {
     try {
-        // const session = await getServerSession(authOptions)
+        const session = await getServerSession(authOptions)
 
-        // if(!session)
-        //     return res.json({ message : "Unauthorized User"}, { status : 404})
+        if(!session)
+            return res.json({ message : "Unauthorized User"}, { status : 404})
 
-        // if( session.user.role !== "admin")
-        //     return res.json({ message : "Unauthorized user"}, { status : 404})
+        if( session.user.role !== "admin")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
 
         const body = await req.json()
 
@@ -29,11 +30,11 @@ export const POST = async(req: NextRequest,) => {
         const payload = {
             title : body.title,
             date : date,
-            newAnnouncement : true,
-            content : body.content
+            newAnnouncement : body.newAnnouncement || true,
+            description : body.description
         }
 
-        const announcements = AnnouncementsModel.create(payload)
+        const announcements = await AnnouncementsModel.create(payload)
 
         if(!announcements)
             return res.json({message : "something went wrong"}, { status : 500})

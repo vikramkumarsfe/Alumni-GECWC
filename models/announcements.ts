@@ -13,7 +13,7 @@ const AnnouncementsSchema = new Schema({
         type : Boolean,
         default : false
     },
-    content : {
+    description : {
         type : String,
         required : true
     }

@@ -21,7 +21,8 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = await params.id
+        const param = await params
+        const id = param.id
         const body = await req.json()
 
         if(!id)
@@ -33,7 +34,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         const payload = {
             title : body.title,
             newAnnouncement : body.newAnnouncement,
-            content : body.content
+            description : body.description
         }
 
         const announcement = await AnnouncementsModel.findByIdAndUpdate(id, { $set : payload})
@@ -60,8 +61,8 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
         if( session.user.role !== "admin")
             return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const id = await params.id
-
+        const param = await params
+        const id = param.id
         if(!id)
              return res.json({ message : "id not found"}, { status : 404})
 

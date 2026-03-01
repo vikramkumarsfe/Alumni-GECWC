@@ -33,10 +33,10 @@ const AlumniPortalPage = () => {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Left Column: About & Mission (Spans 2 columns) */}
-          <div className="lg:col-span-2 space-y-16">
+          <div className="lg:col-span-2 space-y-6">
             
             {/* About Section */}
             <section>
@@ -122,7 +122,7 @@ const AlumniPortalPage = () => {
             
             {/* Advisory Board Card */}
             <Card className="rounded-xl border-gray-200 shadow-sm overflow-hidden">
-              <div className="h-2 bg-primary" />
+              <div className="h-2 bg-primary " />
               <CardHeader>
                 <CardTitle className="text-lg font-semibold flex items-center gap-2">
                   <ShieldCheck className="text-primary" size={20} />
@@ -130,12 +130,16 @@ const AlumniPortalPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-4 ">
                   <BoardMember name="Prof. A. Kumar" role="Patron" />
                   <Separator className="bg-gray-100" />
                   <BoardMember name="Dr. S. Singh" role="President" />
                   <Separator className="bg-gray-100" />
                   <BoardMember name="Mr. R. Verma" role="Secretary" />
+                  <Separator className="bg-gray-100" />
+                  <BoardMember name="Ms. P. Sharma" role="Treasurer" />
+                  <Separator className="bg-gray-100" />
+                  <BoardMember name="Ms. P. Sharma" role="Treasurer" />
                   <Separator className="bg-gray-100" />
                   <BoardMember name="Ms. P. Sharma" role="Treasurer" />
                 </div>

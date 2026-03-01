@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
 import { Button } from "antd"
 import { signOut } from "next-auth/react"
+import Logo from "./shared/Logo"
 
 const items = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -23,11 +24,7 @@ const AdminAppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href="/">
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-bold text-lg">Alumni-GECWC</span>
-                </div>
-              </Link>
+              <Logo />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -61,11 +58,9 @@ const AdminAppSidebar = () => {
       <SidebarFooter className="pb-6">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10">
-              <Button onClick={()=>signOut()} className="bg-transparent">
+            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={()=>signOut()}>
                 <LogOut className="size-4" />
-                <span>Logout</span>
-              </Button>
+                <span className="text-black">Logout</span> 
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
