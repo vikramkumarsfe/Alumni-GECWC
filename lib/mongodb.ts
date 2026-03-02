@@ -5,7 +5,6 @@ console.log("DB_URL:", process.env.DB_URL);
 console.log("DB_NAME:", process.env.DB_NAME);
 console.log("FINAL_URI:", `${process.env.DB_URL}/${process.env.DB_NAME}`);
 
-
 const MONGODB_URI = `${process.env.DB_URL}/${process.env.DB_NAME}`;
 
 if (!MONGODB_URI) {
