@@ -5,7 +5,7 @@ console.log("DB_URL:", process.env.DB_URL);
 console.log("DB_NAME:", process.env.DB_NAME);
 console.log("FINAL_URI:", `${process.env.DB_URL}/${process.env.DB_NAME}`);
 
-const MONGODB_URI = `mongodb+srv://vikramgecwc_db_user:TSMnx7QtCaaHMcD9@besties.zvtksqb.mongodb.net/alumni-gecwc`;
+const MONGODB_URI = `${process.env.DB_URL}/${process.env.DB_NAME}` || `mongodb+srv://vikramgecwc_db_user:TSMnx7QtCaaHMcD9@besties.zvtksqb.mongodb.net/alumni-gecwc`;
 
 if (!MONGODB_URI) {
   throw new Error("MongoDB URI not defined");
