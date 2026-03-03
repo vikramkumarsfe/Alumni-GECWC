@@ -37,8 +37,8 @@ const AnnouncementFeed = () => {
 
   if(data.announcements.length === 0)
     return (
-      <div className="flex item-center justify-center">
-        <Empty />
+      <div className="flex items-center justify-center min-h-screen">
+        <Empty className="block"/>
       </div>
     )
 
