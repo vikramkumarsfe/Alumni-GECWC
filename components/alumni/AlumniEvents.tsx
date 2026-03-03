@@ -94,7 +94,7 @@ const AlumniEvents = () => {
           <Card key={event._id} className="overflow-hidden flex flex-col group transition-all hover:shadow-md">
             <div className="relative h-48 w-full overflow-hidden">
               <img 
-                src={event.bannerImage} 
+                src={event.bannerImage || "/images/event_pic.jpg"} 
                 alt={event.title} 
                 className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
               />
@@ -142,7 +142,7 @@ const AlumniEvents = () => {
           {pastEvents.map((event) => (
             <Card key={event._id} className="overflow-hidden bg-slate-50/50 grayscale-[0.5] hover:grayscale-0 transition-all">
               <div className="relative h-32 w-full">
-                <img src={event.bannerImage} alt={event.title} className="object-cover w-full h-full" />
+                <img src={event.bannerImage || "/images/event_pic.jpg"} alt={event.title} className="object-cover w-full h-full" />
                 <div className="absolute inset-0 bg-black/20" />
                 <Badge variant="secondary" className="absolute top-2 right-2">Completed</Badge>
               </div>
