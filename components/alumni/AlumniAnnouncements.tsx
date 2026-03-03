@@ -36,9 +36,11 @@ const AnnouncementFeed = () => {
     return <Skeleton active />
 
   if(data.announcements.length === 0)
-    return <Empty />
-
-  
+    return (
+      <div className="flex item-center justify-center">
+        <Empty />
+      </div>
+    )
 
   const getContent = (content : string, index : number) => {
     if(isExpanded.expanded === true && index === isExpanded.index)
