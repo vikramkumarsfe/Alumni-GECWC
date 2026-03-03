@@ -153,13 +153,12 @@ const AdminEventForm: FC<EventFormProps> = ({
                 >
                   <Select
                     className="h-10"
-                    mode="tags"
                     getPopupContainer={(node) => node.parentElement!}
                     options={[
                       { value: 'Networking', label: 'Networking' },
                       { value: 'Seminar', label: 'Seminar' },
                       { value: 'Workshop', label: 'Workshop' },
-                      { value : 'Other', label : ''}
+                      { value : 'Other', label : 'other'}
                     ]}
                   />
                 </Form.Item>
