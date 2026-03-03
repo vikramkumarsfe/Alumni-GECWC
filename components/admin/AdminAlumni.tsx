@@ -178,7 +178,7 @@ const AdminAlumni = () => {
     try {
       setLoading(true)
       await axios.delete(`/api/admin/users/${id}` )
-      message.success("Alumni approved")
+      message.success("Alumni Deleted")
       mutate(`/api/admin/users?page=${page}&limit=${pageSize}`)
     }
     catch(err)
@@ -200,7 +200,7 @@ const AdminAlumni = () => {
 
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )
 
-      message.success("Alumni approved")
+      message.success("Alumni Suspended")
       mutate(`/api/admin/users?page=${page}&limit=${pageSize}`)
     }
     catch(err)
