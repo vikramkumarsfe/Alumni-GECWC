@@ -136,7 +136,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             const data = await sendMail({
                 email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
                 sendTo: body.email,
-                subject: "Account Approved",
+                subject: "Account Suspended",
                 text: `Reset your password using this link: `,
                 html: accountApprovedTemplate( user.fullname, "")
               })
@@ -182,7 +182,7 @@ export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
         const data = await sendMail({
             email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
             sendTo: user.email,
-            subject: "Account Approved",
+            subject: "Account Rejected",
             text: `Reset your password using this link: `,
             html: accountRejectedTemplate( user.fullname)
           })
