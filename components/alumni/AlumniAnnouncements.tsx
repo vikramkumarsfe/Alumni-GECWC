@@ -39,6 +39,7 @@ const AnnouncementFeed = () => {
     return (
       <div className="flex item-center justify-center">
         <Empty />
+        
       </div>
     )
 
