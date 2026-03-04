@@ -3,12 +3,8 @@ import React from 'react'
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { Menu } from "lucide-react"
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { SessionProvider, useSession } from 'next-auth/react';
+import { Sheet, SheetContent, SheetTrigger, } from "@/components/ui/sheet"
+import { SessionProvider } from 'next-auth/react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { AppSidebar } from './AppSidebar';
 import DashboardHeader from './DashboardHeader';
@@ -23,8 +19,9 @@ import AuthSection from './authSection';
 import Logo from './shared/Logo';
 import { Button } from './ui/button';
 import { DialogTitle } from './ui/dialog';
+import { MobileAuthSection, MobileLoginSignup } from './mobileAuthSection';
 
-const { Text, Title } = Typography
+const { Text} = Typography
 
 const menus = [
   { label: 'Home', href: '/' },
@@ -123,7 +120,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                   </VisuallyHidden>
                   <div className="mt-8 flex flex-col gap-6 px-6">
                     <div className="pt-4">
-                      <AuthSection />
+                      <MobileAuthSection />
                     </div>
                     {menus.map((item) => (
                       <Link
@@ -138,6 +135,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                         {item.label}
                       </Link>
                     ))}
+                    <div >
+                      <MobileLoginSignup />
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
