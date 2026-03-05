@@ -68,7 +68,7 @@ const AdminAnnouncements = () => {
         await axios.post("/api/announcement", values);
         message.success("Announcement created");
       }
-      mutate('/api/announcement')
+      mutate(`/api/announcement?page=${page}&limit=${pageSize}`)
       setModalOpen(false);
       setSelectedAnnouncement(null);
     } catch (err) {
@@ -79,7 +79,7 @@ const AdminAnnouncements = () => {
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(`/api/announcement/${id}`);
-      mutate('/api/announcement');
+      mutate(`/api/announcement?page=${page}&limit=${pageSize}`);
       message.success("Deleted successfully");
     } catch (err){
       clientCatchError(err)
@@ -104,7 +104,7 @@ const AdminAnnouncements = () => {
         </div>
 
         <Button
-          className="bg-[#0b6ff0] hover:bg-[#0856ba] text-white flex items-center gap-2"
+          className="bg-[#0b6ff0] hover:bg-[#0856ba] text-white flex items-center gap-2 cursor-pointer"
           onClick={() => {
             setSelectedAnnouncement(null);
             setModalOpen(true);

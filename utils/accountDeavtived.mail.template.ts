@@ -1,6 +1,6 @@
 export const accountDeactivatedTemplate = (
   userName: string,
-  supportEmail: string = "gecwc@gmail.com"
+  supportEmail: string = `${process.env.SITE_MAIL_RECIEVER}`
 ) => `
 <tr>
   <td style="background:linear-gradient(135deg,#d97706,#b45309); padding:24px; text-align:center; color:#ffffff;"> 

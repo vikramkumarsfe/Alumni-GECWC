@@ -1,6 +1,6 @@
 export const accountRejectedTemplate = (
   userName: string,
-  supportEmail: string = "gecwc@gmail.com"
+  supportEmail: string = `${process.env.SITE_MAIL_RECIEVER}`
 ) => `
 <tr>
   <td style="background:linear-gradient(135deg,#dc2626,#991b1b); padding:24px; text-align:center; color:#ffffff;"> 

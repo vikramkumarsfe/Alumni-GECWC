@@ -158,6 +158,7 @@ const AdminEventForm: FC<EventFormProps> = ({
                       { value: 'Networking', label: 'Networking' },
                       { value: 'Seminar', label: 'Seminar' },
                       { value: 'Workshop', label: 'Workshop' },
+                      { value : 'Other', label : 'other'}
                     ]}
                   />
                 </Form.Item>
@@ -270,12 +271,12 @@ const AdminEventForm: FC<EventFormProps> = ({
         </div>
 
         <div className="p-4 border-t flex justify-end gap-3">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} className='cursor-pointer'>
             Cancel
           </Button>
           <Button
             onClick={() => form.submit()}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
           >
             {mode === 'create' ? 'Create' : 'Save Changes'}
           </Button>

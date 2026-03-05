@@ -86,7 +86,7 @@ export const POST = async(req : NextRequest) => {
         const data = await sendMail({
                         email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
                         sendTo: body.email,
-                        subject: "Account Approved",
+                        subject: "Form Submitted",
                         text: `Reset your password using this link: `,
                         html: registrationReceivedTemplate(user.fullname)
                       })

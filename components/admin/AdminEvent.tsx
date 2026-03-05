@@ -152,13 +152,13 @@ const AdminEvents = () => {
   ]
 
   return (
-    <div className="bg-slate-50 min-h-screen p-6 space-y-6">
+    <div className="bg-slate-50 min-h-screen space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manage Events</h1>
           <p className="text-muted-foreground text-sm">Create, edit, and track alumni gatherings.</p>
         </div>
-        <Button onClick={openCreateDrawer} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={openCreateDrawer} className="bg-blue-600 hover:bg-blue-700 cursor-pointer">
           <Plus className="mr-2 h-4 w-4" /> Create Event
         </Button>
       </div>

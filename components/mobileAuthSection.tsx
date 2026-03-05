@@ -7,25 +7,13 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
-const AuthSection = () => {
-  const { data: session } = useSession()
-  if (!session) {
-    return (
-      <Space>
-        <Link href="/login">
-          <Button className="bg-slate-500 hover:bg-slate-700 text-white shadow-md">
-            Login
-          </Button>
-        </Link>
 
-        <Link href="/signup">
-          <Button className="bg-violet-600 hover:bg-violet-700 text-white shadow-md">
-            Signup
-          </Button>
-        </Link>
-      </Space>
-    )
-  }
+
+export const MobileAuthSection = () => {
+    const { data: session } = useSession()
+    if (!session) {
+        return null
+    }
 
   const role = session.user?.role
 
@@ -82,4 +70,30 @@ const AuthSection = () => {
   )
 }
 
-export default AuthSection
+export const MobileLoginSignup = () => {
+  const { data: session } = useSession()
+
+  if (!session) {
+    return (
+      <div className="flex flex-col gap-4">
+        
+        <Link
+          href="/login"
+          className="text-base font-medium text-slate-700 hover:text-violet-600 transition-colors"
+        >
+          Login
+        </Link>
+
+        <Link
+          href="/signup"
+          className="text-base font-medium text-slate-700 hover:text-violet-700 transition-colors"
+        >
+          Signup
+        </Link>
+
+      </div>
+    )
+  }
+
+  return null
+}
