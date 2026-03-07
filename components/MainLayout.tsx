@@ -123,17 +123,17 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                       <MobileAuthSection />
                     </div>
                     {menus.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`text-base font-medium ${
-                          pathname === item.href
-                            ? "text-violet-600"
-                            : "text-slate-700"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`text-base font-medium ${
+                            pathname === item.href
+                              ? "text-violet-600"
+                              : "text-slate-700"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
                     ))}
                     <div >
                       <MobileLoginSignup />
@@ -149,7 +149,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           {children}
         </main>
 
-<footer className="bg-[#fafaf9] border-t border-stone-200 text-stone-600">
+    <footer className="bg-[#fafaf9] border-t border-stone-200 text-stone-600">
       <div className="container mx-auto px-6 pb-4  pt-8 md:px-12">
         
         <div className="grid grid-cols-1 gap-12 md:grid-cols-12">

@@ -40,7 +40,7 @@ const Signup = () => {
 
   return (
     <div className='flex h-screen justify-center items-center bg-gray-100'>
-      <Card hoverable className='w-6/12 shadow-lg rounded-xl'>
+      <Card hoverable className='md:w-6/12 w-10/12 shadow-lg rounded-xl'>
         <h1 className='text-2xl font-semibold mb-4 text-center'>Signin</h1>
 
         <Form layout='vertical' onFinish={Login}>
