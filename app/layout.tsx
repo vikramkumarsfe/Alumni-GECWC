@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MainLayout from "@/components/MainLayout";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { CldUploadWidget } from "next-cloudinary"
+import { Analytics } from "@vercel/analytics/next"
 
 
 const geistSans = Geist({
@@ -34,6 +34,7 @@ export default function RootLayout({
         <AntdRegistry>
           <MainLayout>
               {children}
+              <Analytics />
           </MainLayout>
         </AntdRegistry>
       </body>
