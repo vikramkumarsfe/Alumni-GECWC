@@ -66,7 +66,7 @@ export default function AlumniContactCard() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8" 
+                    className="h-8 w-8 cursor-pointer" 
                     onClick={() => copyToClipboard(email)}
                   >
                     {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}

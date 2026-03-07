@@ -34,7 +34,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const blacklists = ['/login', '/signup']
   const isBlacklist = blacklists.includes(pathname)
 
-  // --- LOGIC: Check for Admin or Alumni System ---
   const isAlumniSystem = pathname.startsWith('/alumni')
   const isAdminSystem = pathname.startsWith('/admin')
 
@@ -220,7 +219,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </div>
     </footer>
-  </div>
+      </div>
     </SessionProvider>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Edit2, GraduationCap, Building2, Mail, Shield } from "lucide-react"
+import { Edit2, GraduationCap, Building2, Mail, Shield, VerifiedIcon } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -66,10 +66,10 @@ export default function AlumniPrivateHeader() {
 
                 {role && (
                   <Badge className="flex items-center gap-1.5 px-3 py-1 capitalize">
-                    <Shield className="w-4 h-4" />
+                    <VerifiedIcon className="w-4 h-4"/>
                     {role}
                   </Badge>
-                )}
+                )}          
 
                 {authUser.branch && (
                   <div className="flex items-center gap-1.5 text-slate-600 bg-slate-100 px-3 py-1 rounded-full text-sm">

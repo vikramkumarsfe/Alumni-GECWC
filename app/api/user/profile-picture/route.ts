@@ -54,6 +54,7 @@ import {NextResponse as res} from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/mongodb"
+import cloudinary from "@/utils/cloudingry"
 
 export const POST = async (req: Request) =>  {
 
@@ -64,13 +65,31 @@ export const POST = async (req: Request) =>  {
         if(!session)
             return res.json({ message : "Unauthorized"})
 
-        const { provider, key } = await req.json()
+        const data = await req.formData();
+        const file = data.get("file") as File;
 
-        await  UserModel.findByIdAndUpdate(session.user.id, { $set : { image : key, provider}})
+        if (!file) {
+            return res.json({ message: "File not provided" }, { status: 400 });
+        }
 
-        return res.json({ message : "Profile picture updated"})
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
+        const result  : any = await new Promise((resolve, reject) => {
+            cloudinary.uploader
+            .upload_stream({ folder: "alumni_profiles" }, (error, result) => {
+                if (error) 
+                    reject(error);
+                else 
+                    resolve(result);
+            })
+            .end(buffer);
+        });
 
+        const public_link = result.secure_url
+        await  UserModel.findByIdAndUpdate(session.user.id, { $set : { image : public_link}})
+
+        return res.json({public_link})
     }
     catch(err)
     {
