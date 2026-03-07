@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Card, Button, Form, Input, message } from 'antd'
+import { useState } from 'react'
+import { Card, Button, Form, Input, message, Skeleton } from 'antd'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -19,16 +19,13 @@ const Signup = () => {
         password: values.password,
         redirect: false,
       })
-
       if (res?.error) {
         message.error("Invalid email or password invalid , OR may be your account is not Active")
         return
       }
-
       message.success("Login successful")
       console.log(res)
       router.push('/')
-
     } catch (err) {
       clientCatchError(err)
     }
@@ -61,14 +58,13 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button
-              size='large'
-              htmlType='submit'
-              type='primary'
-              className='w-full'
-            >
-              Login
-            </Button>
+            {loading ?
+              <Skeleton.Button active block size='large' />
+              :
+              <Button size='large' htmlType='submit' type='primary' block className='bg-blue-600'>
+                Login
+              </Button>
+            }
           </Form.Item>
         </Form>
 

@@ -120,7 +120,7 @@ export const GET = async(req: NextRequest) => {
 
         const skip = limit*(page-1)
 
-        const users = await UserModel.find({ role : "alumni", isActive : "approved"},{ fullname : 1, image : 1, email : 1, createdAt : 1 }).sort({ createdAt : -1 }).skip(skip).limit(limit);
+        const users = await UserModel.find({ role : "alumni", isActive : "approved"},{ fullname : 1, image : 1, email : 1, createdAt : 1, address : 1 }).sort({ createdAt : -1 }).skip(skip).limit(limit);
 
         const total = await UserModel.countDocuments()
 
@@ -154,7 +154,8 @@ export const PUT = async( req: NextRequest) => {
             mobile : body.mobile,
             bio : body.bio,
             branch : body.branch,
-            batch : body.batch
+            batch : body.batch,
+            address : body.address
         }
         console.log(payload)
         const user = await UserModel.findByIdAndUpdate({ _id : session.user.id}, { $set : payload}, { new : true})

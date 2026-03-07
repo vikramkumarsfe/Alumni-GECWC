@@ -26,6 +26,8 @@ export default function AlumniDashboard() {
   const { data: session, status, update } = useSession()
   const userId = session?.user.id
 
+  console.log(session)
+
     useEffect(() => {
       if (Event?.events) {
         const upcoming = Event.events.filter(
@@ -56,7 +58,6 @@ export default function AlumniDashboard() {
     { label: "Upcoming Events", value: Event.total, icon: Calendar},
     { label: "New Notices", value: Announcement.total, icon: BellRing},
   ]
-  console.log(Announcement)
   return (
     <div className="space-y-8 animate-in fade-in duration-500 p-8 bg-slate-100 min-h-screen">
       
@@ -64,10 +65,10 @@ export default function AlumniDashboard() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-              Welcome back, <span className="text-violet-600">Vikram!</span>
+              Welcome back, <span className="text-violet-600">{session?.user.name}</span>
             </h1>
             <p className="text-slate-500 max-w-md">
-              You have 3 new connection requests and 2 upcoming events this week.
+              You have 0 new connection requests and {Event.total} upcoming events this week.
             </p>
           </div>
           <div className="w-full md:w-72 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
@@ -120,12 +121,10 @@ export default function AlumniDashboard() {
 
       {/* --- MAIN CONTENT SPLIT --- */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        
-        {/* EVENTS SECTION (LEFT 2/3) */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xl font-bold text-slate-900">Recommended Events</h2>
-            <Button variant="ghost" className="text-violet-600 hover:text-violet-700 font-semibold text-sm">
+            <Button variant="ghost" className="text-violet-600 hover:text-violet-700 font-semibold text-sm cursor-pointer">
               View All <ChevronRight className="ml-1 h-4 w-4" />
             </Button>
           </div>
@@ -135,7 +134,7 @@ export default function AlumniDashboard() {
               <div key={event.title} className="group relative overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:shadow-md">
                 <div className="aspect-video overflow-hidden">
                   <img 
-                    src={event.bannerImage} 
+                    src={event.bannerImage || "/images/event_pic.jpg"} 
                     alt={event.title} 
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
                   />
@@ -152,7 +151,7 @@ export default function AlumniDashboard() {
                     <p className="flex items-center text-sm text-slate-500 gap-1"><MapPin size={14} /> {event.venueName}</p>
                   </div>
                   <Link href={`/alumni/events/${event._id}`}>
-                    <Button className="w-full bg-slate-900 hover:bg-violet-600 transition-colors">Register Interest</Button>
+                    <Button className="w-full bg-slate-900 hover:bg-violet-600 transition-colors cursor-pointer">View Details</Button>
                   </Link>
                 </div>
               </div>
@@ -160,7 +159,6 @@ export default function AlumniDashboard() {
           </div>
         </div>
 
-        {/* ANNOUNCEMENTS (RIGHT 1/3) */}
         <div className="space-y-6">
           <div className="flex items-center justify-between px-1">
             <h2 className="text-xl font-bold text-slate-900">Latest Notices</h2>
@@ -184,7 +182,7 @@ export default function AlumniDashboard() {
               </div>
             ))}
             <Link href="/alumni/announcements">
-              <Button variant="ghost" className="w-full text-slate-500 text-xs py-6 border-2 border-dashed border-slate-100 rounded-xl hover:bg-slate-50">
+              <Button variant="ghost" className="w-full text-slate-500 text-xs py-6 border-2 border-dashed border-slate-100 rounded-xl hover:bg-slate-50 cursor-pointer">
                 Check Archive
               </Button>
             </Link>

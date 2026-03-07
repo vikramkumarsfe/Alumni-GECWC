@@ -20,15 +20,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import ProfileImageUpload from "./ProfileImageUpload";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Pencil } from "lucide-react";
+import clientCatchError from "@/utils/clientCatchError";
 
 const profileSchema = z.object({
   fullname: z.string().min(2, "Name must be at least 2 characters."),
   mobile: z.string().regex(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number."),
   bio: z.string().max(160, "Bio must be under 160 characters.").optional(),
-  batch : z.number().min(2019),
-  branch : z.string().min(2, "Branch at least 2 characters")
+  batch: z.number().min(2019),
+  branch: z.string().min(2, "Branch at least 2 characters"),
+
+  address: z.object({
+    street: z.string(),
+    city: z.string(),
+    state: z.string(),
+    country: z.string(),
+    pincode: z.string().regex(/^[0-9]{6}$/, "Enter valid pincode"),
+  })
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -43,9 +52,16 @@ export default function AlumniEditForm() {
       fullname: "",
       mobile: "",
       bio: "",
-      batch : 2019,
-      branch : ""
-    },
+      batch: 2019,
+      branch: "",
+      address: {
+        street: "",
+        city: "",
+        state: "",
+        country: "",
+        pincode: ""
+      }
+    }
   });
 
   // Prefill form when session loads
@@ -55,8 +71,15 @@ export default function AlumniEditForm() {
         fullname: session.user.name || "",
         mobile: (session.user as any).mobile || "",
         bio: (session.user as any).bio || "",
-        batch : (session.user as any).batch || "",
-        branch : (session.user as any).branch || ""
+        batch: (session.user as any).batch || 2019,
+        branch: (session.user as any).branch || "",
+        address: {
+          street: (session.user as any).address?.street || "",
+          city: (session.user as any).address?.city || "",
+          state: (session.user as any).address?.state || "",
+          country: (session.user as any).address?.country || "",
+          pincode: (session.user as any).address?.pincode || ""
+        }
       });
     }
   }, [session, form]);
@@ -76,7 +99,8 @@ export default function AlumniEditForm() {
         bio: data.bio,
         mobile: data.mobile,
         batch : data.batch,
-        branch : data.branch
+        branch : data.branch,
+        address : data.address
       });
 
       message.success("Profile updated successfully!");
@@ -85,6 +109,55 @@ export default function AlumniEditForm() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if(!session)
+    return null
+  const initials = session.user.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
+  const handleProfilePicture = () => {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+
+    
+
+    input.onchange = async (event: any) => {
+      const file = event.target.files?.[0]
+
+      if(!file)
+        return
+
+      const formData = new FormData()
+
+      formData.append("file", file)
+      try {
+
+        const options = {
+          headers: { "Content-Type": "multipart/form-data" }
+        }
+        const data = await axios.post('/api/user/profile-picture', formData, options)
+
+        await update({
+        image :  data.data.public_link
+      })
+      console.log(data.data.public_link)
+      message.success("image updated succesfully")
+      }
+      catch(err)
+      {
+        clientCatchError(err)
+      }
+      input.remove();
+    }
+
+    input.click()
+    
+    
   }
 
   return (
@@ -101,16 +174,31 @@ export default function AlumniEditForm() {
 
             {/* Profile Image Upload */}
             <div className="flex justify-center pb-4">
-              <ProfileImageUpload
-                  image={session?.user?.image ?? undefined}
-                  name={form.watch("fullname")}
-                />
+              <div
+          onClick={handleProfilePicture}
+          className="relative cursor-pointer group"
+        >
+          <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
+            <AvatarImage
+              src={session.user.image || initials}
+              alt={initials}
+              className="object-cover"
+            />
+            <AvatarFallback className="text-2xl bg-muted">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+            <Pencil className="w-6 h-6" />
+          </div>
+        </div>
 
             </div>
 
             <div className="grid gap-6">
               <div className="grid md:grid-cols-2  gap-4 w-full">
-
               <FormField
                 control={form.control}
                 name="fullname"
@@ -186,6 +274,80 @@ export default function AlumniEditForm() {
                   </FormItem>
                 )}
               />
+              </div>
+
+              <div className="grid  gap-4">
+                <h1 className="text-lg font-sm span-2">Address : </h1>
+              <FormField
+                control={form.control}
+                name="address.street"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Street</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Street address" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input placeholder="City" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input placeholder="State" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Country</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Country" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address.pincode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Pincode</FormLabel>
+                    <FormControl>
+                      <Input placeholder="700001" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               </div>
 
             </div>

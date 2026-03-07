@@ -53,7 +53,7 @@ const AnnouncementFeed = () => {
     <div className="mx-auto space-y-8 p-6 md:p-8">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          University Announcements
+          Administration Announcements
         </h1>
         <p className="text-slate-500 text-sm">
           Stay updated with the latest news and notices from the administration.

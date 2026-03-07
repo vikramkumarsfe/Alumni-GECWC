@@ -46,9 +46,12 @@ export default function AlumniSearchFilter({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Departments</SelectItem>
-          <SelectItem value="cs">Computer Science</SelectItem>
-          <SelectItem value="eng">Engineering</SelectItem>
-          <SelectItem value="biz">Business</SelectItem>
+          <SelectItem value="cs-cs">CSE(CS)</SelectItem>
+          <SelectItem value="civil">CIVIL</SelectItem>
+          <SelectItem value="cse">CSE</SelectItem>
+          <SelectItem value="ece">ECE</SelectItem>
+          <SelectItem value="ee">EE</SelectItem>
+          <SelectItem value="vlsi">VLSI</SelectItem>
         </SelectContent>
       </Select>
 
@@ -59,9 +62,11 @@ export default function AlumniSearchFilter({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Batches</SelectItem>
-          <SelectItem value="2024">Batch of 2019</SelectItem>
-          <SelectItem value="2023">Batch of 2020</SelectItem>
-          <SelectItem value="2022">Batch of 2021</SelectItem>
+          <SelectItem value="2019">Batch of 2019</SelectItem>
+          <SelectItem value="2020">Batch of 2020</SelectItem>
+          <SelectItem value="2021">Batch of 2021</SelectItem>
+          <SelectItem value="2022">Batch of 2022</SelectItem>
+          <SelectItem value="2023">Batch of 2023</SelectItem>
         </SelectContent>
       </Select>
     </div>
