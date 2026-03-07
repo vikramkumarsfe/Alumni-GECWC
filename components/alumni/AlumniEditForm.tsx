@@ -20,8 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import ProfileImageUpload from "./ProfileImageUpload";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Pencil } from "lucide-react";
+import clientCatchError from "@/utils/clientCatchError";
 
 const profileSchema = z.object({
   fullname: z.string().min(2, "Name must be at least 2 characters."),
@@ -110,6 +111,55 @@ export default function AlumniEditForm() {
     }
   }
 
+  if(!session)
+    return null
+  const initials = session.user.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+
+  const handleProfilePicture = () => {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+
+    
+
+    input.onchange = async (event: any) => {
+      const file = event.target.files?.[0]
+
+      if(!file)
+        return
+
+      const formData = new FormData()
+
+      formData.append("file", file)
+      try {
+
+        const options = {
+          headers: { "Content-Type": "multipart/form-data" }
+        }
+        const data = await axios.post('/api/user/profile-picture', formData, options)
+
+        await update({
+        image :  data.data.public_link
+      })
+      console.log(data.data.public_link)
+      message.success("image updated succesfully")
+      }
+      catch(err)
+      {
+        clientCatchError(err)
+      }
+      input.remove();
+    }
+
+    input.click()
+    
+    
+  }
+
   return (
     <Card className="max-w-2xl mx-auto border-none shadow-lg md:border md:shadow-sm">
       <CardHeader>
@@ -124,10 +174,26 @@ export default function AlumniEditForm() {
 
             {/* Profile Image Upload */}
             <div className="flex justify-center pb-4">
-              <ProfileImageUpload
-                  image={session?.user?.image ?? undefined}
-                  name={form.watch("fullname")}
-                />
+              <div
+          onClick={handleProfilePicture}
+          className="relative cursor-pointer group"
+        >
+          <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
+            <AvatarImage
+              src={session.user.image || initials}
+              alt={initials}
+              className="object-cover"
+            />
+            <AvatarFallback className="text-2xl bg-muted">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+            <Pencil className="w-6 h-6" />
+          </div>
+        </div>
 
             </div>
 

@@ -91,6 +91,7 @@ export const authOptions: NextAuthOptions = {
           user.bio = existingUser.bio
           user.mobile = existingUser.mobile
           user.address = existingUser.address
+          user.image = existingUser.image
         }
       }
       return true
@@ -125,7 +126,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id as string
       session.user.role = token.role as string
       session.user.address = token.address as any
-      session.user.image = token.picture as any
+      session.user.image = token.image as any
       session.user.mobile = token.mobile as any
       session.user.bio = token.bio as any
       session.user.batch = token.batch as any
