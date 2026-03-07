@@ -211,8 +211,6 @@ export async function GET(
     if (!session)
       return res.json({ message: "Unauthorized User" }, { status: 401 })
 
-    if (session.user.role !== "admin")
-      return res.json({ message: "Unauthorized user" }, { status: 403 })
 
     if (!id)
       return res.json({ message: "id not found" }, { status: 400 })
