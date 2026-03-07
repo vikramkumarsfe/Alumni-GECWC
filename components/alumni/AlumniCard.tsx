@@ -18,6 +18,13 @@ interface AlumniCardProps {
     batch?: string;
     company?: string; // New field
     location?: string; // New field
+    address ?: {
+      street ?: string,
+      city ?: string,
+      state  ?: string,
+      country ?: string,
+      pincode ?: number
+    }
   };
 }
 
@@ -28,14 +35,16 @@ export default function AlumniCard({ alumni }: AlumniCardProps) {
     .join("")
     .toUpperCase();
 
+    console.log(alumni)
+
   return (
     <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-muted bg-card">
       {/* Location Badge - Positioned Top Right */}
-      {!alumni.location && (
+      {alumni.address && (
         <div className="absolute right-3 top-3">
           <Badge variant="secondary" className="font-normal gap-1 bg-secondary/50 backdrop-blur-sm">
             <MapPin className="h-3 w-3" />
-            {alumni.location ||"delhi"}
+            {alumni.address.city ||"delhi"}
           </Badge>
         </div>
       )}
@@ -84,5 +93,5 @@ export default function AlumniCard({ alumni }: AlumniCardProps) {
         </Button>
       </CardFooter>
     </Card>
-  );
+  )
 }

@@ -103,7 +103,7 @@ export default function AlumniPrivateEducationSection() {
         </div>
 
         <Button
-          className="gap-2 shadow-sm"
+          className="gap-2 shadow-sm cursor-pointer"
           onClick={() => {
             setIsEditing(false)
             setSelectedEducation(null)
@@ -269,7 +269,7 @@ export default function AlumniPrivateEducationSection() {
 
           {/* Submit Button */}
           <Form.Item className="mb-0">
-            <Button className="w-full" type="submit">
+            <Button className="w-full cursor-pointer" type="submit">
               Save Education
             </Button>
           </Form.Item>

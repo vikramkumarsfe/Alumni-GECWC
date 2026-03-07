@@ -62,6 +62,7 @@
 
 import { connectDB } from "@/lib/mongodb"
 import UserModel from "@/models/user.model"
+import { adminNewSignupNotification } from "@/utils/adminNotification.mail.template"
 import { registrationReceivedTemplate } from "@/utils/registrationReceived.template"
 import { sendMail } from "@/utils/send-mail"
 import ServerCatchError from "@/utils/serverCatchError"
@@ -83,13 +84,30 @@ export const POST = async(req : NextRequest) => {
             return res.json({ message : "Failed to create user"})
         }
 
-        const data = await sendMail({
-                        email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
-                        sendTo: body.email,
-                        subject: "Form Submitted",
-                        text: `Reset your password using this link: `,
-                        html: registrationReceivedTemplate(user.fullname)
-                      })
+        await sendMail({
+            email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+            sendTo: body.email,
+            subject: "Registration Form submitted",
+            text: `Reset your password using this link: `,
+            html: registrationReceivedTemplate(user.fullname)
+        })
+        
+        await sendMail({
+            email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+            sendTo: `${process.env.SITE_MAIL_RECIEVER}`,
+            subject: "New Alumni Registration Request",
+            text: `Reset your password using this link:`,
+            html: adminNewSignupNotification(
+                user.fullname,
+                user.email,
+                user.mobile,
+                user.regNo,
+                user.batch,
+                user.branch,
+                `${process.env.SERVER}/admin/users`
+            )
+            })
+
         return res.json({ message : "SignUp successfull!!"})
     }
     catch(err)

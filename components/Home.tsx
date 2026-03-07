@@ -13,7 +13,7 @@ const Home = () => {
     { label: 'Alumni', value: 1000, suffix: '+' },
     { label: 'Events', value: 50, suffix: '+' },
     { label: 'Opportunities', value: 200, suffix: '+' },
-    { label: 'Departments', value: 10, suffix: '+' },
+    { label: 'Departments', value: 6, suffix: '+' },
   ]
 
   const featureData = [

@@ -57,6 +57,28 @@ const UserSchema = new Schema({
     regNo : {
         type : String,
         required : true
+    },
+    address : {
+        street : {
+            type : String,
+            default : null
+        },
+        city : {
+            type : String,
+            default : null
+        },
+        state : {
+            type : String,
+            default : null
+        },
+        country : {
+            type : String,
+            default : null
+        },
+        pincode : {
+            type : String,
+            default : null
+        }
     }
 },{timestamps :  true})
 

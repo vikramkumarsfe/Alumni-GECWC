@@ -123,9 +123,9 @@ const AlumniEvents = () => {
               </p>
             </CardContent>
             <CardFooter className="gap-3">
-              <Button className="flex-1">RSVP Now</Button>
+              <Button className="flex-1 cursor-pointer">RSVP Now</Button>
               <Link href={`/alumni/events/${event._id}`}>
-                <Button variant="outline" className="flex-1">Details</Button>
+                <Button variant="outline" className="flex-1 cursor-pointer">Details</Button>
               </Link>
             </CardFooter>
           </Card>
@@ -152,7 +152,7 @@ const AlumniEvents = () => {
                 <CardDescription className="text-xs">{moment(event.date).format('MMMM Do YYYY, h:mm:ss a')}</CardDescription>
               </CardHeader>
               <CardFooter className="p-4 pt-0">
-                <Button variant="ghost" size="sm" className="w-full text-xs gap-2" >
+                <Button variant="ghost" size="sm" className="w-full text-xs gap-2 cursor-pointer" >
                    <ImageIcon className="h-3 w-3" /> View Gallery
                 </Button>
               </CardFooter>

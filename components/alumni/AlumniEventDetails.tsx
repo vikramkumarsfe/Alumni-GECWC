@@ -135,7 +135,7 @@ const AlumniEventDetails = () => {
 
                 <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-bold uppercase tracking-wider">Availability</span>
+                    <span className="text-xs font-bold uppercase tracking-wider">Seat Filled</span>
                     <span className="text-sm font-bold">{data.attendees.length} / {data.capacity}</span>
                   </div>
                 </div> 

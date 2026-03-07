@@ -45,7 +45,8 @@ export const authOptions: NextAuthOptions = {
           mobile : user.mobile,
           bio : user.bio,
           batch : user.batch,
-          branch : user.branch
+          branch : user.branch,
+          address : user.address
         }
       }
     }),
@@ -89,6 +90,7 @@ export const authOptions: NextAuthOptions = {
           user.address = existingUser.address
           user.bio = existingUser.bio
           user.mobile = existingUser.mobile
+          user.address = existingUser.address
         }
       }
       return true
@@ -108,7 +110,7 @@ export const authOptions: NextAuthOptions = {
       }
 
        if (trigger === "update" && session) {
-        const allowedUpdates = ["image", "provider", "bio", "name", "mobile", "batch", "branch"]
+        const allowedUpdates = ["image", "provider", "bio", "name", "mobile", "batch", "branch", "address"]
 
         allowedUpdates.forEach((key) => {
           if (session[key]) {
@@ -128,6 +130,7 @@ export const authOptions: NextAuthOptions = {
       session.user.bio = token.bio as any
       session.user.batch = token.batch as any
       session.user.branch = token.branch as any
+      session.user.address = token.address as any
       return session
     }
   },

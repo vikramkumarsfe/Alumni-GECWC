@@ -72,7 +72,7 @@ const AdminDashboard = () => {
           inactive: "bg-slate-100 text-slate-600 border-slate-200",
         };
         return (
-          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${isActive === "pending" ? styles.pending : ""}`}>
             {isActive.toUpperCase()}
           </span>
         );
