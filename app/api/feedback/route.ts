@@ -124,18 +124,17 @@ import { connectDB } from "@/lib/mongodb"
 export const POST = async(req : NextRequest) => {
     try {
         await connectDB();
-        const { fullname , email, message, category, role} = await req.json()
+        const { fullname , email, message, category} = await req.json()
 
         
-        if(!fullname || !email || !message  || !category || !role)
-            return res.json({message  : "fullname , email, message, category and role is required"})
+        if(!fullname || !email || !message  || !category)
+            return res.json({message  : "fullname , email, message, category is required"})
 
         const payload = {
             fullname,
             email,
             message,
-            category,
-            role
+            category
         }
 
         const feedback = await FeedbackModal.create(payload)
