@@ -113,6 +113,7 @@
  */
 
 
+
 import FeedbackModal from "@/models/feedback.model"
 import ServerCatchError from "@/utils/serverCatchError"
 import { getServerSession } from "next-auth"
@@ -120,6 +121,11 @@ import { NextRequest, NextResponse as res} from "next/server"
 import { authOptions } from "../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/mongodb"
 
+interface QueryInterface {
+  status ?: string
+  category ?: string
+  sortOptions ?: number
+}
 
 export const POST = async(req : NextRequest) => {
     try {
@@ -134,7 +140,8 @@ export const POST = async(req : NextRequest) => {
             fullname,
             email,
             message,
-            category
+            category,
+            staus : "pending"
         }
 
         const feedback = await FeedbackModal.create(payload)
@@ -166,19 +173,40 @@ export const GET = async (req: NextRequest) => {
 
     const { searchParams } = new URL(req.url)
 
-    const upcoming = searchParams.get("upcoming")
+    const status = searchParams.get("status")
+    const category = searchParams.get("type")
+    const sort = searchParams.get("sort")
 
-    let total
-    if(upcoming)
-    {
-      total = await FeedbackModal.countDocuments({ status : "upcoming"})
-    }
-    else
-    {
-      total = await FeedbackModal.countDocuments()
+    const page = Math.max(Number(searchParams.get("page")) || 1, 1)
+    const limit = Math.min(Number(searchParams.get("limit")) || 10, 50)
+    const skip = limit * (page - 1)
+
+    let query : QueryInterface = {}
+
+    if (status && status !== "all") {
+      query.status = status;
     }
 
-    return res.json({ total })
+    if (category && category !== "all") {
+      query.category = category;
+    }
+
+    let sortOption = {};
+
+    if (sort === "newest") 
+    {
+      sortOption = { createdAt: -1 }
+    } 
+    else if (sort === "oldest")
+    {
+      sortOption = { createdAt: 1 }
+    }
+
+    const data = await FeedbackModal.find(query).sort(sortOption).skip(skip).limit(limit)
+
+    const total = await FeedbackModal.countDocuments(query)
+    
+    return res.json({ data, total})
   } catch (err) {
     return ServerCatchError(err)
   }

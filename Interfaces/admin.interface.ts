@@ -1,12 +1,12 @@
 type FeedbackStatus = "Pending" | "Reviewed" | "Resolved";
 
 interface FeedbackItem {
-  id: number;
-  name: string;
+  _id: string;
+  fullname: string;
   email: string;
   category: string;
   message: string;
-  date: string;
+  createdAt: string;
   status: FeedbackStatus;
   avatar?: string;
   initials?: string;
