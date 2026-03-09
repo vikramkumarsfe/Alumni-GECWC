@@ -32,17 +32,14 @@ const ContactPage = () => {
   const onFinish = async(values: any) => {
     try {
       const data = await axios.post('/api/feedback', values)
-      
       form.resetFields()
       message.success("Feedback is submitted successfully.")
-      
     }
     catch(err)
     {
       clientCatchError(err)
     }
   }
-
   return (
     <div className="bg-appBg font-sans">
 

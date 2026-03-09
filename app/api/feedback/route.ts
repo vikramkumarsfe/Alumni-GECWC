@@ -153,36 +153,34 @@ export const POST = async(req : NextRequest) => {
 
 //Only admin can fetch the feedbacks
 
-export const GET = async ( req: NextRequest) => {
-    try{
-        const session = await getServerSession(authOptions)
-        
-        if(!session || session.user.role !== "admin")
-            return res.json({message : "Unauthorized user"})
+export const GET = async (req: NextRequest) => {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions)
 
-        const { searchParams } = new URL(req.url)
+    if (!session)
+      return res.json({ message: "Unauthorized User" }, { status: 401 })
 
-        const page = Math.max(Number(searchParams.get("page")) || 1, 1)
-        const limit = Math.min(Number(searchParams.get("limit")) || 10, 100)
+    if( session.user.role !== "admin")
+      return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const skip = limit*(page-1)
+    const { searchParams } = new URL(req.url)
 
-        const feedbacks = await FeedbackModal.find().sort({ createdAt : -1 }).skip(skip).limit(limit);
+    const upcoming = searchParams.get("upcoming")
 
-        const total = await FeedbackModal.countDocuments()
-
-        return res.json(
-        {    data : feedbacks,
-            pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-        }})
-    }
-    catch(err)
+    let total
+    if(upcoming)
     {
-        return ServerCatchError(err)
+      total = await FeedbackModal.countDocuments({ status : "upcoming"})
     }
+    else
+    {
+      total = await FeedbackModal.countDocuments()
+    }
+
+    return res.json({ total })
+  } catch (err) {
+    return ServerCatchError(err)
+  }
 }
 
