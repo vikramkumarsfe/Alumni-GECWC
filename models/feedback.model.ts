@@ -16,6 +16,11 @@ const FeedbackSchema = new Schema({
     category : {
         required : true,
         type : String
+    },
+    staus : {
+        type : String,
+        enum : ["pending", "reviewed", "resolved"],
+        default : "pending"
     }
 }, { timestamps : true})
 

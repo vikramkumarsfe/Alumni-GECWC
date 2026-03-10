@@ -110,7 +110,7 @@ const AdminReports = () => {
     message.warning("This section is in under construction and the data shown is dummy.")
   }
   return (
-    <div className="p-8 space-y-8">
+    <div className="space-y-8">
       {/* Page Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -154,7 +154,7 @@ const AdminReports = () => {
 
       {/* Alumni Report */}
       <Card>
-        <CardHeader className="flex flex-row justify-between items-center">
+        <CardHeader className="flex flex-row justify-between items-center overfolw-x-auto">
           <CardTitle>Alumni Directory Report</CardTitle>
           <Button icon={<FileSpreadsheet />} onClick={handleAlumniDownload}>Export CSV</Button>
         </CardHeader>
@@ -168,7 +168,7 @@ const AdminReports = () => {
       </Card>
 
       {/* Event Report */}
-      <Card>
+      <Card className="overflow-x-auto">
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle>Event Attendance Summary</CardTitle>
           <Button icon={<PrinterOutlined />} onClick={handleEventDownload}>Print Report</Button>

@@ -1,5 +1,5 @@
 'use client'
-import { LayoutDashboard, Users, Calendar, Briefcase, Megaphone, BarChart3, LogOut, GraduationCap } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Briefcase, Megaphone, BarChart3, LogOut, GraduationCap, MessageSquareQuote } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 
@@ -13,6 +13,7 @@ const items = [
   { title: "Manage Alumni", href: "/admin/alumni", icon: Users },
   { title: "Manage Events", href: "/admin/events", icon: Calendar },
   { title: "Manage Announcements", href: "/admin/announcements", icon: Megaphone },
+  { title: "Manage Feedback", href: "/admin/feedback", icon: MessageSquareQuote },
   { title: "Reports", href: "/admin/reports", icon: BarChart3 },
 ]
 

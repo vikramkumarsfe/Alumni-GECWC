@@ -113,6 +113,7 @@
  */
 
 
+
 import FeedbackModal from "@/models/feedback.model"
 import ServerCatchError from "@/utils/serverCatchError"
 import { getServerSession } from "next-auth"
@@ -120,22 +121,27 @@ import { NextRequest, NextResponse as res} from "next/server"
 import { authOptions } from "../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/mongodb"
 
+interface QueryInterface {
+  status ?: string
+  category ?: string
+  sortOptions ?: number
+}
 
 export const POST = async(req : NextRequest) => {
     try {
         await connectDB();
-        const { fullname , email, message, category, role} = await req.json()
+        const { fullname , email, message, category} = await req.json()
 
         
-        if(!fullname || !email || !message  || !category || !role)
-            return res.json({message  : "fullname , email, message, category and role is required"})
+        if(!fullname || !email || !message  || !category)
+            return res.json({message  : "fullname , email, message, category is required"})
 
         const payload = {
             fullname,
             email,
             message,
             category,
-            role
+            staus : "pending"
         }
 
         const feedback = await FeedbackModal.create(payload)
@@ -154,36 +160,55 @@ export const POST = async(req : NextRequest) => {
 
 //Only admin can fetch the feedbacks
 
-export const GET = async ( req: NextRequest) => {
-    try{
-        const session = await getServerSession(authOptions)
-        
-        if(!session || session.user.role !== "admin")
-            return res.json({message : "Unauthorized user"})
+export const GET = async (req: NextRequest) => {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions)
 
-        const { searchParams } = new URL(req.url)
+    if (!session)
+      return res.json({ message: "Unauthorized User" }, { status: 401 })
 
-        const page = Math.max(Number(searchParams.get("page")) || 1, 1)
-        const limit = Math.min(Number(searchParams.get("limit")) || 10, 100)
+    if( session.user.role !== "admin")
+      return res.json({ message : "Unauthorized user"}, { status : 404})
 
-        const skip = limit*(page-1)
+    const { searchParams } = new URL(req.url)
 
-        const feedbacks = await FeedbackModal.find().sort({ createdAt : -1 }).skip(skip).limit(limit);
+    const status = searchParams.get("status")
+    const category = searchParams.get("type")
+    const sort = searchParams.get("sort")
 
-        const total = await FeedbackModal.countDocuments()
+    const page = Math.max(Number(searchParams.get("page")) || 1, 1)
+    const limit = Math.min(Number(searchParams.get("limit")) || 10, 50)
+    const skip = limit * (page - 1)
 
-        return res.json(
-        {    data : feedbacks,
-            pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-        }})
+    let query : QueryInterface = {}
+
+    if (status && status !== "all") {
+      query.status = status;
     }
-    catch(err)
+
+    if (category && category !== "all") {
+      query.category = category;
+    }
+
+    let sortOption = {};
+
+    if (sort === "newest") 
     {
-        return ServerCatchError(err)
+      sortOption = { createdAt: -1 }
+    } 
+    else if (sort === "oldest")
+    {
+      sortOption = { createdAt: 1 }
     }
+
+    const data = await FeedbackModal.find(query).sort(sortOption).skip(skip).limit(limit)
+
+    const total = await FeedbackModal.countDocuments(query)
+    
+    return res.json({ data, total})
+  } catch (err) {
+    return ServerCatchError(err)
+  }
 }
 
