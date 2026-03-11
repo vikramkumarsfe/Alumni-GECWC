@@ -34,17 +34,13 @@ const UserSchema = new Schema({
         default : null
     },
     expiryResetLink : {
-        type: String,
+        type: Date,
         default : null
     },
     isActive : {
         type: String,
         enum: ["inactive", "active", "pending"],
         default : "pending"
-    },
-    bio : {
-        type : String,
-        default : "Welcome to Bio."
     }, 
     batch  :{
         type : Number,
@@ -79,6 +75,25 @@ const UserSchema = new Schema({
             type : String,
             default : null
         }
+    },
+    profile : {
+        bio : {
+            type : String,
+            default : "Welcome to Bio."
+        },
+        skills:{
+            type:[String],
+            default:[]
+        },
+        headline : {
+            type : String,
+            default : "I am a GECWC family."
+        }
+    },
+    socialLinks : {
+        linkedIn : String,
+        github : String,
+        twitter : String
     }
 },{timestamps :  true})
 
@@ -86,9 +101,10 @@ UserSchema.pre("save", async function(next){
     this.password = await bcrypt.hash(this.password, 12)
 })
 
-
-UserSchema.pre("save", async function(next){
-    this.role = "alumni"
+UserSchema.pre("save", function(next){
+    if(this.role === "admin"){
+        return new Error("Admin role cannot be assigned during registration")
+    }
 })
 
 const UserModel = models.User || model("User", UserSchema)
