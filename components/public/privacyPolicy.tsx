@@ -1,10 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { FC, ReactNode } from "react";
 import { List } from "antd";
 import { Mail } from "lucide-react";
 
-const Section = ({ number, title, children }) => {
+interface SectionInterface {
+  number : string
+  title : string
+  children : ReactNode
+}
+
+const Section : FC <SectionInterface > = ({ number, title, children }) => {
   return (
     <section className="py-8 border-b border-slate-100 last:border-none">
       <div className="flex items-center gap-3 mb-4">
@@ -108,16 +114,16 @@ const PrivacyPolicy = () => {
         {/* 2. Information We Collect */}
         <Section number="2" title="Information We Collect">
           <p className="text-slate-600 mb-3">We may collect the following categories of personal information:</p>
-          <List
-            dataSource={collectionList}
-            renderItem={(item, index) => (
-              <List.Item className="border-none py-1.5">
-                <span className="flex gap-2 text-slate-600">
-                  <span className="text-slate-400 font-medium w-5 shrink-0">{index + 1}.</span>{item}
+          <ol className="flex flex-col">
+            {collectionList.map((item, index) => (
+              <li key={index} className="border-none py-1.5 flex gap-2 text-slate-600">
+                <span className="text-slate-400 font-medium w-5 shrink-0">
+                  {index + 1}.
                 </span>
-              </List.Item>
-            )}
-          />
+                {item}
+              </li>
+            ))}
+          </ol>
           <div className="mt-4 bg-slate-50 rounded-lg p-4 text-sm text-slate-500">
             <strong className="text-slate-700">Automatically Collected Data:</strong> We may also collect technical data
             such as IP addresses, browser type, device information, and pages visited through cookies and server logs
@@ -128,16 +134,16 @@ const PrivacyPolicy = () => {
         {/* 3. How We Use Information */}
         <Section number="3" title="How We Use Your Information">
           <p className="text-slate-600 mb-3">The information we collect is used exclusively for the following purposes:</p>
-          <List
-            dataSource={usageList}
-            renderItem={(item, index) => (
-              <List.Item className="border-none py-1.5">
-                <span className="flex gap-2 text-slate-600">
-                  <span className="text-slate-400 font-medium w-5 shrink-0">{index + 1}.</span>{item}
+          <ol className="flex flex-col">
+            {usageList.map((item, index) => (
+              <li key={index} className="border-none py-1.5 flex gap-2 text-slate-600">
+                <span className="text-slate-400 font-medium w-5 shrink-0">
+                  {index + 1}.
                 </span>
-              </List.Item>
-            )}
-          />
+                {item}
+              </li>
+            ))}
+          </ol>
           <p className="text-slate-500 text-sm mt-4 italic">
             We will never use your data for purposes beyond those listed above without your explicit consent.
           </p>

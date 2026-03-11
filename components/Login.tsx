@@ -25,7 +25,7 @@ const Signup = () => {
       }
       message.success("Login successful")
       console.log(res)
-      router.push('/')
+      router.push('/login')
     } catch (err) {
       clientCatchError(err)
     }
