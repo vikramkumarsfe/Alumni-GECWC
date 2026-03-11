@@ -1,41 +1,42 @@
 'use client'
-import { LayoutDashboard, Users, Calendar, Briefcase, Megaphone, BarChart3, LogOut, GraduationCap, MessageSquareQuote } from "lucide-react"
-import { usePathname } from "next/navigation"
-import Link from "next/link"
+import { LayoutDashboard, UserCircle, Users, Calendar, Briefcase, Bell, LogOut, GraduationCap, Settings } from "lucide-react"
 
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup} from "@/components/ui/sidebar"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "antd"
 import { signOut } from "next-auth/react"
-import Logo from "./shared/Logo"
+import Logo from "../shared/Logo"
 
 const items = [
-  { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { title: "Manage Alumni", href: "/admin/alumni", icon: Users },
-  { title: "Manage Events", href: "/admin/events", icon: Calendar },
-  { title: "Manage Announcements", href: "/admin/announcements", icon: Megaphone },
-  { title: "Manage Feedback", href: "/admin/feedback", icon: MessageSquareQuote },
-  { title: "Reports", href: "/admin/reports", icon: BarChart3 },
+  { title: "Dashboard", url: "/alumni", icon: LayoutDashboard },
+  { title: "My Profile", url: "/alumni/profile", icon: UserCircle },
+  { title: "Alumni Directory", url: "/alumni/directory", icon: Users },
+  { title: "Events", url: "/alumni/events", icon: Calendar },
+  { title: "Announcements", url: "/alumni/announcements", icon: Bell },
 ]
 
-const AdminAppSidebar = () => {
+export function AppSidebar() {
   const pathname = usePathname()
+
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarHeader className="py-6">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Logo />
+                <Logo />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
+
+      {/* --- Main Navigation --- */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
             {items.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.url
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
@@ -44,7 +45,7 @@ const AdminAppSidebar = () => {
                     isActive={isActive}
                     className={isActive ? "text-violet-600 bg-violet-50 hover:bg-violet-100" : ""}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.url}>
                       <item.icon className={isActive ? "text-violet-600" : ""} />
                       <span>{item.title}</span>
                     </Link>
@@ -56,12 +57,13 @@ const AdminAppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
+      {/* --- Footer / Logout --- */}
       <SidebarFooter className="pb-6">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={()=>signOut()}>
                 <LogOut className="size-4" />
-                <span className="text-black">Logout</span> 
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -69,4 +71,3 @@ const AdminAppSidebar = () => {
     </Sidebar>
   )
 }
-export default AdminAppSidebar

@@ -6,10 +6,7 @@ import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, } from "@/components/ui/sheet"
 import { SessionProvider } from 'next-auth/react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import { AppSidebar } from './AppSidebar';
 import DashboardHeader from './DashboardHeader';
-import AdminAppSidebar from './adminAppSidebar';
-import AdminDashboardHeader from './adminDashboardHeader';
 import { Separator } from "@/components/ui/separator"
 import { Typography } from "antd"
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></link>
@@ -20,6 +17,11 @@ import Logo from './shared/Logo';
 import { Button } from './ui/button';
 import { DialogTitle } from './ui/dialog';
 import { MobileAuthSection, MobileLoginSignup } from './mobileAuthSection';
+import AdminAppSidebar from './public/adminAppSidebar';
+import AdminDashboardHeader from './public/adminDashboardHeader';
+import { AppSidebar } from './public/AppSidebar';
+import StudentAppSidebar from './public/studentAppSidebar';
+import StudentDashboardHeader from './public/studentDashboardHeader';
 
 const { Text} = Typography
 
@@ -36,9 +38,27 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
 
   const isAlumniSystem = pathname.startsWith('/alumni')
   const isAdminSystem = pathname.startsWith('/admin')
+  const isStudentSystem = pathname.startsWith('/student')
 
   if (isBlacklist) {
     return <>{children}</>
+  }
+
+  if(isStudentSystem) 
+  {
+    return (
+      <SessionProvider>
+      <SidebarProvider>
+        <StudentAppSidebar />
+        <SidebarInset className="flex flex-col min-h-screen bg-slate-50">
+          <StudentDashboardHeader />
+          <main className="flex-1 p-6 bg-slate-50">
+            {children}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </SessionProvider>
+    )
   }
 
   // --- RENDER: ADMIN DASHBOARD (Matches Alumni structure) ---

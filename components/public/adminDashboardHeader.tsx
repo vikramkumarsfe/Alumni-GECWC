@@ -1,10 +1,9 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Search, Bell, Mail } from "lucide-react"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useSession } from "next-auth/react";
 import { Skeleton } from "antd";
 import Link from "next/link";
-import AuthSection from "./authSection";
+import AuthSection from "../authSection";
 
 const AdminDashboardHeader = () =>  {
   const { data: session, status, update } = useSession()
@@ -13,12 +12,12 @@ const AdminDashboardHeader = () =>  {
   if(!name)
     return <Skeleton active />
 
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase()
+  // const initials = name
+  //   .split(" ")
+  //   .map((n) => n[0])
+  //   .join("")
+  //   .substring(0, 2)
+  //   .toUpperCase()
 
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-8 sticky top-0 z-10">

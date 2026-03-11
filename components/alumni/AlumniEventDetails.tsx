@@ -78,7 +78,7 @@ const AlumniEventDetails = () => {
       <div className="mx-auto space-y-6">
         
         <Link href="/alumni/events" className="block mb-3">
-            <Button variant="ghost" className="p-0 h-auto text-muted-foreground hover:bg-transparent hover:text-primary">
+            <Button variant="ghost" className="p-0 h-auto text-muted-foreground hover:bg-transparent hover:text-primary cursor-pointer">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Events
             </Button>
         </Link>

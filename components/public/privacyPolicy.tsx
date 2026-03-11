@@ -76,30 +76,21 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white font-sans">
+    <div className="min-h-screen bg-white font-sans px-4">
 
       {/* Banner */}
-      <div className="bg-gradient-to-br from-blue-700 to-blue-500 py-20 text-center relative overflow-hidden">
+      <div className=" py-12 text-center relative overflow-hidden">
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
         <div className="relative">
-          <h1 className="text-5xl font-bold text-white mb-4">Privacy Policy</h1>
-          <p className="text-blue-100 text-lg">Government Engineering College West Champaran Alumni Portal</p>
-          <p className="text-blue-200 text-sm mt-2">Last Updated: October 2025</p>
+          <h1 className="text-5xl font-bold mb-4">Privacy Policy</h1>
+          <p className=" text-lg">Government Engineering College West Champaran Alumni Portal</p>
+          <p className=" text-sm mt-2">Last Updated: March 2026</p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
-
-        {/* Quick Summary */}
-        <div className="bg-blue-600 text-white rounded-2xl p-6 mb-10">
-          <p className="font-semibold text-lg mb-1">Summary</p>
-          <p className="text-blue-100 text-sm leading-relaxed">
-            We collect only the information necessary to help you connect with fellow alumni and stay updated with GECWC events.
-            Your data is never sold to third parties. You have full rights to access, correct, and delete your information at any time.
-          </p>
-        </div>
+      <div className="max-w-6xl mx-auto px-6">
 
         {/* 1. Introduction */}
         <Section number="1" title="Introduction">
@@ -269,8 +260,17 @@ const PrivacyPolicy = () => {
           </p>
         </Section>
 
+                              {/* Quick Summary */}
+        <div className="bg-blue-600 text-white rounded-2xl p-6 mt-10">
+          <p className="font-semibold text-lg mb-1">Summary</p>
+          <p className="text-blue-100 text-sm leading-relaxed">
+            We collect only the information necessary to help you connect with fellow alumni and stay updated with GECWC events.
+            Your data is never sold to third parties. You have full rights to access, correct, and delete your information at any time.
+          </p>
+        </div>
+
         {/* Contact */}
-        <div className="mt-6 pt-8 border-t border-slate-100">
+        <div className="mb-6 pt-8 border-t border-slate-100">
           <h2 className="text-xl font-semibold text-slate-800 mb-3">Contact Us</h2>
           <p className="text-slate-600 mb-4 leading-relaxed">
             If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data,
@@ -286,6 +286,8 @@ const PrivacyPolicy = () => {
         </div>
 
       </div>
+
+
     </div>
   );
 };

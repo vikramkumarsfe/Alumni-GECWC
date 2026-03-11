@@ -85,7 +85,7 @@ const AdminDashboard = () => {
       render: (_: any, record: any) => (
         <Space>
           <Tooltip title="View Profile">
-            <Link href={`/admin/alumni/${_._id}`}>
+            <Link href={`/admin/alumni/${_._id}`} target='_blank'>
               <Button type="text" icon={<ExternalLink size={16} className="text-slate-400" />} />
             </Link>
           </Tooltip>
