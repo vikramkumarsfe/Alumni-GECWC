@@ -20,6 +20,10 @@ const UserSchema = new Schema({
         required : true,
         unique : true
     },
+    gender : {
+        type : String,
+        default : null
+    },
     password : {
         type : String,
         required  : true
@@ -77,10 +81,6 @@ const UserSchema = new Schema({
         }
     },
     profile : {
-        bio : {
-            type : String,
-            default : "Welcome to Bio."
-        },
         skills:{
             type:[String],
             default:[]
@@ -94,6 +94,14 @@ const UserSchema = new Schema({
         linkedIn : String,
         github : String,
         twitter : String
+    },
+    bio : {
+        type : String,
+        default : "Welcome to Bio."
+    },
+    DOB : {
+        type : Date,
+        default : null
     }
 },{timestamps :  true})
 
