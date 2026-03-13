@@ -3,10 +3,11 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import Image from "next/image";
 import {
     GraduationCap, MapPin, Building2, Calendar,
-    Mail, Phone, Edit2, Camera, Linkedin, Github, 
+    Mail, Phone, Edit2, Camera, Linkedin, Github,
     Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus
 } from 'lucide-react';
 
@@ -45,7 +46,11 @@ const StudentProfile = () => {
                                 </div>
                                 <div className="flex gap-2">
                                     <Button variant="outline" className="text-slate-600">Upload Picture</Button>
-                                    <Button className="bg-blue-600 hover:bg-blue-700">Edit Profile</Button>
+                                    <Link href="/student/edit-profile">
+                                        <Button className="bg-blue-600 hover:bg-blue-700">
+                                            Edit Profile
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +159,7 @@ const StudentProfile = () => {
 
                 {/* Right Column */}
                 <div className="col-span-12 lg:col-span-4 space-y-6">
-                    
+
                     {/* 5. Skills & Interests */}
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
