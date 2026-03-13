@@ -108,7 +108,7 @@ function CardContent({ children }: { children: React.ReactNode }) {
 }
 
 function FormRow({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-2 gap-5 mb-5">{children}</div>;
+  return <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">{children}</div>;
 }
 
 function FormCol({ children }: { children: React.ReactNode }) {
@@ -167,7 +167,7 @@ export default function EditProfile() {
 
   return (
     <div className=" min-h-screen" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>
-      <div className="max-w-[1000px] mx-auto px-8 pt-8 pb-10 flex flex-col gap-6">
+      <div className="max-w-[1000px] mx-auto px-4 md:px-8 pt-8 pb-10 flex flex-col gap-6">
 
         {/* Page heading */}
         <div>
@@ -179,7 +179,7 @@ export default function EditProfile() {
         <Card>
           <CardHeader>Basic Information</CardHeader>
           <CardContent>
-            <div className="flex items-center gap-6 mb-8">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
               <AvatarImg src={AVATAR_URL} size="lg" />
               <div className="flex flex-col gap-3">
                 <div className="flex gap-3">
@@ -258,7 +258,7 @@ export default function EditProfile() {
               </FormCol>
             </FormRow>
 
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               <FormCol><Label>Batch Year</Label><Input defaultValue="2020-2024" /></FormCol>
               <FormCol>
                 <Label>Expected Graduation</Label>
@@ -328,7 +328,7 @@ export default function EditProfile() {
               <FormCol><Label>LinkedIn Profile</Label><SocialInput icon={Linkedin} defaultValue="linkedin.com/in/alexsharma" /></FormCol>
               <FormCol><Label>GitHub Profile</Label><SocialInput icon={Github} defaultValue="github.com/alexsharmadev" /></FormCol>
             </FormRow>
-            <div className="grid grid-cols-2 gap-5 mb-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-0">
               <FormCol><Label>Personal Website / Portfolio</Label><SocialInput icon={Globe} defaultValue="alexsharma.dev" /></FormCol>
               <FormCol><Label>Twitter / X (Optional)</Label><SocialInput icon={Twitter} defaultValue="@alexsharma_tech" /></FormCol>
             </div>
@@ -336,7 +336,7 @@ export default function EditProfile() {
         </Card>
 
         {/* Cancel + Save inside Social Links card */}
-          <div className="px-8 py-2 border-t border-[#e2e8f0] flex justify-end gap-4">
+          <div className="px-4 md:px-8 py-2 border-t border-[#e2e8f0] flex justify-end gap-4">
             <Button variant="outline">Cancel</Button>
             <Button><Save size={15} /> Save Changes</Button>
           </div>

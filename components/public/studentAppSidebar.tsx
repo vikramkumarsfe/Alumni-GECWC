@@ -2,20 +2,35 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, User, Users, MessageSquare, Compass, Calendar, Briefcase, Award, Settings, GraduationCap} from 'lucide-react'
+import { LayoutDashboard, User, Users, MessageSquare, Compass, Calendar, Briefcase, Award, Settings } from 'lucide-react'
+import { useEffect } from "react"
 
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, } from '@/components/ui/sidebar'
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  useSidebar
+} from '@/components/ui/sidebar'
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Logo from '../shared/Logo'
 
 const mainNav = [
   { label: 'Dashboard', href: '/student', icon: LayoutDashboard },
-  { label: 'My Profile',  href: '/student/profile', icon: User },
+  { label: 'My Profile', href: '/student/profile', icon: User },
 ]
 
 const networkNav = [
   { label: 'Alumni Directory', href: '/student/directory', icon: Users },
-  { label: 'Chat with Alumni',  href: '/student/chat', icon: MessageSquare },
+  { label: 'Chat with Alumni', href: '/student/chat', icon: MessageSquare },
   { label: 'Mentorship', href: '/student/mentorship', icon: Compass },
 ]
 
@@ -31,19 +46,33 @@ const accountNav = [
 
 const StudentAppSidebar = () => {
   const pathname = usePathname()
+  const { setOpen } = useSidebar()
+
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setOpen(false)
+    }
+  }, [pathname])
 
   const isActive = (href: string) =>
     href === '/student' ? pathname === '/student' : pathname.startsWith(href)
 
+  const handleClick = () => {
+  if (window.innerWidth < 768) {
+    setOpen(false)
+  }
+}
+
   return (
     <Sidebar className="border-r border-slate-200 bg-white">
+
       {/* Logo */}
       <SidebarHeader className="h-16 flex flex-row items-center gap-2 px-6 pt-2">
         <Logo />
-        
       </SidebarHeader>
 
       <SidebarContent className="px-3 py-4">
+
         {/* Main */}
         <SidebarGroup>
           <SidebarGroupContent>
@@ -54,6 +83,7 @@ const StudentAppSidebar = () => {
                     asChild
                     isActive={isActive(item.href)}
                     className="gap-3 font-medium"
+                    onClick={handleClick}
                   >
                     <Link href={item.href}>
                       <item.icon className="h-5 w-5" />
@@ -80,7 +110,7 @@ const StudentAppSidebar = () => {
                     isActive={isActive(item.href)}
                     className="gap-3 font-medium"
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} onClick={handleClick}>
                       <item.icon className="h-5 w-5" />
                       {item.label}
                     </Link>
@@ -105,7 +135,7 @@ const StudentAppSidebar = () => {
                     isActive={isActive(item.href)}
                     className="gap-3 font-medium"
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} onClick={handleClick}>
                       <item.icon className="h-5 w-5" />
                       {item.label}
                     </Link>
@@ -130,7 +160,7 @@ const StudentAppSidebar = () => {
                     isActive={isActive(item.href)}
                     className="gap-3 font-medium"
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} onClick={handleClick}>
                       <item.icon className="h-5 w-5" />
                       {item.label}
                     </Link>
@@ -140,9 +170,10 @@ const StudentAppSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
       </SidebarContent>
 
-      {/* Footer: current user */}
+      {/* Footer */}
       <SidebarFooter className="border-t border-slate-200 p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
@@ -155,6 +186,7 @@ const StudentAppSidebar = () => {
           </div>
         </div>
       </SidebarFooter>
+
     </Sidebar>
   )
 }

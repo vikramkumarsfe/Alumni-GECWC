@@ -115,7 +115,7 @@ function AlumniCard({ alumni }: { alumni: Alumni }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2.5">
+               <div className="flex flex-col sm:flex-row gap-2.5">
                     <Button
                         variant="outline"
                         className="flex-1 text-[13px] h-9 border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50"
@@ -166,7 +166,7 @@ function CustomPagination({
   const pages = getPageNumbers(current, totalPages);
 
   return (
-    <div className="flex items-center justify-between w-full pt-6">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full pt-6">
 
       {/* Previous */}
       <button
@@ -234,11 +234,11 @@ export default function AlumniDirectory() {
 
     return (
         <div className="flex-1 flex flex-col bg-white min-h-screen">
-            <main className="flex-1 px-8 py-8 flex flex-col gap-6">
+            <main className="flex-1 px-4 md:px-8 py-6 md:py-8 flex flex-col gap-6">
 
                 {/* ── Page Header ── */}
                 <div>
-                    <h1 className="text-[22px] font-bold text-slate-900 mb-1">
+                    <h1 className="text-xl md:text-[22px] font-bold text-slate-900 mb-1">
                         Alumni Directory
                     </h1>
                     <p className="text-slate-400 text-[14px]">
@@ -247,9 +247,9 @@ export default function AlumniDirectory() {
                 </div>
 
                 {/* ── Filter Bar ── */}
-                <div className="border border-slate-200 rounded-xl px-4 py-3 flex flex-wrap items-center gap-2.5 bg-white shadow-sm">
+                <div className="border border-slate-200 rounded-xl px-3 md:px-4 py-3 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 bg-white shadow-sm">
                     {/* Search */}
-                    <div className="flex-1 min-w-[220px] flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg bg-white">
+                    <div className="w-full sm:flex-1 sm:min-w-[220px] flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg bg-white">
                         <Search size={14} className="text-slate-400 flex-shrink-0" />
                         <input
                             type="text"
@@ -265,7 +265,7 @@ export default function AlumniDirectory() {
 
                     {/* Department */}
                     <Select>
-                        <SelectTrigger className="w-auto min-w-[130px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
+                        <SelectTrigger className="w-full sm:w-auto sm:min-w-[130px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
                             <Building size={13} className="text-slate-400" />
                             <SelectValue placeholder="Department" />
                         </SelectTrigger>
@@ -279,7 +279,7 @@ export default function AlumniDirectory() {
 
                     {/* Batch Year */}
                     <Select>
-                        <SelectTrigger className="w-auto min-w-[120px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
+                        <SelectTrigger className="w-full sm:w-auto sm:min-w-[120px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
                             <Calendar size={13} className="text-slate-400" />
                             <SelectValue placeholder="Batch Year" />
                         </SelectTrigger>
@@ -294,7 +294,7 @@ export default function AlumniDirectory() {
 
                     {/* Location */}
                     <Select>
-                        <SelectTrigger className="w-auto min-w-[110px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
+                        <SelectTrigger className="w-full sm:w-auto sm:min-w-[110px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
                             <MapPin size={13} className="text-slate-400" />
                             <SelectValue placeholder="Location" />
                         </SelectTrigger>
@@ -320,7 +320,7 @@ export default function AlumniDirectory() {
 
                 {/* ── Alumni Grid ── */}
                 {paginated.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
                         {paginated.map((alumni) => (
                             <AlumniCard key={alumni.id} alumni={alumni} />
                         ))}
