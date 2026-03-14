@@ -115,7 +115,7 @@ function FormCol({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col">{children}</div>;
 }
 
-function AvatarImg({ src, size = "md" }: { src: string; size?: "sm" | "lg" }) {
+function AvatarImg({ src, size = "sm" }: { src: string; size?: "sm" | "lg" }) {
   const s = size === "lg" ? "w-[100px] h-[100px]" : "w-9 h-9";
   return (
     <div className={cn("rounded-full overflow-hidden border border-[#e2e8f0] bg-[#e8f1ff] flex-shrink-0", s)}>
