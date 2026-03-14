@@ -4,7 +4,7 @@ import "./globals.css";
 import MainLayout from "@/components/MainLayout";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { Analytics } from "@vercel/analytics/next"
-
+import { SidebarProvider } from "@/components/ui/sidebar"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,10 +32,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AntdRegistry>
-          <MainLayout>
+          <SidebarProvider>
+            <MainLayout>
               {children}
               <Analytics />
-          </MainLayout>
+            </MainLayout>
+          </SidebarProvider>
         </AntdRegistry>
       </body>
     </html>

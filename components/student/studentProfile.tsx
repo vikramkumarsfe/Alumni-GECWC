@@ -3,22 +3,23 @@ import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import Image from "next/image";
 import {
     GraduationCap, MapPin, Building2, Calendar,
-    Mail, Phone, Edit2, Camera, Linkedin, Github, 
+    Mail, Phone, Edit2, Camera, Linkedin, Github,
     Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus
 } from 'lucide-react';
 
 const StudentProfile = () => {
     return (
-        <div className="max-w-7xl mx-auto p-8 space-y-6 bg-[#f8fafc]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 bg-[#f8fafc]">
 
             {/* 1. Header Hero Section */}
             <Card className="overflow-hidden border border-slate-200 shadow-sm">
-                <div className="h-32 bg-[#4285F4] -mt-10" />
+                <div className="h-24 md:h-32 bg-[#4285F4] -mt-10" />
                 <CardContent className="relative pt-0 px-8 pb-8">
-                    <div className="flex flex-col md:flex-row items-end gap-6 -mt-12">
+                    <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-12 items-center md:items-end">
                         <div className="relative group">
                             <Image
                                 src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F1"
@@ -32,7 +33,7 @@ const StudentProfile = () => {
                         <div className="flex-1 pb-2">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <h1 className="text-2xl font-bold flex items-center gap-3">
+                                    <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3 flex-wrap">
                                         Alex Sharma
                                         <div className="h-6 w-12 bg-blue-600 rounded-full" /> {/* Representing the blue status bar */}
                                     </h1>
@@ -43,9 +44,13 @@ const StudentProfile = () => {
                                         <span className="flex items-center gap-1"><MapPin size={16} /> San Francisco, CA</span>
                                     </div>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex flex-col sm:flex-row gap-2 mt-3 md:mt-0">
                                     <Button variant="outline" className="text-slate-600">Upload Picture</Button>
-                                    <Button className="bg-blue-600 hover:bg-blue-700">Edit Profile</Button>
+                                    <Link href="/student/edit-profile">
+                                        <Button className="bg-blue-600 hover:bg-blue-700">
+                                            Edit Profile
+                                        </Button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +159,7 @@ const StudentProfile = () => {
 
                 {/* Right Column */}
                 <div className="col-span-12 lg:col-span-4 space-y-6">
-                    
+
                     {/* 5. Skills & Interests */}
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -162,7 +167,7 @@ const StudentProfile = () => {
                             <Plus size={18} className="text-slate-400 cursor-pointer" />
                         </CardHeader>
                         <CardContent>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 items-start">
                                 {['Web Development', 'React.js', 'Data Structures', 'UI/UX Design', 'Cloud Computing', 'Python'].map((skill) => (
                                     <Badge key={skill} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none px-3 py-1 font-normal flex items-center gap-1">
                                         {skill} <span className="text-xs opacity-50">×</span>
@@ -179,19 +184,19 @@ const StudentProfile = () => {
                             <Button variant="ghost" size="sm" className="text-slate-400 font-normal"><Edit2 size={14} className="mr-1" /> Edit</Button>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600">
+                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
                                 <Linkedin size={18} className="text-slate-400" />
                                 <span className="flex-1 truncate">linkedin.com/in/alexsharma</span>
                             </div>
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600">
+                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
                                 <Github size={18} className="text-slate-400" />
                                 <span className="flex-1 truncate">github.com/alexsharmadev</span>
                             </div>
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600">
+                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
                                 <Globe size={18} className="text-slate-400" />
                                 <span className="flex-1 truncate">alexsharma.dev</span>
                             </div>
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600">
+                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
                                 <Twitter size={18} className="text-slate-400" />
                                 <span className="flex-1 truncate">@alexsharma_tech</span>
                             </div>
