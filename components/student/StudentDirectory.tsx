@@ -56,7 +56,7 @@ const alumniData: Alumni[] = Array.from({ length: 50 }, (_, i) => ({
 function AlumniCard({ alumni }: { alumni: Alumni }) {
     return (
         <Card className="border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 rounded-2xl overflow-hidden">
-            <CardContent className="p-6 flex flex-col gap-0">
+            <CardContent className="flex flex-col gap-0">
                 {/* Top — Avatar + Name row */}
                 <div className="flex items-center gap-4 pb-4">
                     <Avatar className="w-14 h-14 rounded-full border border-slate-100 shadow-sm flex-shrink-0">
@@ -233,7 +233,7 @@ export default function AlumniDirectory() {
     );
 
     return (
-        <div className="flex-1 flex flex-col bg-white min-h-screen">
+        <div className="flex-1 flex flex-col bg-slate-50 min-h-screen">
             <main className="flex-1 px-4 md:px-8 py-6 md:py-8 flex flex-col gap-6">
 
                 {/* ── Page Header ── */}

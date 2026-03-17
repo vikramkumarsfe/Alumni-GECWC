@@ -52,7 +52,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         <StudentAppSidebar />
         <SidebarInset className="flex flex-col min-h-screen bg-slate-50">
           <StudentDashboardHeader />
-          <main className="flex-1 p-6 bg-slate-50">
+          <main className="flex-1 bg-slate-50">
             {children}
           </main>
         </SidebarInset>

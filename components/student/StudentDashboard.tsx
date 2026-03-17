@@ -310,7 +310,7 @@ function MentorshipCard() {
 
 export default function StudentDashboardPage() {
   return (
-    <div className="flex flex-col gap-6 max-w-[1200px] mx-auto">
+    <div className="flex flex-col gap-6 max-w-[1200px] mx-auto py-4">
       {/* Welcome banner */}
       <WelcomeCard />
 
