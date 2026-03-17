@@ -16,7 +16,6 @@ const StudentDashboardHeader = () => {
       <div className="flex items-center gap-3">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="h-5" />
-        <span className="text-sm font-medium text-slate-500">Overview</span>
       </div>
 
       {/* Right: actions */}
