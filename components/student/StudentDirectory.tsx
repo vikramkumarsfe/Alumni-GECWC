@@ -27,7 +27,7 @@ function AlumniCard({ alumni }: { alumni: any }) {
                         <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-base">
                             {alumni.fullname
                                 .split(" ")
-                                .map((n) => n[0])
+                                .map((n : any) => n[0])
                                 .join("")}
                         </AvatarFallback>
                     </Avatar>
