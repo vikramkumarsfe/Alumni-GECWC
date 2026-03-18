@@ -91,7 +91,6 @@ function AlumniCard({ alumni }: { alumni: any }) {
                         <MessageSquare size={13} />
                         Message
                     </Button>
-                    </Link>
                 </div>
             </CardContent>
         </Card>
