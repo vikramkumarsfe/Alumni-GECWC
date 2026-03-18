@@ -56,7 +56,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     return [
       {
         path: '/',
-        title: <Link href="/"><HomeOutlined /></Link>,
+        title: <HomeOutlined />,
       },
       ...extraBreadcrumbItems,
     ];

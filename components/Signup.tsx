@@ -103,14 +103,13 @@ const Signup = () => {
                 rules={[{ required: true, message: 'Select your department' }]}
               >
                 <Select size='large' placeholder='Select your branch'>
-                  <Option value="CSE">Computer Science & Engineering</Option>
-                  <Option value="CSECS">Computer Science & Engineering(Cyber Security)</Option>
-                  <Option value="CE">Civil Engineering</Option>
+                  <Option value="Computer Science & Engineering">Computer Science & Engineering</Option>
+                  <Option value="Computer Science & Engineering(Cyber Security)">Computer Science & Engineering(Cyber Security)</Option>
+                  <Option value="Civil Engineering">Civil Engineering</Option>
                   <Option value="VLSI">VLSI</Option>
-                  <Option value="ECE">Electronics & Communication</Option>
-                  <Option value="ME">Mechanical Engineering</Option>
-                  <Option value="EE">Electrical Engineering</Option>
-                  
+                  <Option value="Electronics & Communication">Electronics & Communication</Option>
+                  <Option value="Mechanical Engineering">Mechanical Engineering</Option>
+                  <Option value="Electrical Engineering">Electrical Engineering</Option>
                 </Select>
               </Form.Item>
             </Col>

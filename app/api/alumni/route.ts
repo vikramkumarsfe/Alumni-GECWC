@@ -104,38 +104,79 @@ import { authOptions } from "../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/mongodb"
 
 
-export const GET = async(req: NextRequest) => {
-    try 
-    {
+export const GET = async (req: NextRequest) => {
+    try {
         await connectDB();
-        const session = await getServerSession(authOptions)
+        const session = await getServerSession(authOptions);
 
-        if(!session )
-            return res.json({ message :  "Unauthorized User"}, { status : 404})
+        if (!session) {
+            return res.json({ message: "Unauthorized User" }, { status: 401 }); // 401 is better for Unauthorized
+        }
 
-        const { searchParams } = new URL(req.url)
+        const { searchParams } = new URL(req.url);
 
-        const page = Math.max(Number(searchParams.get("page")) || 1, 1)
-        const limit = Math.min(Number(searchParams.get("limit")) || 10, 100)
+        // 1. Pagination Params
+        const page = Math.max(Number(searchParams.get("page")) || 1, 1);
+        const limit = Math.min(Number(searchParams.get("limit")) || 10, 100);
+        const skip = limit * (page - 1);
 
-        const skip = limit*(page-1)
+        // 2. Filter Params
+        const branch = searchParams.get("branch");
+        const batch = searchParams.get("batch");
+        const search = searchParams.get("search");
+        const sort = searchParams.get("sort") || "newest";
 
-        const users = await UserModel.find({ role : "alumni", isActive : "approved"},{ fullname : 1, image : 1, email : 1, createdAt : 1, address : 1 }).sort({ createdAt : -1 }).skip(skip).limit(limit);
+        // 3. Dynamic Query Build Karein
+        let query: any = { role: "alumni", isActive: "approved" };
 
-        const total = await UserModel.countDocuments()
+        if (branch && branch !== "all") {
+            query.branch = branch;
+        }
 
-        return res.json(
-        {    data : users,
+        if (batch && batch !== "all") {
+            query.batch = batch;
+        }
+
+        if (search) {
+            query.$or = [
+                { fullname: { $regex: search, $options: "i" } },
+                { "profile.company": { $regex: search, $options: "i" } },
+                { "profile.skills": { $regex: search, $options: "i" } }
+            ];
+        }
+
+        // 4. Sorting logic
+        const sortOrder = sort === "oldest" ? 1 : -1;
+
+        // 5. Database Operations
+        const [users, total] = await Promise.all([
+            UserModel.find(query, { 
+                fullname: 1, 
+                image: 1, 
+                branch: 1, 
+                batch: 1, 
+                address: 1, 
+                profile: 1, 
+                createdAt: 1 
+            })
+            .sort({ createdAt: sortOrder })
+            .skip(skip)
+            .limit(limit),
+            UserModel.countDocuments(query) // Query apply karna zaroori hai count ke liye
+        ]);
+
+        return res.json({
+            data: users,
             pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-        }})
-    }
-    catch(err)
-    {
-        return ServerCatchError(err)
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            }
+        });
+
+    } catch (err) {
+        return ServerCatchError(err);
     }
 }
 
