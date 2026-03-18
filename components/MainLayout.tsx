@@ -87,7 +87,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <StudentDashboardHeader />
 
               {/* Breadcrumb */}
-              <div className="px-6 pt-4 bg-slate-50 border-b">
+              <div className="px-6 pt-4 bg-slate-50">
                 <Breadcrumb items={generateBreadcrumbs()} />
               </div>
 
@@ -113,7 +113,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <AdminDashboardHeader />
 
               {/* Breadcrumb */}
-              <div className="px-6 pt-4 bg-slate-50 border-b">
+              <div className="px-6 pt-4 bg-slate-50">
                 <Breadcrumb items={generateBreadcrumbs()} />
               </div>
 
@@ -139,7 +139,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <DashboardHeader />
 
               {/* Breadcrumb */}
-              <div className="px-6 pt-4 bg-slate-50 border-b">
+              <div className="px-6 pt-4 bg-slate-50">
                 <Breadcrumb items={generateBreadcrumbs()} />
               </div>
 
