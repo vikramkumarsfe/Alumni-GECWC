@@ -1,5 +1,5 @@
 import { NextRequest , NextResponse as res } from "next/server"
 
-export const GET = (req: NextRequest) => {
+export const POST = (req: NextRequest) => {
     return res.json({ message : "deployment error fixed "})
 }

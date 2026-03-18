@@ -46,3 +46,38 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         return ServerCatchError(err)
     }
 }
+
+export const GET = async( req: NextRequest, { params }: ContextInterface) =>{
+    try
+    {
+        await connectDB();
+        const session = await getServerSession(authOptions)
+
+        if(!session)
+            return res.json({ message : "Unauthorized User"}, { status : 404})
+
+        if( session.user.role !== "alumni")
+            return res.json({ message : "Unauthorized user"}, { status : 404})
+
+        const param = await params
+        const alumniId = param.id
+        const id = session.user.id
+
+        if(!alumniId)
+            return res.json({message : "Id is required"})
+
+        const connection = await ConnectionModel.findOne({
+            $or: [
+                { sender : id, receiver : alumniId},
+                { receiver : id, sender : alumniId }
+            ]
+            })
+            
+        return res.json(connection)
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}
+

@@ -91,7 +91,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 <Breadcrumb items={generateBreadcrumbs()} />
               </div>
 
-              <main className="flex-1 p-6 bg-slate-50 overflow-auto">
+              <main className="flex-1 bg-slate-50 overflow-auto">
                 {children}
               </main>
             </SidebarInset>

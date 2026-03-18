@@ -92,6 +92,10 @@ const UserSchema = new Schema({
         company : {
             type : String,
             default : "Indepedent"
+        },
+        mentorship : {
+            type : String,
+            default : "I am availavbe for the mentorship."
         }
     },
     socialLinks : {

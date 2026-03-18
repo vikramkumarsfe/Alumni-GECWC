@@ -1,145 +1,96 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  MapPin,
-  GraduationCap,
-  Building,
-  Briefcase,
-  User,
-  Compass,
-  Award,
-  Link2,
-  Mail,
-  Github,
-  Globe,
-  Linkedin,
-  UserPlus,
-  MessageSquare,
-  CheckCircle2,
-  BookOpen,
-  Building2,
-} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLeft, MapPin, GraduationCap, Building, Briefcase, User, Compass, Award, Link2, Mail, Github, Globe, Linkedin, UserPlus, MessageSquare,CheckCircle2,BookOpen, Building2, TwitterIcon, Clock, Check } from "lucide-react";
+import { useSession } from "next-auth/react";
+import useSWR from "swr";
+import ErrorState from "../shared/Errorstate";
+import {  message, Skeleton } from "antd";
+import { fetcher } from "@/utils/fetcher";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
+import clientCatchError from "@/utils/clientCatchError";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Experience {
-  title: string;
-  company: string;
-  duration: string;
-  description: string;
-  current?: boolean;
+interface IConnection {
+  _id: string;
+  sender: string;
+  receiver: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
 }
 
-interface Education {
-  degree: string;
-  institution: string;
-  duration: string;
-  description: string;
-}
+// In your component state or props:
 
-interface AlumniProfile {
-  name: string;
-  headline: string;
-  location: string;
-  batch: string;
-  department: string;
-  faculty: string;
-  avatar: string;
-  verified: boolean;
-  about: string;
-  experience: Experience[];
-  education: Education[];
-  skills: string[];
-  mentorshipNote: string;
-  contact: {
-    email: string;
-    linkedin: string;
-    github: string;
-    website: string;
-  };
-}
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-
-const profile: AlumniProfile = {
-  name: "Priya Patel",
-  headline: "Senior Software Engineer at Google",
-  location: "Seattle, WA, United States",
-  batch: "Class of 2019",
-  department: "Computer Science",
-  faculty: "Information Technology",
-  avatar:
-    "https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FSouth%20Asian%2F2",
-  verified: true,
-  about:
-    "Passionate Software Engineer with over 5 years of experience in building scalable web applications and distributed systems. Currently working at Google on the Cloud Infrastructure team. I enjoy tackling complex backend challenges and mentoring junior developers. Always open to connecting with fellow alumni and students who are interested in cloud computing and system design.",
-  experience: [
-    {
-      title: "Senior Software Engineer",
-      company: "Google",
-      duration: "Jan 2022 - Present • 2 yrs 8 mos",
-      description:
-        "Leading the development of core microservices for Google Cloud infrastructure. Mentoring a team of 4 engineers and improving system reliability by 15%.",
-      current: true,
-    },
-    {
-      title: "Software Engineer",
-      company: "Amazon",
-      duration: "Jul 2019 - Dec 2021 • 2 yrs 6 mos",
-      description:
-        "Developed backend services for AWS Lambda using Java and Node.js. Optimized API response times and contributed to internal deployment tools.",
-      current: false,
-    },
-  ],
-  education: [
-    {
-      degree: "Bachelor of Technology in Computer Science",
-      institution: "University Institute of Technology",
-      duration: "Aug 2015 - May 2019",
-      description:
-        "Graduated with Honors. President of the Coding Club. Led the technical team for the annual tech fest.",
-    },
-  ],
-  skills: [
-    "React",
-    "Node.js",
-    "System Design",
-    "Java",
-    "Microservices",
-    "AWS",
-    "GCP",
-    "Kubernetes",
-    "Mentoring",
-  ],
-  mentorshipNote:
-    "I am currently accepting mentorship requests for career guidance, resume reviews, and technical interview preparation.",
-  contact: {
-    email: "priya.patel@example.com",
-    linkedin: "linkedin.com/in/priyapatel",
-    github: "github.com/priyacodes",
-    website: "priyapatel.dev",
-  },
-};
-
-// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AlumniProfilePage() {
   const router = useRouter();
+  const pathname = usePathname()
+  const { data: session, status, update } = useSession()
+  const userId = session?.user.id
+  const alumniId = pathname.split('/').pop()
+  const [connection, setConnection] = useState<IConnection | null>(null);
+  const [connectionButton, setConnectionButton] = useState(false)
 
+  const { data , error, isLoading } = useSWR(`/api/admin/users/${alumniId}`, fetcher)
+  const { data : connectionData } = useSWR(`/api/connection/${alumniId}`, fetcher)
+
+
+  useEffect(()=>{
+    if(connectionData)
+      setConnection(connectionData)
+
+    console.log(connectionData)
+  },[connectionData])
+
+
+  if(error)
+    return <ErrorState/>
+
+  if(isLoading)
+    return <Skeleton active/>
+
+  const profile = data?.user
+
+  const handleConnection = async (id: string) => {
+    try 
+    {
+      setConnectionButton(true)
+      const payload = {
+        receiverId : id
+      }
+
+      await axios.post('/api/connection', payload)
+
+      message.success("connection request is sent!")
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+    finally {
+      setConnectionButton(false)
+    }
+  }
+
+  const handleAccept = ( id : string) => {
+    alert(id)
+  }
   return (
     <div className="bg-slate-50 min-h-screen w-full">
       <div className="px-8 py-6 flex flex-col gap-6 max-w-[1200px] mx-auto w-full">
 
         {/* ── Back Link ── */}
+        <Link href="/student/directory">
         <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors w-fit"
+          className=" cursor-pointer flex items-center gap-2 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors w-fit"
         >
           <ArrowLeft size={15} />
           Back to Directory
         </button>
+        </Link>
 
         {/* ══════════════════════════════════════════
             PROFILE HEADER CARD
@@ -152,28 +103,35 @@ export default function AlumniProfilePage() {
             <div className="flex items-start justify-between sm:contents gap-4">
 
               {/* Avatar */}
-              <img
-                src={profile.avatar}
-                alt={profile.name}
-                className="w-[80px] h-[80px] sm:w-[110px] sm:h-[110px] rounded-full object-cover border-4 border-slate-100 shadow-sm flex-shrink-0"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "https://ui-avatars.com/api/?name=" +
-                    encodeURIComponent(profile.name) +
-                    "&background=e2e8f0&color=475569&size=110";
-                }}
-              />
-
+              <Avatar className="w-28 h-28 rounded-full border border-slate-100 shadow-sm flex-shrink-0">
+                  <AvatarImage src={profile.image} alt={profile.fullname} />
+                  <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-base">
+                      {profile.fullname
+                          .split(" ")
+                          .map((n : any) => n[0])
+                          .join("")}
+                  </AvatarFallback>
+              </Avatar>
+              
               {/* Buttons — show beside avatar on mobile, top-right on desktop */}
               <div className="flex items-center gap-2 sm:hidden">
-                <button className="flex items-center gap-1.5 px-3 h-9 border border-slate-200 rounded-lg text-[13px] font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors whitespace-nowrap">
-                  <UserPlus size={14} />
-                  Connect
-                </button>
-                <button className="flex items-center gap-1.5 px-3 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-semibold text-white transition-colors whitespace-nowrap">
-                  <MessageSquare size={14} />
-                  Message
-                </button>
+                {
+                  connection ? 
+                  <button 
+                  className="cursor-pointer flex items-center gap-1.5 px-3 h-9 border border-slate-200 rounded-lg text-[13px] font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors whitespace-nowrap"
+                  onClick={() => handleConnection(profile._id)}
+                  >
+                    <UserPlus size={14} />
+                    Connect
+                  </button>
+                  : 
+                  <Link href="/student/chat">
+                  <button className="cursor-pointer flex items-center gap-1.5 px-3 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-semibold text-white transition-colors whitespace-nowrap">
+                    <MessageSquare size={14} />
+                    Message
+                  </button>
+                  </Link>
+                }
               </div>
             </div>
 
@@ -182,10 +140,10 @@ export default function AlumniProfilePage() {
               {/* Name + badge */}
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-[22px] sm:text-[28px] font-bold text-slate-900 leading-tight">
-                  {profile.name}
+                  {profile.fullname}
                 </h1>
-                {profile.verified && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 text-[12px] sm:text-[13px] font-semibold whitespace-nowrap">
+                {profile.isActive === "approved" && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-50  text-blue-400 text-[12px] sm:text-[13px] font-semibold whitespace-nowrap">
                     <CheckCircle2 size={12} />
                     Verified Alumni
                   </span>
@@ -194,36 +152,67 @@ export default function AlumniProfilePage() {
 
               {/* Headline */}
               <p className="text-[14px] sm:text-[16px] text-slate-500 font-normal mt-1.5">
-                {profile.headline}
+                {profile.profile.headline}
               </p>
 
               {/* Meta row */}
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2.5">
                 <span className="flex items-center gap-1.5 text-[13px] sm:text-[14px] text-slate-500">
                   <MapPin size={14} className="text-slate-400" />
-                  {profile.location}
+                  {profile.address.city } { profile.address.state}
                 </span>
                 <span className="flex items-center gap-1.5 text-[13px] sm:text-[14px] text-slate-500">
                   <GraduationCap size={14} className="text-slate-400" />
-                  {profile.batch} • {profile.department}
+                  {profile.batch} • {profile.branch}
                 </span>
                 <span className="flex items-center gap-1.5 text-[13px] sm:text-[14px] text-slate-500">
                   <Building size={14} className="text-slate-400" />
-                  {profile.faculty}
+                  {profile.profile.company}
                 </span>
               </div>
             </div>
 
             {/* Buttons — hidden on mobile (shown above), visible on desktop */}
-            <div className="hidden sm:flex items-center gap-3 flex-shrink-0 pt-1">
-              <button className="flex items-center gap-2 px-5 h-11 border border-slate-200 rounded-lg text-[14px] font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors whitespace-nowrap">
-                <UserPlus size={16} />
-                Connect
-              </button>
-              <button className="flex items-center gap-2 px-5 h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white transition-colors whitespace-nowrap">
-                <MessageSquare size={16} />
-                Message
-              </button>
+            <div className="hidden md:flex items-center my-auto gap-3 flex-shrink-0">
+              {!connection ? (
+                <button 
+                  className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                  onClick={() => handleConnection(profile._id)}
+                >
+                  <UserPlus size={14} /> Connect
+                </button>
+              ) : connection.status === "pending" ? (
+                connection.sender === userId ? (
+                  <button 
+                    disabled 
+                    className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-400 bg-slate-50 cursor-not-allowed"
+                  >
+                    <Clock size={14} /> Requested
+                  </button>
+                ) : (
+
+                  <button 
+                    className="flex items-center gap-1.5 px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white transition-colors"
+                    onClick={() => handleAccept(connection._id)}
+                  >
+                    <Check size={14} /> Accept
+                  </button>
+                )
+              ) : connection.status === "approved" ? (
+                // APPROVED: Show Message 
+                <Link href="/student/chat">
+                  <button className="flex items-center gap-1.5 px-3 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-semibold text-white">
+                    <MessageSquare size={14} /> Message
+                  </button>
+                </Link>
+              ) : <button 
+                  className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                  onClick={() => handleConnection(profile._id)}
+                >
+                  <UserPlus size={14} /> Connect
+                </button>
+                } 
+
             </div>
           </div>
         </div>
@@ -243,7 +232,7 @@ export default function AlumniProfilePage() {
                 About
               </div>
               <p className="text-[15px] text-slate-600 leading-relaxed">
-                {profile.about}
+                {profile.bio}
               </p>
             </div>
 
@@ -254,7 +243,7 @@ export default function AlumniProfilePage() {
                 Experience
               </div>
               <div className="flex flex-col gap-6">
-                {profile.experience.map((exp, i) => (
+                { data && data.experience.map((exp : any, i : number) => (
                   <div key={i} className="flex gap-4">
                     {/* Icon box */}
                     <div
@@ -270,10 +259,10 @@ export default function AlumniProfilePage() {
                     {/* Content */}
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <p className="font-semibold text-[16px] text-slate-900 leading-snug">
-                        {exp.title}
+                        {exp.designation}
                       </p>
                       <p className="text-[14px] text-blue-600 font-medium">{exp.company}</p>
-                      <p className="text-[13px] text-slate-400 mt-0.5">{exp.duration}</p>
+                      <p className="text-[13px] text-slate-400 mt-0.5">{exp.starting} - {exp.completion} </p>
                       <p className="text-[14px] text-slate-600 leading-relaxed mt-1">
                         {exp.description}
                       </p>
@@ -290,7 +279,7 @@ export default function AlumniProfilePage() {
                 Education
               </div>
               <div className="flex flex-col gap-6">
-                {profile.education.map((edu, i) => (
+                {data && data.education.map((edu : any, i : number) => (
                   <div key={i} className="flex gap-4">
                     {/* Icon box */}
                     <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -299,12 +288,12 @@ export default function AlumniProfilePage() {
                     {/* Content */}
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <p className="font-semibold text-[16px] text-slate-900 leading-snug">
-                        {edu.degree}
+                        {edu.degreeName}
                       </p>
                       <p className="text-[14px] text-blue-600 font-medium">
-                        {edu.institution}
+                        {edu.universityName}
                       </p>
-                      <p className="text-[13px] text-slate-400 mt-0.5">{edu.duration}</p>
+                      <p className="text-[13px] text-slate-400 mt-0.5">{edu.completionYear}</p>
                       <p className="text-[14px] text-slate-600 leading-relaxed mt-1">
                         {edu.description}
                       </p>
@@ -326,9 +315,9 @@ export default function AlumniProfilePage() {
                 Mentorship
               </div>
               <p className="text-[14px] text-slate-600 leading-relaxed mb-5">
-                {profile.mentorshipNote}
+                {profile.profile.mentorship}
               </p>
-              <button className="w-full flex items-center justify-center h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white transition-colors">
+              <button className=" cursor-pointer w-full flex items-center justify-center h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white transition-colors">
                 Request Mentorship
               </button>
             </div>
@@ -340,7 +329,7 @@ export default function AlumniProfilePage() {
                 Skills
               </div>
               <div className="flex flex-wrap gap-2">
-                {profile.skills.map((skill) => (
+                {profile.profile.skills && profile.profile.skills.map((skill : any) => (
                   <span
                     key={skill}
                     className="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 text-[13px] font-medium hover:bg-slate-200 transition-colors"
@@ -364,43 +353,43 @@ export default function AlumniProfilePage() {
                     <Mail size={15} className="text-slate-500" />
                   </div>
                   <span className="text-[14px] text-slate-700 truncate">
-                    {profile.contact.email}
+                    {profile.email}
                   </span>
                 </div>
                 {/* LinkedIn */}
                 <a
-                  href={`https://${profile.contact.linkedin}`}
+                  href={`https://${profile.socialLinks && profile.socialLinks.linkedIn}`}
                   className="flex items-center gap-3 group"
                 >
                   <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                     <Linkedin size={15} className="text-slate-500" />
                   </div>
                   <span className="text-[14px] text-slate-700 group-hover:text-blue-600 transition-colors truncate">
-                    {profile.contact.linkedin}
+                    {profile.socialLinks && profile.socialLinks.linkedIn}
                   </span>
                 </a>
                 {/* GitHub */}
                 <a
-                  href={`https://${profile.contact.github}`}
+                  href={`https://${profile.socialLinks && profile.socialLinks.github}`}
                   className="flex items-center gap-3 group"
                 >
                   <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
                     <Github size={15} className="text-slate-500" />
                   </div>
                   <span className="text-[14px] text-slate-700 group-hover:text-blue-600 transition-colors truncate">
-                    {profile.contact.github}
+                    {profile.socialLinks && profile.socialLinks.github}
                   </span>
                 </a>
                 {/* Website */}
                 <a
-                  href={`https://${profile.contact.website}`}
+                  href={`https://${profile.socialLinks && profile.socialLinks.twitter}`}
                   className="flex items-center gap-3 group"
                 >
                   <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <Globe size={15} className="text-slate-500" />
+                    <TwitterIcon size={15} className="text-slate-500" />
                   </div>
                   <span className="text-[14px] text-slate-700 group-hover:text-blue-600 transition-colors truncate">
-                    {profile.contact.website}
+                    {profile.socialLinks && profile.socialLinks.twitter}
                   </span>
                 </a>
               </div>

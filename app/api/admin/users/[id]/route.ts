@@ -100,6 +100,7 @@ import { accountApprovedTemplate } from "@/utils/accountApprove.mail.template"
 import { accountRejectedTemplate } from "@/utils/accountRejected.mail.template"
 import { accountDeactivatedTemplate } from "@/utils/accountDeavtived.mail.template"
 import { connectDB } from "@/lib/mongodb"
+import ExperienceModel from "@/models/experience.model"
 
 
 
@@ -217,11 +218,12 @@ export async function GET(
 
     const user = await UserModel.findById(id).select("-password")
     const education = await AcademicModel.find({ user: id })
+    const experience = await ExperienceModel.find({ user: id})
 
     if (!user)
       return res.json({ message: "User not found" }, { status: 404 })
 
-    return res.json({ user, education })
+    return res.json({ user, education , experience})
   } catch (err) {
     return ServerCatchError(err)
   }

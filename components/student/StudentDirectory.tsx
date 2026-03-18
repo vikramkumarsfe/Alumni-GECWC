@@ -78,19 +78,15 @@ function AlumniCard({ alumni }: { alumni: any }) {
                 </div>
 
                 {/* Action Buttons */}
-               <div className="flex flex-col sm:flex-row gap-2.5">
-                    <Link href="/student/alumni-profile">
-                        <Button
+               <div className="w-full">
+                    <Link href={`/student/alumni-profile/${alumni._id}`}>
+                    <Button
                         variant="outline"
-                        className="flex-1 text-[13px] h-9 border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 cursor-pointer"
+                        className="w-full text-[15px] h-9 border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 cursor-pointer my-2"
                     >
                         View Profile
                     </Button>
                     </Link>
-                    <Button className="flex-1 text-[13px] h-9 bg-blue-600 hover:bg-blue-700 text-white font-medium gap-1.5 rounded-lg shadow-none">
-                        <MessageSquare size={13} />
-                        Message
-                    </Button>
                 </div>
             </CardContent>
         </Card>
@@ -123,7 +119,7 @@ export default function AlumniDirectory() {
 
     return (
         <div className="flex-1 flex flex-col bg-slate-50 min-h-screen">
-            <main className="flex-1 px-4 md:px-8 py-6 md:py-8 flex flex-col gap-6">
+            <main className="flex-1 px-3 md:px-6 py-3 md:py-6 flex flex-col gap-6">
 
                 {/* ── Page Header ── */}
                 <div>

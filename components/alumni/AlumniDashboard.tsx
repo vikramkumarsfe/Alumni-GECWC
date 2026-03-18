@@ -26,8 +26,6 @@ export default function AlumniDashboard() {
   const { data: session, status, update } = useSession()
   const userId = session?.user.id
 
-  console.log(session)
-
     useEffect(() => {
       if (Event?.events) {
         const upcoming = Event.events.filter(
@@ -37,9 +35,6 @@ export default function AlumniDashboard() {
         setUpcomingEvents(upcoming)
       }
     }, [Event])
-
-  
-
 
   if(isLoading)
     return <Skeleton active />
