@@ -16,7 +16,6 @@ const Signup = () => {
     try {
       setLoading(true)
       const { data } = await axios.post('/api/user/signup', values)
-      
       message.success("Registration successful! Admin approval pending.")
       router.push('/login')
     }
@@ -29,7 +28,10 @@ const Signup = () => {
   }
 
   return (
-    <div className='min-h-screen py-10 flex justify-center items-center bg-gray-50'>
+    <div
+      style={{ minHeight: '100dvh' }}
+      className='w-full py-10 flex justify-center items-center bg-gray-50'
+    >
       <Card hoverable className='w-full max-w-2xl shadow-lg border-stone-200'>
         <div className='mb-6'>
           <h1 className='text-2xl font-semibold text-stone-800'>Create Alumni Account</h1>
@@ -85,12 +87,12 @@ const Signup = () => {
                 name='batch'
                 rules={[{ required: true, message: 'Select your admission year' }]}
               >
-                <InputNumber 
-                  size='large' 
-                  className='w-full' 
-                  placeholder='e.g. 2022' 
-                  min={1990} 
-                  max={2050} 
+                <InputNumber
+                  size='large'
+                  className='w-full'
+                  placeholder='e.g. 2022'
+                  min={1990}
+                  max={2050}
                 />
               </Form.Item>
             </Col>

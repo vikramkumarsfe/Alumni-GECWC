@@ -79,14 +79,15 @@ function AlumniCard({ alumni }: { alumni: any }) {
 
                 {/* Action Buttons */}
                <div className="flex flex-col sm:flex-row gap-2.5">
-                    <Button
+                    <Link href="/student/alumni-profile">
+                        <Button
                         variant="outline"
                         className="flex-1 text-[13px] h-9 border-slate-200 text-slate-700 font-medium rounded-lg hover:bg-slate-50 cursor-pointer"
                     >
                         View Profile
                     </Button>
-                    <Link href="/student/chat">
-                    <Button className="flex-1 text-[13px] h-9 bg-blue-600 hover:bg-blue-700 text-white font-medium gap-1.5 rounded-lg shadow-none cursor-pointer">
+                    </Link>
+                    <Button className="flex-1 text-[13px] h-9 bg-blue-600 hover:bg-blue-700 text-white font-medium gap-1.5 rounded-lg shadow-none">
                         <MessageSquare size={13} />
                         Message
                     </Button>

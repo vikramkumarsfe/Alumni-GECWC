@@ -20,24 +20,28 @@ const Signup = () => {
         redirect: false,
       })
       if (res?.error) {
-        message.error("Invalid email or password invalid , OR may be your account is not Active")
+        message.error("Invalid email or password, OR may be your account is not Active")
         return
       }
       message.success("Login successful")
-      console.log(res)
-      router.push('/login')
+      router.push('/alumni/dashboard')
     } catch (err) {
       clientCatchError(err)
-    }
-    finally
-    {
+    } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className='flex h-screen justify-center items-center bg-gray-100'>
-      <Card hoverable className='md:w-6/12 w-10/12 shadow-lg rounded-xl'>
+    <div
+      style={{ minHeight: '100dvh' }}
+      className='flex w-full justify-center items-center bg-gray-100'
+    >
+      <Card
+        hoverable
+        className='w-full shadow-lg rounded-xl'
+        style={{ maxWidth: 480 }}
+      >
         <h1 className='text-2xl font-semibold mb-4 text-center'>Signin</h1>
 
         <Form layout='vertical' onFinish={Login}>
@@ -50,7 +54,7 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item
-            label='Password' 
+            label='Password'
             name='password'
             rules={[{ required: true, message: "Password is required" }]}
           >
@@ -58,18 +62,24 @@ const Signup = () => {
           </Form.Item>
 
           <Form.Item>
-            {loading ?
+            {loading ? (
               <Skeleton.Button active block size='large' />
-              :
-              <Button size='large' htmlType='submit' type='primary' block className='bg-blue-600'>
+            ) : (
+              <Button
+                size='large'
+                htmlType='submit'
+                type='primary'
+                block
+                className='bg-blue-600'
+              >
                 Login
               </Button>
-            }
+            )}
           </Form.Item>
         </Form>
 
         <div className='flex items-center justify-center gap-2'>
-          <label>Don’t have an account?</label>
+          <label>Don't have an account?</label>
           <Link href='/signup' className='text-blue-600 font-medium'>
             Register now
           </Link>

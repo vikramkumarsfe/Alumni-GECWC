@@ -3,13 +3,13 @@ import React from 'react'
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
 import { Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger, } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { SessionProvider } from 'next-auth/react';
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import DashboardHeader from './DashboardHeader';
 import { Separator } from "@/components/ui/separator"
-import { Typography, Breadcrumb } from "antd" // Added Breadcrumb here
-import { MailOutlined, PhoneOutlined, LinkedinOutlined, TwitterOutlined, InstagramOutlined, HomeOutlined } from "@ant-design/icons"
+import { Typography } from "antd"
+import { MailOutlined, PhoneOutlined, LinkedinOutlined, TwitterOutlined, InstagramOutlined } from "@ant-design/icons"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import AuthSection from './authSection';
 import Logo from './shared/Logo';
@@ -33,7 +33,7 @@ const menus = [
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
   const blacklists = ['/login', '/signup']
-  const isBlacklist = blacklists.includes(pathname)
+  const isBlacklist = blacklists.some((path) => pathname.startsWith(path))
 
   const isAlumniSystem = pathname.startsWith('/alumni')
   const isAdminSystem = pathname.startsWith('/admin')
@@ -124,7 +124,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="flex min-h-screen flex-col bg-background font-sans antialiased">
         {/* ... existing header and footer code remains the same ... */}
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <nav className="container flex h-20 items-center justify-between px-6 md:px-8">
+          <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 md:px-8">
             <Logo />
             <div className="hidden md:flex items-center gap-8">
               <div className="flex gap-6">
@@ -172,7 +172,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                           {item.label}
                         </Link>
                     ))}
-                    <div >
+                    <div>
                       <MobileLoginSignup />
                     </div>
                   </div>
