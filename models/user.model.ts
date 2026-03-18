@@ -88,6 +88,10 @@ const UserSchema = new Schema({
         headline : {
             type : String,
             default : "I am a GECWC family."
+        },
+        company : {
+            type : String,
+            default : "Indepedent"
         }
     },
     socialLinks : {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, User, Users, MessageSquare, Compass, Calendar, Briefcase, Award, Settings } from 'lucide-react'
+import { LayoutDashboard, User, Users, MessageSquare, Compass, Calendar, Briefcase, Award, Settings, UserCircle } from 'lucide-react'
 import { useEffect } from "react"
 
 
@@ -30,13 +30,13 @@ const mainNav = [
 
 const networkNav = [
   { label: 'Alumni Directory', href: '/student/directory', icon: Users },
+  { label: 'connections', href: '/student/connection', icon: UserCircle },
   { label: 'Chat with Alumni', href: '/student/chat', icon: MessageSquare },
   { label: 'Mentorship', href: '/student/mentorship', icon: Compass },
 ]
 
 const opportunitiesNav = [
   { label: 'Events', href: '/student/events', icon: Calendar },
-  { label: 'Jobs & Internships', href: '/student/jobs', icon: Briefcase },
 ]
 
 const accountNav = [

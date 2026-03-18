@@ -40,28 +40,7 @@ import clientCatchError from "@/utils/clientCatchError";
 
 
 const StatusBadge = ({ status }: {status: FeedbackStatus }) => {
-  // const variants: Record<
-  //   FeedbackStatus,
-  //   { label: string; className: string }
-  // > = {
-  //   Pending: {
-  //     label: "Pending",
-  //     className:
-  //       "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-50",
-  //   },
-  //   Reviewed: {
-  //     label: "Reviewed",
-  //     className:
-  //       "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-50",
-  //   },
-  //   Resolved: {
-  //     label: "Resolved",
-  //     className:
-  //       "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50",
-  //   },
-  // };
-
-  // const { label, className } = variants[status];
+  
   return (
     <Badge className={`"bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50 font-semibold text-xs px-3 py-1 rounded-full`}>
       {status}

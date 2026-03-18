@@ -39,62 +39,80 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const isAdminSystem = pathname.startsWith('/admin')
   const isStudentSystem = pathname.startsWith('/student')
 
+  // Helper to generate Breadcrumb items from path
+  const generateBreadcrumbs = () => {
+    const pathSnippets = pathname.split('/').filter((i) => i);
+    
+    const extraBreadcrumbItems = pathSnippets.map((_, index) => {
+      const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+      const label = pathSnippets[index].charAt(0).toUpperCase() + pathSnippets[index].slice(1);
+      
+      return {
+        key: url,
+        title: <Link href={url}>{label.replace(/-/g, ' ')}</Link>,
+      };
+    });
+
+    return [
+      {
+        path: '/',
+        title: <HomeOutlined />,
+      },
+      ...extraBreadcrumbItems,
+    ];
+  };
+
   if (isBlacklist) {
     return <>{children}</>
   }
 
-  // --- RENDER: STUDENT SYSTEM ---
+  // Common Wrapper for Dashboard Content to include Breadcrumbs
+  const DashboardWrapper = ({ children, header }: { children: React.ReactNode, header: React.ReactNode }) => (
+    <SidebarInset className="flex flex-col min-h-screen bg-slate-50">
+      {header}
+      <div className="px-6 py-4 bg-slate-50">
+        <Breadcrumb items={generateBreadcrumbs()} className="mb-4" />
+      </div>
+      <main className="flex-1 px-6 pb-6 bg-slate-50">
+        {children}
+      </main>
+    </SidebarInset>
+  )
+
   if (isStudentSystem) {
     return (
       <SessionProvider>
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex min-h-screen w-full overflow-hidden">
-            <StudentAppSidebar />
-            <SidebarInset className="flex flex-col min-h-screen flex-1 min-w-0 bg-slate-50">
-              <StudentDashboardHeader />
-              <main className="flex-1 p-6 bg-slate-50 overflow-auto">
-                {children}
-              </main>
-            </SidebarInset>
-          </div>
+        <SidebarProvider>
+          <StudentAppSidebar />
+          <DashboardWrapper header={<StudentDashboardHeader />}>
+            {children}
+          </DashboardWrapper>
         </SidebarProvider>
       </SessionProvider>
     )
   }
 
-  // --- RENDER: ADMIN SYSTEM ---
   if (isAdminSystem) {
     return (
       <SessionProvider>
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex min-h-screen w-full overflow-hidden">
-            <AdminAppSidebar />
-            <SidebarInset className="flex flex-col flex-1 min-w-0 bg-zinc-50/50">
-              <AdminDashboardHeader />
-              <main className="flex-1 p-6 bg-slate-50 overflow-auto">
-                {children}
-              </main>
-            </SidebarInset>
-          </div>
+        <SidebarProvider>
+          <AdminAppSidebar />
+          <DashboardWrapper header={<AdminDashboardHeader />}>
+            {children}
+          </DashboardWrapper>
         </SidebarProvider>
       </SessionProvider>
     )
   }
 
-  // --- RENDER: ALUMNI SYSTEM ---
   if (isAlumniSystem) {
     return (
       <SessionProvider>
-        <SidebarProvider defaultOpen={true}>
-          <div className="flex min-h-screen w-full overflow-hidden">
-            <AppSidebar />
-            <SidebarInset className="flex flex-col flex-1 min-w-0 bg-slate-50/50">
-              <DashboardHeader />
-              <main className="flex-1 bg-slate-50 overflow-auto">
-                {children}
-              </main>
-            </SidebarInset>
-          </div>
+        <SidebarProvider>
+          <AppSidebar />
+          <DashboardWrapper header={<DashboardHeader />}>
+            {children}
+          </DashboardWrapper>
         </SidebarProvider>
       </SessionProvider>
     )
@@ -103,14 +121,11 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   // --- RENDER: STANDARD PUBLIC LAYOUT ---
   return (
     <SessionProvider>
-      <div className="flex min-h-screen w-full flex-col bg-background font-sans antialiased">
-
-        {/* ── Navbar ── */}
+      <div className="flex min-h-screen flex-col bg-background font-sans antialiased">
+        {/* ... existing header and footer code remains the same ... */}
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <nav className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-6 md:px-8">
             <Logo />
-
-            {/* Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
               <div className="flex gap-6">
                 {menus.map((item) => (
@@ -118,9 +133,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                     key={item.href}
                     href={item.href}
                     className={`text-sm font-medium transition-colors hover:text-primary ${
-                      pathname === item.href
-                        ? "text-violet-600"
-                        : "text-muted-foreground"
+                      pathname === item.href ? "text-violet-600" : "text-muted-foreground"
                     }`}
                   >
                     {item.label}
@@ -129,8 +142,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               </div>
               <AuthSection />
             </div>
+          {/* Mobile Hamburger */}
 
-            {/* Mobile Hamburger */}
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
@@ -147,17 +160,17 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                       <MobileAuthSection />
                     </div>
                     {menus.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`text-base font-medium ${
-                          pathname === item.href
+                       <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`text-base font-medium ${
+                            pathname === item.href
                             ? "text-violet-600"
                             : "text-slate-700"
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
                     ))}
                     <div>
                       <MobileLoginSignup />
@@ -169,33 +182,34 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           </nav>
         </header>
 
-        {/* ── Main Content ── */}
-        <main className="flex-1 w-full">
+        <main className="flex-1">
+          {/* Optional: Add breadcrumbs to public pages too if desired */}
           {children}
         </main>
 
-        {/* ── Footer ── */}
-        <footer className="w-full bg-[#fafaf9] border-t border-stone-200 text-stone-600">
-          <div className="mx-auto w-full max-w-7xl px-6 pb-4 pt-8 md:px-12">
-
+        <footer className="bg-[#fafaf9] border-t border-stone-200 text-stone-600">
+          <div className="container mx-auto px-6 pb-4  pt-8 md:px-12">
             <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
 
-              {/* Branding */}
+            
+              {/* Branding - Spans more columns for a modern look */}
               <div className="md:col-span-5 space-y-6">
                 <div>
-                  <Logo />
+                  <Logo/>
                   <Text className="text-stone-500 max-w-xs block leading-relaxed">
                     A natural bridge between our past and your future. Nurturing a professional ecosystem for every graduate.
                   </Text>
                 </div>
+
+              
                 <div className="flex gap-4 text-stone-400">
-                  <a href="https://x.com/gecwc" target="_blank" rel="noreferrer">
+                  <a href='https://x.com/gecwc' target="_blank">
                     <TwitterOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
                   </a>
-                  <a href="https://www.instagram.com/gecwc19/" target="_blank" rel="noreferrer">
+                  <a href="https://www.instagram.com/gecwc19/" target='_blank'>
                     <InstagramOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
                   </a>
-                  <a href="https://www.linkedin.com/school/government-engineering-college-west-champaran/posts/?feedView=all" target="_blank" rel="noreferrer">
+                  <a href="https://www.linkedin.com/school/government-engineering-college-west-champaran/posts/?feedView=all" target="_blank">
                     <LinkedinOutlined className="hover:text-stone-600 cursor-pointer transition-colors" />
                   </a>
                 </div>
@@ -220,11 +234,12 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 </nav>
               </div>
 
-              {/* Contact */}
+              {/* Contact Details */}
+
               <div className="md:col-span-3 space-y-3">
                 <h6 className="text-large font-bold uppercase tracking-widest text-black">Connect</h6>
                 <div className="space-y-3">
-                  <a href="mailto:alumni@gecwc.ac.in" className="flex items-center gap-2 hover:text-stone-900 transition-colors">
+                  <a href="mailto:support@gecwc.edu" className="flex items-center gap-2 hover:text-stone-900 transition-colors">
                     <MailOutlined className="text-stone-300" />
                     <span>alumni@gecwc.ac.in</span>
                   </a>
@@ -235,7 +250,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
                 </div>
               </div>
             </div>
-
             <Separator className="mt-8 mb-2 bg-stone-200/60" />
 
             <div className="flex flex-col md:flex-row justify-center items-center gap-4">
@@ -244,8 +258,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               </Text>
             </div>
           </div>
-        </footer>
-
+        </footer> 
       </div>
     </SessionProvider>
   )
