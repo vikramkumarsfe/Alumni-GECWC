@@ -46,7 +46,9 @@ const StudentDashboardHeader = () => {
             <DropdownMenuItem asChild>
               <Link href="/student/profile">Profile</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/student/settings">Settings</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-500">Logout</DropdownMenuItem>
           </DropdownMenuContent>
