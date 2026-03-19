@@ -31,6 +31,7 @@ export default async function AlumniPublicProfile({ params }: PageProps) {
     )
 
   const data = await resUser.json();
+  console.log(data)
 
   return (
     <div className="bg-gray-50 min-h-screen">

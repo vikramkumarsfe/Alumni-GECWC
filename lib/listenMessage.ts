@@ -23,4 +23,4 @@ export const listenMessages = ( chatId: string, callback: (messages: (Message & 
 
   });
 
-};
+}

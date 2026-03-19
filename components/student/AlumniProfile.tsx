@@ -86,8 +86,21 @@ export default function AlumniProfilePage() {
     }
   }
 
-  const handleAccept = ( id : string) => {
-    alert(id)
+  const handleAccept = async ( id : string) => {
+    try {
+      const payload = {
+        status : "approved"
+      }
+
+      await axios.put(`/api/connection/${id}`, payload)
+
+      message.success("accepted")
+      mutate(`/api/connection/${alumniId}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
   }
 
   const handleMentorship =async  (id: string) => {

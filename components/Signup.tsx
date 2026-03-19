@@ -72,7 +72,7 @@ const Signup = () => {
             </Col>
 
             {/* Registration No & Batch */}
-            <Col xs={24} md={12}>
+            <Col xs={24} md={8}>
               <Form.Item
                 label='Registration No.'
                 name='regNo'
@@ -81,7 +81,7 @@ const Signup = () => {
                 <Input size='large' placeholder='000000000' />
               </Form.Item>
             </Col>
-            <Col xs={24} md={12}>
+            <Col xs={24} md={8}>
               <Form.Item
                 label='Batch (Year)'
                 name='batch'
@@ -94,6 +94,19 @@ const Signup = () => {
                   min={1990}
                   max={2050}
                 />
+              </Form.Item>
+              </Col>
+              <Col xs={24} md={8}>
+              <Form.Item
+                label='Role'
+                name='role'
+                rules={[{ required: true, message: 'Select your admission year' }]}
+                className='px-3 py-3'
+              >
+                <Select size='small' placeholder='select Role'>
+                  <Option value="alumni">Alumni</Option>
+                  <Option value="student">Student</Option>
+                </Select>
               </Form.Item>
             </Col>
 

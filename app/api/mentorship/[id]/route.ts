@@ -91,7 +91,7 @@ export const GET = async( req: NextRequest, { params }: ContextInterface) =>{
             })
 
         if(!mentorship)
-            return res.json({ message : "something went wrong"}, { status : 500})
+            return res.json({ message : "not mentorship found"}, { status : 200})
 
         return res.json(mentorship)
     }
