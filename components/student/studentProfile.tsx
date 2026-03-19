@@ -1,57 +1,115 @@
 "use client"
-import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import Image from "next/image";
-import {
-    GraduationCap, MapPin, Building2, Calendar,
-    Mail, Phone, Edit2, Camera, Linkedin, Github,
-    Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus
+import { 
+  MapPin, Building2, Calendar, Edit2, Linkedin, Github, 
+  Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus 
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { Skeleton, Space } from 'antd';
 
 const StudentProfile = () => {
+    const { data: session, status } = useSession();
+
+    if (status === "loading") {
+        return (
+            <div className="max-w-7xl mx-auto p-8">
+                <Skeleton active avatar paragraph={{ rows: 4 }} />
+                <div className="grid grid-cols-12 gap-6 mt-6">
+                    <div className="col-span-8"><Skeleton active paragraph={{ rows: 6 }} /></div>
+                    <div className="col-span-4"><Skeleton active paragraph={{ rows: 6 }} /></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!session || !session.user) {
+        return <div className="flex justify-center items-center h-screen">Not authenticated</div>;
+    }
+
+    const user = session.user;
+
+    // Data Mapping Configurations
+    const basicInfo = [
+        { label: "Full Name", value: user?.name ?? "Student User" },
+        { label: "Email Address", value: user?.email ?? "No email provided" },
+        { label: "Phone Number", value: user?.mobile ?? "Not provided" },
+        { label: "Gender", value: "Male" },
+        { label: "Date of Birth", value: "Not provided" },
+        { label: "Address", value: `${user?.address?.street ?? 'Street'}, ${user?.address?.city ?? 'City'}, ${user?.address?.state ?? 'State'}` },
+    ];
+
+    let  completionYear = 2022
+
+    if(user?.batch)
+        completionYear = user?.batch + 4
+
+    const academicInfo = [
+        { label: "College/University", value: "Government Engineering College West Champaran" },
+        { label: "Degree", value: "Bachelor of Technology (B.Tech)" },
+        { label: "Department", value: user?.branch ?? "Engineering" },
+        { label: "Expected Graduation Year", value: completionYear ?? "N/A"  },
+        { label: "Batch Year", value: user?.batch ?? "N/A" },
+        { label: "Student ID / Roll No.", value: "CS2020-0451" },
+    ];
+
+    const socialLinks = [
+        { icon: <Linkedin size={18} />, label: "linkedin.com/in/alexsharma", color: "text-slate-400" },
+        { icon: <Github size={18} />, label: "github.com/alexsharmadev", color: "text-slate-400" },
+        { icon: <Globe size={18} />, label: "alexsharma.dev", color: "text-slate-400" },
+        { icon: <Twitter size={18} />, label: "@alexsharma_tech", color: "text-slate-400" },
+    ];
+
+    const accountSettings = [
+        { icon: <Lock size={18} />, label: "Change Password" },
+        { icon: <Shield size={18} />, label: "Privacy Settings" },
+        { icon: <Bell size={18} />, label: "Email Preferences" },
+    ];
+
+    const initials = user?.name
+        ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+        : "ST";
+
     return (
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 bg-[#f8fafc]">
 
             {/* 1. Header Hero Section */}
             <Card className="overflow-hidden border border-slate-200 shadow-sm">
-                <div className="h-24 md:h-32 bg-[#4285F4] -mt-10" />
+                <div className="h-24 md:h-32 bg-[#4285F4]" />
                 <CardContent className="relative pt-0 px-8 pb-8">
                     <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-12 items-center md:items-end">
-                        <div className="relative group">
-                            <Image
-                                src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F1"
-                                alt="Alex Sharma"
-                                width={128}
-                                height={128}
-                                className="w-32 h-32 rounded-full border-4 border-white object-cover"
-                            />
-                        </div>
+                        <Avatar className="w-28 h-28 rounded-full border-4 border-white shadow-sm flex-shrink-0">
+                            <AvatarImage src={user?.image} alt={user?.name || ""} />
+                            <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-xl">
+                                {initials}
+                            </AvatarFallback>
+                        </Avatar>
 
                         <div className="flex-1 pb-2">
-                            <div className="flex justify-between items-start">
+                            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-4">
                                 <div>
-                                    <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3 flex-wrap">
-                                        Alex Sharma
-                                        <div className="h-6 w-12 bg-blue-600 rounded-full" /> {/* Representing the blue status bar */}
+                                    <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3">
+                                        {user?.name ?? "Student User"}
+                                        <Badge className="bg-blue-600 hover:bg-blue-600 h-2 w-10 p-0" />
                                     </h1>
-                                    <p className="text-slate-600 mt-1">Final Year B.Tech Student | Aspiring Software Engineer</p>
+                                    <p className="text-slate-600 mt-1">Student</p>
                                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-slate-500">
-                                        <span className="flex items-center gap-1"><Building2 size={16} /> Computer Science Department</span>
-                                        <span className="flex items-center gap-1"><Calendar size={16} /> Class of 2024</span>
-                                        <span className="flex items-center gap-1"><MapPin size={16} /> San Francisco, CA</span>
+                                        <span className="flex items-center gap-1"><Building2 size={16} /> {user?.branch ?? "Branch"}</span>
+                                        <span className="flex items-center gap-1"><Calendar size={16} /> Class of {user?.batch ?? "N/A"}</span>
+                                        <span className="flex items-center gap-1"><MapPin size={16} /> {user?.address?.city ?? "City"}, {user?.address?.state ?? "State"}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col sm:flex-row gap-2 mt-3 md:mt-0">
-                                    <Button variant="outline" className="text-slate-600">Upload Picture</Button>
+                                <Space size="middle" className="mt-3 md:mt-0">
+                                    <Button variant="outline" className="text-slate-600 border-slate-200">Upload Picture</Button>
                                     <Link href="/student/edit-profile">
-                                        <Button className="bg-blue-600 hover:bg-blue-700">
+                                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                                             Edit Profile
                                         </Button>
                                     </Link>
-                                </div>
+                                </Space>
                             </div>
                         </div>
                     </div>
@@ -66,33 +124,17 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Basic Information</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal"><Edit2 size={14} className="mr-1" /> Edit</Button>
+                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
+                                <Edit2 size={14} className="mr-1" /> Edit
+                            </Button>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Full Name</p>
-                                <p className="text-sm font-medium">Alex Sharma</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Email Address</p>
-                                <p className="text-sm font-medium">alex.sharma@university.edu</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Phone Number</p>
-                                <p className="text-sm font-medium">+1 (555) 123-4567</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Gender</p>
-                                <p className="text-sm font-medium">Male</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Date of Birth</p>
-                                <p className="text-sm font-medium">August 14, 2002</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Address</p>
-                                <p className="text-sm font-medium">123 Campus Drive, Apt 4B, SF, CA</p>
-                            </div>
+                            {basicInfo.map((info, idx) => (
+                                <div key={idx}>
+                                    <p className="text-xs text-slate-400 mb-1">{info.label}</p>
+                                    <p className="text-sm font-medium">{info.value}</p>
+                                </div>
+                            ))}
                         </CardContent>
                     </Card>
 
@@ -100,47 +142,33 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Academic Information</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal"><Edit2 size={14} className="mr-1" /> Edit</Button>
+                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
+                                <Edit2 size={14} className="mr-1" /> Edit
+                            </Button>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">College/University</p>
-                                <p className="text-sm font-medium">State University of Technology</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Degree</p>
-                                <p className="text-sm font-medium">Bachelor of Technology (B.Tech)</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Department</p>
-                                <p className="text-sm font-medium">Computer Science and Engineering</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Expected Graduation Year</p>
-                                <p className="text-sm font-medium">2024</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Batch Year</p>
-                                <p className="text-sm font-medium">2020-2024</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-slate-400 mb-1">Student ID / Roll No.</p>
-                                <p className="text-sm font-medium">CS2020-0451</p>
-                            </div>
+                            {academicInfo.map((info, idx) => (
+                                <div key={idx}>
+                                    <p className="text-xs text-slate-400 mb-1">{info.label}</p>
+                                    <p className="text-sm font-medium">{info.value}</p>
+                                </div>
+                            ))}
                         </CardContent>
                     </Card>
 
                     {/* 4. Professional Interests */}
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-lg font-bold">Professional Interests & Career Goals</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal"><Edit2 size={14} className="mr-1" /> Edit</Button>
+                            <CardTitle className="text-lg font-bold">Professional Interests</CardTitle>
+                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
+                                <Edit2 size={14} className="mr-1" /> Edit
+                            </Button>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
                                     <p className="text-xs text-slate-400 mb-2">Internship Interests</p>
-                                    <p className="text-sm font-medium">Frontend Engineering, Full-stack Development, UI/UX</p>
+                                    <p className="text-sm font-medium">Frontend Engineering, Full-stack Development</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-slate-400 mb-2">Preferred Industries</p>
@@ -150,7 +178,7 @@ const StudentProfile = () => {
                             <div>
                                 <p className="text-xs text-slate-400 mb-1">Career Goals</p>
                                 <p className="text-sm text-slate-700 leading-relaxed">
-                                    I am passionate about building scalable web applications and enhancing user experiences. Looking for opportunities to work in a fast-paced environment where I can contribute to meaningful projects and learn from experienced engineers.
+                                    I am passionate about building scalable web applications. Looking for opportunities to work in a fast-paced environment.
                                 </p>
                             </div>
                         </CardContent>
@@ -159,18 +187,17 @@ const StudentProfile = () => {
 
                 {/* Right Column */}
                 <div className="col-span-12 lg:col-span-4 space-y-6">
-
-                    {/* 5. Skills & Interests */}
+                    {/* 5. Skills */}
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Skills & Interests</CardTitle>
-                            <Plus size={18} className="text-slate-400 cursor-pointer" />
+                            <Plus size={18} className="text-slate-400 cursor-pointer hover:text-blue-600 transition-colors" />
                         </CardHeader>
                         <CardContent>
-                            <div className="flex flex-wrap gap-2 items-start">
-                                {['Web Development', 'React.js', 'Data Structures', 'UI/UX Design', 'Cloud Computing', 'Python'].map((skill) => (
-                                    <Badge key={skill} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none px-3 py-1 font-normal flex items-center gap-1">
-                                        {skill} <span className="text-xs opacity-50">×</span>
+                            <div className="flex flex-wrap gap-2">
+                                {['Web Development', 'React.js', 'Data Structures', 'UI/UX Design', 'Cloud Computing'].map((skill) => (
+                                    <Badge key={skill} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none px-3 py-1 font-normal">
+                                        {skill} <span className="ml-1 text-xs opacity-50 cursor-pointer">×</span>
                                     </Badge>
                                 ))}
                             </div>
@@ -181,25 +208,15 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Social Links</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal"><Edit2 size={14} className="mr-1" /> Edit</Button>
+                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent"><Edit2 size={14} className="mr-1" /> Edit</Button>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
-                                <Linkedin size={18} className="text-slate-400" />
-                                <span className="flex-1 truncate">linkedin.com/in/alexsharma</span>
-                            </div>
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
-                                <Github size={18} className="text-slate-400" />
-                                <span className="flex-1 truncate">github.com/alexsharmadev</span>
-                            </div>
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
-                                <Globe size={18} className="text-slate-400" />
-                                <span className="flex-1 truncate">alexsharma.dev</span>
-                            </div>
-                            <div className="flex items-center gap-3 p-3 border rounded-lg text-sm text-slate-600 break-all">
-                                <Twitter size={18} className="text-slate-400" />
-                                <span className="flex-1 truncate">@alexsharma_tech</span>
-                            </div>
+                            {socialLinks.map((link, idx) => (
+                                <div key={idx} className="flex items-center gap-3 p-3 border border-slate-100 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                                    <span className={link.color}>{link.icon}</span>
+                                    <span className="flex-1 truncate">{link.label}</span>
+                                </div>
+                            ))}
                         </CardContent>
                     </Card>
 
@@ -209,21 +226,17 @@ const StudentProfile = () => {
                             <CardTitle className="text-lg font-bold">Account Settings</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-1 px-2">
-                            <Button variant="ghost" className="w-full justify-between font-normal text-slate-700 h-10">
-                                <span className="flex items-center gap-3"><Lock size={18} className="text-slate-400" /> Change Password</span>
-                                <ChevronRight size={16} className="text-slate-400" />
-                            </Button>
-                            <Button variant="ghost" className="w-full justify-between font-normal text-slate-700 h-10">
-                                <span className="flex items-center gap-3"><Shield size={18} className="text-slate-400" /> Privacy Settings</span>
-                                <ChevronRight size={16} className="text-slate-400" />
-                            </Button>
-                            <Button variant="ghost" className="w-full justify-between font-normal text-slate-700 h-10">
-                                <span className="flex items-center gap-3"><Bell size={18} className="text-slate-400" /> Email Preferences</span>
-                                <ChevronRight size={16} className="text-slate-400" />
-                            </Button>
+                            {accountSettings.map((setting, idx) => (
+                                <Button key={idx} variant="ghost" className="w-full justify-between font-normal text-slate-700 h-10 hover:bg-slate-50">
+                                    <span className="flex items-center gap-3">
+                                        <span className="text-slate-400">{setting.icon}</span>
+                                        {setting.label}
+                                    </span>
+                                    <ChevronRight size={16} className="text-slate-400" />
+                                </Button>
+                            ))}
                         </CardContent>
                     </Card>
-
                 </div>
             </div>
         </div>
