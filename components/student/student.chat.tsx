@@ -70,7 +70,9 @@ const ChatPage = () => {
 
     return () => {
       if (typeof unsubscribe === "function") 
-        unsubscribe();
+        {
+        (unsubscribe as Function)(); 
+      }
     };
   }, [firebaseChatId]);
 
