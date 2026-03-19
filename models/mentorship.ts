@@ -13,7 +13,7 @@ const MentorshipSchema = new Schema({
     },
     status : {
         type : String,
-        enum : [ "pending", "running", "completed"],
+        enum : [ "pending", "running", "completed", "rejected"],
         default : "pending"
     },
     startTime : {

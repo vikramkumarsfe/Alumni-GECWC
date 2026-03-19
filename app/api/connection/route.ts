@@ -47,23 +47,37 @@ export const GET = async (req: NextRequest) => {
             return res.json({ message : "Unauthorized access"}, { status : 400})
 
         const id = session.user.id
-        const { alumniId } = await req.json()
 
-        if(!alumniId)
-            return res.json({ message : "alumni id is required"}, { status : 500})
-        
-        // const payload = {
-        //     sender : id,
-        //     receiver : Id,
-        //     status : "pending"
-        // }
-
-        const connection = await ConnectionModel.findOne({ sender : id , receiver : alumniId})
-
+        const connection = await ConnectionModel.find({
+            status: "approved",
+            $or: [
+                { sender: id },
+                { receiver: id }
+            ]
+        })
+        .populate('sender', 'fullname image profile')   // First, populate the sender
+        .populate('receiver', 'fullname image profile'); // Second, populate the receiver
         if(!connection)
             return res.json({ message : "Something went wrong , Please try again!!"}, { status : 500})
 
-        return res.json(connection)
+        const formattedConnections = connection.map((conn) => {
+            // If I am the sender, the "other party" is the receiver (and vice versa)
+            const otherParty = 
+                conn.sender._id.toString() === id
+                ? conn.receiver 
+                : conn.sender;
+
+            return {
+                _id : conn._id,
+                user: otherParty, 
+                lastMsg: conn.lastMsg, 
+                updatedAt: conn.updatedAt,
+            };
+        });
+
+        console.log(formattedConnections)
+        return res.json(formattedConnections);
+
     }
     catch(err)
     {

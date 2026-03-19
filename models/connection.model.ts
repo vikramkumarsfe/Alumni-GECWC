@@ -13,6 +13,10 @@ const ConnectionSchema = new Schema({
         type : String,
         enum : ["pending", "approved", "rejected"],
         default : "pending"
+    },
+    lastMessage : {
+        type : String,
+        default : null
     }
 },{ timestamps : true})
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, MapPin, GraduationCap, Building, Briefcase, User, Compass, Award, Link2, Mail, Github, Globe, Linkedin, UserPlus, MessageSquare,CheckCircle2,BookOpen, Building2, TwitterIcon, Clock, Check } from "lucide-react";
+import { ArrowLeft, MapPin, GraduationCap, Building, Briefcase, User, Compass, Award, Link2, Mail, Github, Globe, Linkedin, UserPlus, MessageSquare,CheckCircle2,BookOpen, Building2, TwitterIcon, Clock, Check, Zap } from "lucide-react";
 import { useSession } from "next-auth/react";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import ErrorState from "../shared/Errorstate";
 import {  message, Skeleton } from "antd";
 import { fetcher } from "@/utils/fetcher";
@@ -21,8 +21,14 @@ interface IConnection {
   createdAt: string;
 }
 
-// In your component state or props:
-
+interface IMentorship {
+  _id: string;
+  sender: string;
+  receiver: string;
+  status: "pending" | "running" | "completed" | "rejected";
+  startTime?: Date | string;
+  endTime?: Date | string;
+}
 
 
 export default function AlumniProfilePage() {
@@ -32,20 +38,24 @@ export default function AlumniProfilePage() {
   const userId = session?.user.id
   const alumniId = pathname.split('/').pop()
   const [connection, setConnection] = useState<IConnection | null>(null);
+  const [ mentorship , setMentorship ] = useState<IMentorship | null> (null)
   const [connectionButton, setConnectionButton] = useState(false)
 
   const { data , error, isLoading } = useSWR(`/api/admin/users/${alumniId}`, fetcher)
   const { data : connectionData } = useSWR(`/api/connection/${alumniId}`, fetcher)
-
+  const { data : mentorshipData } = useSWR(`/api/mentorship/${alumniId}`, fetcher)
 
   useEffect(()=>{
     if(connectionData)
       setConnection(connectionData)
 
-    console.log(connectionData)
-  },[connectionData])
+    if(mentorshipData)
+      setMentorship(mentorshipData)
+
+  },[connectionData, mentorshipData])
 
 
+  mentorshipData && console.log(mentorshipData)
   if(error)
     return <ErrorState/>
 
@@ -65,6 +75,7 @@ export default function AlumniProfilePage() {
       await axios.post('/api/connection', payload)
 
       message.success("connection request is sent!")
+      mutate(`/api/connection/${alumniId}`)
     }
     catch(err)
     {
@@ -78,6 +89,30 @@ export default function AlumniProfilePage() {
   const handleAccept = ( id : string) => {
     alert(id)
   }
+
+  const handleMentorship =async  (id: string) => {
+    try {
+      const payload = {
+        receiverId : id
+      }
+      await axios.post('/api/mentorship', payload)
+      message.success("mentorship request sent")
+      mutate(`/api/mentorship/${alumniId}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+  }
+
+  const handleAcceptMentorship = (id: string) => {
+    alert(id)
+  }
+
+  const handleCancelMentorship = (id: string) => {
+    alert(id)
+  }
+  
   return (
     <div className="bg-slate-50 min-h-screen w-full">
       <div className="px-8 py-6 flex flex-col gap-6 max-w-[1200px] mx-auto w-full">
@@ -317,9 +352,56 @@ export default function AlumniProfilePage() {
               <p className="text-[14px] text-slate-600 leading-relaxed mb-5">
                 {profile.profile.mentorship}
               </p>
-              <button className=" cursor-pointer w-full flex items-center justify-center h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white transition-colors">
-                Request Mentorship
-              </button>
+
+              {/* Mentorship Status Logic */}
+              {!mentorship ? (
+                /* STATE: No Request Sent */
+                <button 
+                  className="cursor-pointer w-full flex items-center justify-center h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white transition-colors"
+                  onClick={() => handleMentorship(profile._id)}
+                >
+                  Request Mentorship
+                </button>
+              ) : mentorship.status === "pending" ? (
+                mentorship.sender === userId ? (
+                  /* STATE: You sent it, waiting for them */
+                  <button 
+                    onClick={()=>handleCancelMentorship(mentorship._id)}
+                    className="w-full flex items-center justify-center h-11 bg-rose-100 border border-slate-200 rounded-lg text-[14px] font-semibold text-slate-400 cursor-pointer"
+                  >
+                    <Clock size={16} className="mr-2" /> Cancel Request
+                  </button>
+                ) : (
+                  /* STATE: They sent it, you need to accept */
+                  <button 
+                    className="w-full flex items-center justify-center h-11 bg-green-600 hover:bg-green-700 rounded-lg text-[14px] font-semibold text-white transition-colors"
+                    onClick={() => handleAcceptMentorship(mentorship._id)}
+                  >
+                    <Check size={16} className="mr-2" /> Accept Mentorship
+                  </button>
+                )
+              ) : mentorship.status === "running" ? (
+                /* STATE: Mentorship is active */
+                <div className="w-full flex items-center justify-center h-11 bg-blue-50 border border-blue-200 rounded-lg text-[14px] font-semibold text-blue-700">
+                  <Zap size={16} className="mr-2 text-blue-500" /> Active Mentorship
+                </div>
+              ) : mentorship.status === "completed" ? (
+                /* STATE: Mentorship finished */
+                <button 
+                  className="w-full flex items-center justify-center h-11 border border-slate-200 rounded-lg text-[14px] font-semibold text-slate-600 hover:bg-slate-50"
+                  onClick={() => handleMentorship(profile._id)} // Allow re-requesting?
+                >
+                  Restart Mentorship
+                </button>
+              ) : (
+                /* STATE: Rejected (Usually just show the request button again) */
+                <button 
+                  className="w-full flex items-center justify-center h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white"
+                  onClick={() => handleMentorship(profile._id)}
+                >
+                  Request Mentorship
+                </button>
+              )}
             </div>
 
             {/* Skills */}
