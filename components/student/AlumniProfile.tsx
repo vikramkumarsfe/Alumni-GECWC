@@ -1,5 +1,4 @@
 "use client";
-
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, MapPin, GraduationCap, Building, Briefcase, User, Compass, Award, Link2, Mail, Github, Globe, Linkedin, UserPlus, MessageSquare,CheckCircle2,BookOpen, Building2, TwitterIcon, Clock, Check, Zap } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -102,7 +101,7 @@ export default function AlumniProfilePage() {
       return clientCatchError(err)
     }
   }
-
+  
   const handleMentorship =async  (id: string) => {
     try {
       const payload = {
@@ -118,12 +117,31 @@ export default function AlumniProfilePage() {
     }
   }
 
-  const handleAcceptMentorship = (id: string) => {
-    alert(id)
+  const handleAcceptMentorship = async(id: string) => {
+    try {
+      const payload = {
+        status : "approved"
+      }
+      await axios.put(`/api/mentorship/${id}`, payload)
+      message.success("mentorship approved!!")
+      mutate(`/api/mentorship/${alumniId}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
   }
 
-  const handleCancelMentorship = (id: string) => {
-    alert(id)
+  const handleCancelMentorship = async(id: string) => {
+    try {
+      await axios.delete(`/api/mentorship/${id}`)
+      message.success("mentorship rejected")
+      mutate(`/api/mentorship/${alumniId}`)
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
   }
   
   return (
@@ -224,7 +242,7 @@ export default function AlumniProfilePage() {
             <div className="hidden md:flex items-center my-auto gap-3 flex-shrink-0">
               {!connection ? (
                 <button 
-                  className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                  className=" cursor-pointer flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors"
                   onClick={() => handleConnection(profile._id)}
                 >
                   <UserPlus size={14} /> Connect
@@ -233,14 +251,14 @@ export default function AlumniProfilePage() {
                 connection.sender === userId ? (
                   <button 
                     disabled 
-                    className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-400 bg-slate-50 cursor-not-allowed"
+                    className=" cursor-pointer flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-400 bg-slate-50 cursor-not-allowed"
                   >
                     <Clock size={14} /> Requested
                   </button>
                 ) : (
 
                   <button 
-                    className="flex items-center gap-1.5 px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white transition-colors"
+                    className="cursor-pointer flex items-center gap-1.5 px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white transition-colors"
                     onClick={() => handleAccept(connection._id)}
                   >
                     <Check size={14} /> Accept
@@ -249,12 +267,12 @@ export default function AlumniProfilePage() {
               ) : connection.status === "approved" ? (
                 // APPROVED: Show Message 
                 <Link href="/student/chat">
-                  <button className="flex items-center gap-1.5 px-3 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-semibold text-white">
+                  <button className="cursor-pointer flex items-center gap-1.5 px-3 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-semibold text-white">
                     <MessageSquare size={14} /> Message
                   </button>
                 </Link>
               ) : <button 
-                  className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+                  className="cursor-pointer flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors"
                   onClick={() => handleConnection(profile._id)}
                 >
                   <UserPlus size={14} /> Connect
