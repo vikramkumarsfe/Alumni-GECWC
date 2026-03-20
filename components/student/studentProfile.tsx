@@ -4,16 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { 
-  MapPin, Building2, Calendar, Edit2, Linkedin, Github, 
-  Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus, 
-  Verified
-} from 'lucide-react';
+import {  MapPin, Building2, Calendar, Edit2, Linkedin, Github, Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus, Verified } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { Skeleton, Space } from 'antd';
+import { message, Skeleton, Space } from 'antd';
+import clientCatchError from "@/utils/clientCatchError";
+import axios from "axios";
 
 const StudentProfile = () => {
-    const { data: session, status } = useSession();
+    const { data: session, status, update } = useSession();
 
     if (status === "loading") {
         return (
@@ -32,8 +30,6 @@ const StudentProfile = () => {
     }
 
     const user = session.user;
-
-    console.log(user)
 
     // Data Mapping Configurations
     const basicInfo = [
@@ -79,6 +75,43 @@ const StudentProfile = () => {
         ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
         : "ST";
 
+    const handleProfilePicture = () => {
+    const input = document.createElement("input")
+    input.type = "file"
+    input.accept = "image/*"
+
+    input.onchange = async (event: any) => {
+      const file = event.target.files?.[0]
+
+      if(!file)
+        return
+
+      const formData = new FormData()
+
+      formData.append("file", file)
+      try {
+
+        const options = {
+          headers: { "Content-Type": "multipart/form-data" }
+        }
+        const data = await axios.post('/api/user/profile-picture', formData, options)
+
+        await update({
+        image :  data.data.public_link
+      })
+      message.success("image updated succesfully")
+      }
+      catch(err)
+      {
+        clientCatchError(err)
+      }
+      input.remove();
+    }
+
+    input.click()
+    
+  }
+
     return (
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6 bg-[#f8fafc]">
 
@@ -118,9 +151,18 @@ const StudentProfile = () => {
                                     </div>
                                 </div>
                                 <Space size="middle" className="mt-3 md:mt-0">
-                                    <Button variant="outline" className="cursor-pointer text-slate-600 border-slate-200">Upload Picture</Button>
+                                    <Button 
+                                        variant="outline" 
+                                        className="cursor-pointer text-slate-600 border-slate-200"
+                                        onClick={handleProfilePicture}
+                                    >
+                                            Upload Picture
+                                    </Button>
                                     <Link href="/student/edit-profile">
-                                        <Button className="cursor-pointer  bg-blue-600 hover:bg-blue-700 text-white">
+                                        <Button 
+                                            className="cursor-pointer  bg-blue-600 hover:bg-blue-700 text-white"
+                                            
+                                        >
                                             Edit Profile
                                         </Button>
                                     </Link>

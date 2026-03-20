@@ -12,6 +12,7 @@ import { listenMessages } from "@/lib/listenMessage";
 import { Message } from "@/types/chat";
 import { useSession } from "next-auth/react";
 import { sendMessage } from "@/lib/sendMessage";
+import axios from "axios";
 
 const { TextArea } = Input;
 
@@ -54,6 +55,12 @@ const ChatPage = () => {
     return getChatId(currentChat.user._id, userId);
   }, [currentChat, userId]);
 
+  useEffect(() => {
+  if (connections && connections.length > 0 && !activeChatId) {
+    setActiveChatId(connections[0]._id);
+  }
+}, [connections, activeChatId]);
+
   // 3. Real-time Listener Effect
   useEffect(() => {
     if (!firebaseChatId) 
@@ -82,12 +89,6 @@ const ChatPage = () => {
       return;
 
     try {
-      // const messagesRef = ref(db, `chats/${firebaseChatId}/messages`);
-      // await push(messagesRef, {
-      //   senderId: userId,
-      //   text: values.message.trim(),
-      //   timestamp: new Date().toISOString(), // Or serverTimestamp() if your type supports it
-      // });
       if (!currentChat?.user?._id || !userId) return null;
 
       const message = {
@@ -97,16 +98,29 @@ const ChatPage = () => {
         timestamp : Date.now(),
       }
       sendMessage(firebaseChatId, message)
+
+      const payload = {
+        lastMessage : values.message.trim()
+      }
+
+      await axios.put(`/api/connection/${activeChatId}`,payload)
       form.resetFields();
     } catch (err) {
       antMessage.error("Failed to send message");
     }
   };
 
-  if (error) return <ErrorState />;
-  if (isLoading) return <Skeleton active className="p-10" />;
-  if (!connections || connections.length === 0) return <div className="p-10 text-center">No connections found.</div>;
-  if (!currentChat) return <Skeleton active />;
+  if (error) 
+    return <ErrorState />;
+
+  if (isLoading) 
+    return <Skeleton active className="p-10" />;
+
+  if (!connections || connections.length === 0) 
+    return <div className="p-10 text-center">No connections found.</div>;
+
+  if (!currentChat) 
+    return <Skeleton active />;
 
   return (
     <div className="flex h-[calc(100vh-120px)] bg-slate-50 md:border border-gray-200 overflow-hidden shadow-sm m-2">
@@ -191,8 +205,8 @@ const ChatPage = () => {
           </div>
           <div className="flex items-center gap-1 md:gap-3 shrink-0">
             <Button type="text" shape="circle" icon={<Phone size={18} />} className="bg-[#f1f5f9] text-[#64748b]" onClick={() => antMessage.info("Feature coming soon!")} />
-            <Button type="text" shape="circle" icon={<Video size={18} />} className="hidden md:flex bg-[#f1f5f9] text-[#64748b]" />
-            <Button type="text" shape="circle" icon={<MoreVertical size={18} />} className="bg-[#f1f5f9] text-[#64748b]" />
+            <Button type="text" shape="circle" icon={<Video size={18} />} className="hidden md:flex bg-[#f1f5f9] text-[#64748b]" onClick={() => antMessage.info("Feature coming soon!")} />
+            <Button type="text" shape="circle" icon={<MoreVertical size={18} />} className="bg-[#f1f5f9] text-[#64748b]" onClick={() => antMessage.info("Feature coming soon!")} />
           </div>
         </header>
 

@@ -70,7 +70,7 @@ export const GET = async (req: NextRequest) => {
             return {
                 _id : conn._id,
                 user: otherParty, 
-                lastMsg: conn.lastMsg, 
+                lastMsg: conn.lastMessage, 
                 updatedAt: conn.updatedAt,
             };
         });

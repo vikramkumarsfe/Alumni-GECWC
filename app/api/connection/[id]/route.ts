@@ -3,7 +3,6 @@ import { NextRequest, NextResponse as res} from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 import ContextInterface from "@/Interfaces/context.interface"
-import AnnouncementsModel from "@/models/announcements"
 import { connectDB } from "@/lib/mongodb"
 import ConnectionModel from "@/models/connection.model"
 
@@ -17,9 +16,6 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         if(!session)
             return res.json({ message : "Unauthorized User"}, { status : 404})
 
-        if( session.user.role !== "alumni")
-            return res.json({ message : "Unauthorized user"}, { status : 404})
-
         const param = await params
         const id = param.id
         const body = await req.json()
@@ -31,7 +27,8 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             return res.json({ message : "body is required"}, { status : 404})
 
         const payload = {
-            status : body.status
+            status : body.status,
+            lastMessage : body.lastMessage
         }
         
         const announcement = await ConnectionModel.findByIdAndUpdate(id, { $set : payload})
