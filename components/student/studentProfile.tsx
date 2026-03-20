@@ -6,7 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { 
   MapPin, Building2, Calendar, Edit2, Linkedin, Github, 
-  Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus 
+  Globe, Twitter, Lock, Shield, Bell, ChevronRight, Plus, 
+  Verified
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { Skeleton, Space } from 'antd';
@@ -32,14 +33,19 @@ const StudentProfile = () => {
 
     const user = session.user;
 
+    console.log(user)
+
     // Data Mapping Configurations
     const basicInfo = [
         { label: "Full Name", value: user?.name ?? "Student User" },
         { label: "Email Address", value: user?.email ?? "No email provided" },
         { label: "Phone Number", value: user?.mobile ?? "Not provided" },
-        { label: "Gender", value: "Male" },
-        { label: "Date of Birth", value: "Not provided" },
-        { label: "Address", value: `${user?.address?.street ?? 'Street'}, ${user?.address?.city ?? 'City'}, ${user?.address?.state ?? 'State'}` },
+        { label: "Gender", value: user?.gender ?? "Not provided" },
+        { label: "Date of Birth", value: user?.DOB ? new Date(user.DOB).toLocaleDateString() : "Not provided" },
+        { 
+            label: "Address", 
+            value: `${user?.address?.street ?? 'Street'}, ${user?.address?.city ?? 'City'}, ${user?.address?.state ?? 'State'}`
+        },
     ];
 
     let  completionYear = 2022
@@ -51,16 +57,16 @@ const StudentProfile = () => {
         { label: "College/University", value: "Government Engineering College West Champaran" },
         { label: "Degree", value: "Bachelor of Technology (B.Tech)" },
         { label: "Department", value: user?.branch ?? "Engineering" },
-        { label: "Expected Graduation Year", value: completionYear ?? "N/A"  },
+        { label: "Expected Graduation Year", value: completionYear ?? "N/A" },
         { label: "Batch Year", value: user?.batch ?? "N/A" },
-        { label: "Student ID / Roll No.", value: "CS2020-0451" },
+        { label: "Student ID / Roll No.", value: user?.regNo ?? "N/A" },
     ];
 
     const socialLinks = [
-        { icon: <Linkedin size={18} />, label: "linkedin.com/in/alexsharma", color: "text-slate-400" },
-        { icon: <Github size={18} />, label: "github.com/alexsharmadev", color: "text-slate-400" },
-        { icon: <Globe size={18} />, label: "alexsharma.dev", color: "text-slate-400" },
-        { icon: <Twitter size={18} />, label: "@alexsharma_tech", color: "text-slate-400" },
+        { icon: <Linkedin size={18} />, label: user?.socialLinks?.linkedIn ?? "Not added", color: "text-slate-400" },
+        { icon: <Github size={18} />, label: user?.socialLinks?.github ?? "Not added", color: "text-slate-400" },
+        { icon: <Globe size={18} />, label: "Portfolio not added", color: "text-slate-400" },
+        { icon: <Twitter size={18} />, label: user?.socialLinks?.twitter ?? "Not added", color: "text-slate-400" },
     ];
 
     const accountSettings = [
@@ -78,11 +84,11 @@ const StudentProfile = () => {
 
             {/* 1. Header Hero Section */}
             <Card className="overflow-hidden border border-slate-200 shadow-sm">
-                <div className="h-24 md:h-32 bg-[#4285F4]" />
-                <CardContent className="relative pt-0 px-8 pb-8">
+                <div className="h-4 md:h-8" />
+                <CardContent className="relative pt-0 px-4 md:px-8 pb-8">
                     <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-12 items-center md:items-end">
                         <Avatar className="w-28 h-28 rounded-full border-4 border-white shadow-sm flex-shrink-0">
-                            <AvatarImage src={user?.image} alt={user?.name || ""} />
+                            <AvatarImage src={user?.image || '/images/user.png'} alt={user?.name || ""} />
                             <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-xl">
                                 {initials}
                             </AvatarFallback>
@@ -93,19 +99,28 @@ const StudentProfile = () => {
                                 <div>
                                     <h1 className="text-xl md:text-2xl font-bold flex items-center gap-3">
                                         {user?.name ?? "Student User"}
-                                        <Badge className="bg-blue-600 hover:bg-blue-600 h-2 w-10 p-0" />
+                                        <Verified className="text-blue-400 hover:text-blue-600 p-0" />
                                     </h1>
                                     <p className="text-slate-600 mt-1">Student</p>
                                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-slate-500">
-                                        <span className="flex items-center gap-1"><Building2 size={16} /> {user?.branch ?? "Branch"}</span>
-                                        <span className="flex items-center gap-1"><Calendar size={16} /> Class of {user?.batch ?? "N/A"}</span>
-                                        <span className="flex items-center gap-1"><MapPin size={16} /> {user?.address?.city ?? "City"}, {user?.address?.state ?? "State"}</span>
+                                        <span className="flex items-center gap-1">
+                                            <Building2 size={16} /> {user?.branch ?? "Branch"}
+                                        </span>
+
+                                        <span className="flex items-center gap-1">
+                                            <Calendar size={16} /> Class of {user?.batch ?? "N/A"}
+                                        </span>
+
+                                        <span className="flex items-center gap-1">
+                                            <MapPin size={16} /> 
+                                            {user?.address?.city ?? "City"}, {user?.address?.state ?? "State"}
+                                        </span>
                                     </div>
                                 </div>
                                 <Space size="middle" className="mt-3 md:mt-0">
-                                    <Button variant="outline" className="text-slate-600 border-slate-200">Upload Picture</Button>
+                                    <Button variant="outline" className="cursor-pointer text-slate-600 border-slate-200">Upload Picture</Button>
                                     <Link href="/student/edit-profile">
-                                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                                        <Button className="cursor-pointer  bg-blue-600 hover:bg-blue-700 text-white">
                                             Edit Profile
                                         </Button>
                                     </Link>
@@ -124,9 +139,9 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Basic Information</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
+                            {/* <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
                                 <Edit2 size={14} className="mr-1" /> Edit
-                            </Button>
+                            </Button> */}
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                             {basicInfo.map((info, idx) => (
@@ -142,9 +157,9 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Academic Information</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
+                            {/* <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
                                 <Edit2 size={14} className="mr-1" /> Edit
-                            </Button>
+                            </Button> */}
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                             {academicInfo.map((info, idx) => (
@@ -157,7 +172,7 @@ const StudentProfile = () => {
                     </Card>
 
                     {/* 4. Professional Interests */}
-                    <Card className="border border-slate-200 shadow-sm">
+                    {/* <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Professional Interests</CardTitle>
                             <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent">
@@ -182,7 +197,7 @@ const StudentProfile = () => {
                                 </p>
                             </div>
                         </CardContent>
-                    </Card>
+                    </Card> */}
                 </div>
 
                 {/* Right Column */}
@@ -191,13 +206,13 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Skills & Interests</CardTitle>
-                            <Plus size={18} className="text-slate-400 cursor-pointer hover:text-blue-600 transition-colors" />
+                            {/* <Plus size={18} className="text-slate-400 cursor-pointer hover:text-blue-600 transition-colors" /> */}
                         </CardHeader>
                         <CardContent>
                             <div className="flex flex-wrap gap-2">
-                                {['Web Development', 'React.js', 'Data Structures', 'UI/UX Design', 'Cloud Computing'].map((skill) => (
+                                {(user?.profile?.skills?.length ? user.profile.skills : ['No skills added']).map((skill) => (
                                     <Badge key={skill} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none px-3 py-1 font-normal">
-                                        {skill} <span className="ml-1 text-xs opacity-50 cursor-pointer">×</span>
+                                        {skill}
                                     </Badge>
                                 ))}
                             </div>
@@ -208,7 +223,7 @@ const StudentProfile = () => {
                     <Card className="border border-slate-200 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                             <CardTitle className="text-lg font-bold">Social Links</CardTitle>
-                            <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent"><Edit2 size={14} className="mr-1" /> Edit</Button>
+                            {/* <Button variant="ghost" size="sm" className="text-slate-400 font-normal hover:bg-transparent"><Edit2 size={14} className="mr-1" /> Edit</Button> */}
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {socialLinks.map((link, idx) => (
@@ -227,13 +242,15 @@ const StudentProfile = () => {
                         </CardHeader>
                         <CardContent className="space-y-1 px-2">
                             {accountSettings.map((setting, idx) => (
-                                <Button key={idx} variant="ghost" className="w-full justify-between font-normal text-slate-700 h-10 hover:bg-slate-50">
-                                    <span className="flex items-center gap-3">
-                                        <span className="text-slate-400">{setting.icon}</span>
-                                        {setting.label}
-                                    </span>
-                                    <ChevronRight size={16} className="text-slate-400" />
-                                </Button>
+                                <Link key={idx} href='/student/settings'>
+                                    <Button  variant="ghost" className="cursor-pointer w-full justify-between font-normal text-slate-700 h-10 hover:bg-slate-50">
+                                        <span className="flex items-center gap-3">
+                                            <span className="text-slate-400">{setting.icon}</span>
+                                            {setting.label}
+                                        </span>
+                                        <ChevronRight size={16} className="text-slate-400" />
+                                    </Button>
+                                </Link>
                             ))}
                         </CardContent>
                     </Card>

@@ -12,14 +12,7 @@ const DashboardHeader = () =>  {
   const name = session?.user.name
   if(!name)
     return <Skeleton active />
-
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .substring(0, 2)
-    .toUpperCase()
-
+    
   return (
     <header className="flex h-16 items-center justify-between border-b bg-background px-4 md:px-8 sticky top-0 z-10">
       <div className="flex items-center gap-4">

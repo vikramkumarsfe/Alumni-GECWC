@@ -43,7 +43,7 @@ const UserSchema = new Schema({
     },
     isActive : {
         type: String,
-        enum: ["inactive", "active", "pending"],
+        enum: ["inactive", "approved", "pending"],
         default : "pending"
     }, 
     batch  :{

@@ -39,14 +39,27 @@ export const authOptions: NextAuthOptions = {
           id: user._id.toString(),
           email: user.email,
           name: user.fullname,
+
           role: user.role,
-          image: user.image,       
+          image: user.image,
           provider: user.provider,
-          mobile : user.mobile,
-          bio : user.bio,
-          batch : user.batch,
-          branch : user.branch,
-          address : user.address
+
+          mobile: user.mobile,
+          bio: user.bio,
+
+          batch: user.batch,
+          branch: user.branch,
+          regNo: user.regNo,
+
+          address: user.address,
+
+          profile: user.profile,
+          socialLinks: user.socialLinks,
+
+          DOB: user.DOB,
+          isActive: user.isActive,
+
+          gender: user.gender
         }
       }
     }),
@@ -68,8 +81,7 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google") 
-        {
+      if (account?.provider === "google") {
         const existingUser = await UserModel.findOne({ email: user.email })
 
         if (!existingUser) {
@@ -84,54 +96,108 @@ export const authOptions: NextAuthOptions = {
           user.address = newUser.address
           user.mobile = newUser.mobile
           user.bio = newUser.bio
+          user.image = newUser.image
+          user.batch = newUser.batch
+          user.branch = newUser.branch
+          user.regNo = newUser.regNo
+          user.profile = newUser.profile
+          user.socialLinks = newUser.socialLinks
+          user.DOB = newUser.DOB
+          user.isActive = newUser.isActive
         } else {
           user.id = existingUser._id.toString()
           user.role = existingUser.role
           user.address = existingUser.address
-          user.bio = existingUser.bio
           user.mobile = existingUser.mobile
-          user.address = existingUser.address
+          user.bio = existingUser.bio
           user.image = existingUser.image
+          user.batch = existingUser.batch
+          user.branch = existingUser.branch
+          user.regNo = existingUser.regNo
+          user.profile = existingUser.profile
+          user.socialLinks = existingUser.socialLinks
+          user.DOB = existingUser.DOB
+          user.isActive = existingUser.isActive
         }
       }
       return true
     },
 
     async jwt({ token, user, trigger, session }) {
+      // Initial login
       if (user) {
         token.id = user.id
+        token.name = user.name
+        token.email = user.email
         token.role = user.role
         token.address = user.address
-        token.image  = user.image,       
+        token.image = user.image
         token.provider = user.provider
         token.mobile = user.mobile
         token.bio = user.bio
         token.batch = user.batch
         token.branch = user.branch
+        token.regNo = user.regNo
+        token.profile = user.profile
+        token.socialLinks = user.socialLinks
+        token.DOB = user.DOB
+        token.isActive = user.isActive
+        token.gender = user.gender
       }
 
-       if (trigger === "update" && session) {
-        const allowedUpdates = ["image", "provider", "bio", "name", "mobile", "batch", "branch", "address"]
+      // Update session
+      if (trigger === "update" && session) {
+        const allowedUpdates = [
+          "image",
+          "provider",
+          "bio",
+          "name",
+          "mobile",
+          "batch",
+          "branch",
+          "address",
+          "regNo",
+          "profile",
+          "socialLinks",
+          "DOB",
+          "isActive",
+          "gender"
+        ]
 
         allowedUpdates.forEach((key) => {
-          if (session[key]) {
-            token[key] = session[key];
+          if ((session as any)[key] !== undefined) {
+            (token as any)[key] = (session as any)[key]
           }
         })
       }
+
       return token
     },
 
     async session({ session, token }) {
       session.user.id = token.id as string
-      session.user.role = token.role as string
-      session.user.address = token.address as any
+      session.user.name = token.name as string
+      session.user.email = token.email as string
+
+      session.user.role = token.role as any
       session.user.image = token.image as any
+      session.user.provider = token.provider as any
+
       session.user.mobile = token.mobile as any
       session.user.bio = token.bio as any
+
       session.user.batch = token.batch as any
       session.user.branch = token.branch as any
+      session.user.regNo = token.regNo as any
+
       session.user.address = token.address as any
+      session.user.profile = token.profile as any
+      session.user.socialLinks = token.socialLinks as any
+
+      session.user.DOB = token.DOB as any
+      session.user.isActive = token.isActive as any
+      session.user.gender = token.gender as any
+
       return session
     }
   },
