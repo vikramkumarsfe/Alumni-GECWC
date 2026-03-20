@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   SlidersHorizontal,
@@ -11,93 +11,22 @@ import {
   Mic,
   Check,
 } from "lucide-react";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
+import { Skeleton } from "antd";
+import ErrorState from "../shared/Errorstate";
+import moment from "moment";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface Event {
-  id: number;
-  title: string;
-  type: "Online" | "In-Person";
-  month: string;
-  day: string;
-  time: string;
-  location: string;
-  speaker: string;
-  image: string;
-  attendees: string[];
-  attendeeCount: string;
-  rsvped: boolean;
-}
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const eventsData: Event[] = [
-  {
-    id: 1,
-    title: "Transitioning from College to Tech Industry",
-    type: "Online",
-    month: "Nov",
-    day: "12",
-    time: "6:00 PM - 7:30 PM (IST)",
-    location: "Zoom Link will be provided upon RSVP",
-    speaker: "Priya Singh, Senior SDE at Google",
-    image: "https://storage.googleapis.com/banani-generated-images/generated-images/44df3460-58bd-4946-9d0e-741fc578b89c.jpg",
-    attendees: [
-      "https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FSouth%20Asian%2F2",
-      "https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F3",
-      "https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FSouth%20Asian%2F4",
-    ],
-    attendeeCount: "+42 attending",
-    rsvped: false,
-  },
-  {
-    id: 2,
-    title: "Annual Alumni Networking Mixer 2025",
-    type: "In-Person",
-    month: "Nov",
-    day: "18",
-    time: "4:00 PM - 8:00 PM (IST)",
-    location: "Main Auditorium, University Campus",
-    speaker: "Multiple Industry Experts",
-    image: "https://storage.googleapis.com/banani-generated-images/generated-images/6ed09875-4c05-4019-8a42-4de777366096.jpg",
-    attendees: [
-      "https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F25-35%2FSouth%20Asian%2F1",
-      "https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FSouth%20Asian%2F1",
-      "https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F4",
-    ],
-    attendeeCount: "+128 attending",
-    rsvped: true,
-  },
-  {
-    id: 3,
-    title: "Startup Funding 101 for Student Founders",
-    type: "Online",
-    month: "Nov",
-    day: "24",
-    time: "5:00 PM - 6:30 PM (IST)",
-    location: "Google Meet",
-    speaker: "Rahul Verma, Founder at TechNova",
-    image: "https://storage.googleapis.com/banani-generated-images/generated-images/314cae10-7278-4c5f-a207-e3e267a4d9a6.jpg",
-    attendees: [
-      "https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F5",
-      "https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FSouth%20Asian%2F1",
-    ],
-    attendeeCount: "+24 attending",
-    rsvped: false,
-  },
-];
-
-// ─── Event Card ───────────────────────────────────────────────────────────────
-
-function EventCard({ event }: { event: Event }) {
-  const [rsvped, setRsvped] = useState(event.rsvped);
+function EventCard({ event }: { event: any }) {
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
       <div className="relative h-[160px] w-full bg-blue-50 flex-shrink-0">
         <img
-          src={event.image}
+          src={'/images/event_pic.jpg'}
           alt={event.title}
           className="w-full h-full object-cover"
           onError={(e) => {
@@ -116,12 +45,9 @@ function EventCard({ event }: { event: Event }) {
         </div>
 
         {/* Date badge */}
-        <div className="absolute top-4 right-4 bg-white rounded-xl px-2.5 py-2 flex flex-col items-center shadow-md min-w-[54px]">
-          <span className="text-[11px] font-bold text-blue-600 uppercase leading-none">
-            {event.month}
-          </span>
-          <span className="text-[20px] font-bold text-slate-900 leading-tight mt-0.5">
-            {event.day}
+        <div className="absolute top-4 right-4 bg-slate-50 rounded-xl px-2.5 py-2 flex flex-col items-center shadow-md min-w-[54px]">
+          <span className="text-[10px] text-gray-400 uppercase leading-none">
+            { moment(event.date).format('MMMM Do YYYY') }
           </span>
         </div>
       </div>
@@ -136,78 +62,62 @@ function EventCard({ event }: { event: Event }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-start gap-2.5 text-[13px] text-slate-500">
             <Clock size={15} className="flex-shrink-0 mt-0.5 text-slate-400" />
-            <span>{event.time}</span>
+            <span>{ moment(event.date).format('MMMM Do YYYY, h:mm a') }</span>
           </div>
           <div className="flex items-start gap-2.5 text-[13px] text-slate-500">
             <MapPin size={15} className="flex-shrink-0 mt-0.5 text-slate-400" />
-            <span>{event.location}</span>
+            <span> {event.venueName} • {event.venueAddress}</span>
           </div>
           <div className="flex items-start gap-2.5 text-[13px] text-slate-500">
             <Mic size={15} className="flex-shrink-0 mt-0.5 text-slate-400" />
-            <span>{event.speaker}</span>
+            <span>{event.organizerName}</span>
           </div>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
-          {/* Attendees */}
-          <div className="flex items-center gap-2">
-            <div className="flex">
-              {event.attendees.map((av, i) => (
-                <img
-                  key={i}
-                  src={av}
-                  alt="Attendee"
-                  className="w-7 h-7 rounded-full object-cover border-2 border-white"
-                  style={{ marginLeft: i === 0 ? 0 : -8 }}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://ui-avatars.com/api/?name=U&background=e2e8f0&color=475569&size=28";
-                  }}
-                />
-              ))}
-            </div>
-            <span className="text-[12px] font-medium text-slate-500">
-              {event.attendeeCount}
-            </span>
-          </div>
-
-          {/* RSVP Button */}
-          {rsvped ? (
-            <button
-              onClick={() => setRsvped(false)}
-              className="flex items-center gap-1.5 px-4 h-9 border border-blue-500 rounded-lg text-[13px] font-medium text-blue-600 bg-white hover:bg-blue-50 transition-colors"
-            >
-              <Check size={14} />
-              Going
-            </button>
-          ) : (
-            <button
-              onClick={() => setRsvped(true)}
-              className="flex items-center gap-1.5 px-4 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-medium text-white transition-colors"
-            >
-              RSVP Now
-            </button>
-          )}
+            <Link href={`/student/events/${event._id}`} className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer">View Details</Button>
+              </Link>
         </div>
       </div>
     </div>
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
-const TABS = ["Upcoming Events", "My RSVPs", "Past Events"];
+const TABS = ["Upcoming Events", "Past Events"];
 
 export default function EventsPage() {
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
-  const filtered = eventsData.filter((e) =>
-    e.title.toLowerCase().includes(search.toLowerCase()) ||
-    e.speaker.toLowerCase().includes(search.toLowerCase()) ||
-    e.location.toLowerCase().includes(search.toLowerCase())
-  );
+  const [pastEvents, setPastEvents] = useState<any[]>([])
+  const [upcomingEvents, setUpcomingEvents] = useState<any[]>([])
+  
+  const { data, isLoading, error } = useSWR('/api/event', fetcher)
+
+  useEffect(() => {
+      if (data?.events) {
+        const upcoming = data.events.filter(
+          (event: any) => event.status === "upcoming"
+        )
+  
+        const past = data.events.filter(
+          (event: any) => event.status === "completed"
+        )
+  
+        setUpcomingEvents(upcoming)
+        setPastEvents(past)
+      }
+    }, [data])
+
+    if(isLoading)
+      return <Skeleton active />
+  
+    if(error)
+      return <ErrorState />
+
+  const displayEvents = activeTab === 0 ? upcomingEvents : pastEvents;
 
   return (
     <div className="bg-slate-50 min-h-screen w-full">
@@ -249,7 +159,7 @@ export default function EventsPage() {
             <button
               key={tab}
               onClick={() => setActiveTab(i)}
-              className={`px-4 py-3 text-[14px] font-medium border-b-2 transition-colors -mb-px ${
+              className={`px-4 py-3 text-[14px] cursor-pointer font-medium border-b-2 transition-colors -mb-px ${
                 activeTab === i
                   ? "border-blue-600 text-blue-600"
                   : "border-transparent text-slate-500 hover:text-slate-700"
@@ -261,10 +171,10 @@ export default function EventsPage() {
         </div>
 
         {/* ── Events Grid ── */}
-        {filtered.length > 0 ? (
+        {displayEvents.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filtered.map((event) => (
-              <EventCard key={event.id} event={event} />
+            {displayEvents.map((event) => (
+              <EventCard key={event._id} event={event} />
             ))}
           </div>
         ) : (
@@ -272,7 +182,6 @@ export default function EventsPage() {
             No events found matching your search.
           </div>
         )}
-
       </div>
     </div>
   );

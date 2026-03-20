@@ -56,7 +56,9 @@ export const GET = async (req: NextRequest) => {
             ]
         })
         .populate('sender', 'fullname image profile')   // First, populate the sender
-        .populate('receiver', 'fullname image profile'); // Second, populate the receiver
+        .populate('receiver', 'fullname image profile') // Second, populate the receiver
+        .sort({ updatedAt : -1})
+        
         if(!connection)
             return res.json({ message : "Something went wrong , Please try again!!"}, { status : 500})
 

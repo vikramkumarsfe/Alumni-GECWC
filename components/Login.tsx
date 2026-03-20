@@ -84,6 +84,13 @@ const Signup = () => {
             Register now
           </Link>
         </div>
+
+        <div className='flex items-center justify-center gap-2 mt-3'>
+          <label>Do not remember Password?</label>
+          <Link href='/forgot-password' className='text-blue-600 font-medium'>
+            forgot password
+          </Link>
+        </div>
       </Card>
     </div>
   )

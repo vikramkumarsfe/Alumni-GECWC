@@ -22,7 +22,7 @@ export const forgotPassword = async (email :string) : Promise<String> => {
     if(!user)
         throw new Error("User not found")
 
-    const resetLink  = `${process.env.SERVER}/reset-password?token=${token}`
+    const resetLink  = `${process.env.SERVER}/reset-password/${token}`
     const data = await sendMail({
     email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
     sendTo: email,
@@ -44,7 +44,7 @@ export const setPassword = async (password : string, token : string) :Promise<an
     if(!user)
         throw new Error("User does not exist or link expired")
     
-    user.password = await bcrypt.hash(password, 12)
+    user.password = password
     user.resetPasswordToken = null
     user.expiryResetLink = null
 

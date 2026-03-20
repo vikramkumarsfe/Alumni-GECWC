@@ -32,7 +32,6 @@ const networkNav = [
   { label: 'Alumni Directory', href: '/student/directory', icon: Users },
   { label: 'connections', href: '/student/connection', icon: UserCircle },
   { label: 'Chat with Alumni', href: '/student/chat', icon: MessageSquare },
-  { label: 'Mentorship', href: '/student/mentorship', icon: Compass },
 ]
 
 const opportunitiesNav = [
