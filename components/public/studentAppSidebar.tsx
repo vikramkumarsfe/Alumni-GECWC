@@ -175,5 +175,4 @@ const StudentAppSidebar = () => {
     </Sidebar>
   )
 }
-
 export default StudentAppSidebar

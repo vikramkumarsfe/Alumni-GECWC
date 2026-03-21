@@ -5,7 +5,7 @@ import { fetcher } from "@/utils/fetcher";
 import { Skeleton, Button, message } from "antd"; // Added Button here
 import axios from "axios";
 import { 
-  Send, FileText, Users, MessagesSquare, BriefcaseBusiness, 
+  Send,  Users, MessagesSquare, BriefcaseBusiness, 
   UserRoundPlus, Handshake, CalendarDays, BadgeHelp, ClipboardList, 
   UserPen, LifeBuoy, ArrowRightCircle, 
   Clock
@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
 import ErrorState from "../shared/Errorstate";
+import Link from "next/link";
 
 // ─── Check Item ───────────────────────────────────────────────────────────────
 
@@ -345,13 +346,15 @@ const BecomeAlumni = () => {
                 />
               </div>
               {/* Ant Design Button replace */}
-              <Button 
-                block
-                icon={<UserPen size={15} />}
-                className="h-10 border-slate-200 rounded-lg text-[14px] font-medium text-slate-700 hover:!text-blue-600 hover:!border-blue-600 transition-colors"
-              >
-                Update Profile Details
-              </Button>
+              <Link href="/student/edit-profile">
+                <Button 
+                  block
+                  icon={<UserPen size={15} />}
+                  className="h-10 border-slate-200 rounded-lg text-[14px] font-medium text-slate-700 hover:!text-blue-600 hover:!border-blue-600 transition-colors"
+                >
+                  Update Profile Details
+                </Button>
+              </Link>
             </div>
 
             {/* ── Need Help ── */}

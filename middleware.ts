@@ -1,41 +1,88 @@
 import { getToken } from "next-auth/jwt";
+import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@daveyplate/next-rate-limit";
 
-import { MiddlewareConfig, NextRequest, NextResponse } from "next/server";
+export const middleware = async (req: NextRequest) => {
+  // ✅ Apply rate limiting FIRST
+  const rateLimitResponse = await rateLimit({
+    request: req,
+    response: NextResponse.next(),
+    sessionLimit: 50,
+    ipLimit: 150,
+    sessionWindow: 10,
+    ipWindow: 10,
+    upstash: {
+      enabled: true,
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+      analytics: true,
+    },
+  });
 
-export const middleware = async (req : NextRequest ) => {
-    const session = await getToken({req, secret : process.env.NEXTAUTH_SECRET})
-    const {pathname} = req.nextUrl
-    const adminPath = pathname.startsWith("/admin")
-    const userPath = pathname.startsWith("/alumni")
+  // If rate limit blocks → return immediately
+  if (rateLimitResponse.status === 429) {
+    return rateLimitResponse;
+  }
 
-    if(!session && (adminPath || userPath))
-        return NextResponse.redirect(new URL("/login",req.url))
+  // ✅ Auth logic
+  const session = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
-    if(session)
-    {
-        const role = session.role
+  const { pathname } = req.nextUrl;
 
-        if(adminPath && role !== "admin")
-             return NextResponse.redirect(new URL("/login",req.url))
+  const isAdmin = pathname.startsWith("/admin");
+  const isAlumni = pathname.startsWith("/alumni");
+  const isStudent = pathname.startsWith("/student");
 
-        if(userPath && role !== "alumni")
-             return NextResponse.redirect(new URL("/login",req.url))
+  //  Block unauthenticated users
+  if (!session && (isAdmin || isAlumni || isStudent)) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
 
-        if( (pathname === "/login" || pathname === "/signup") && role === "alumni")
-            return NextResponse.redirect(new URL("/alumni", req.url))
+  if (session) {
+    const role = session.role as "admin" | "alumni" | "student";
 
-        if( (pathname === "/login" || pathname === "/signup") && role === "admin")
-            return NextResponse.redirect(new URL("/admin", req.url))
-
-        return NextResponse.next()
+    //  Role-based protection
+    if (isAdmin && role !== "admin") {
+      return NextResponse.redirect(new URL("/", req.url));
     }
-}
 
-export const config : MiddlewareConfig = {
-    matcher : [
-        "/alumni/:path",
-        "/admin/:path",
-        "/login",
-        "/signup"
-    ]
-}
+    if (isAlumni && role !== "alumni") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (isStudent && role !== "student") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    // 🔁 Prevent logged-in users from visiting auth pages
+    if (pathname === "/login" || pathname === "/signup") {
+      if (role === "admin") {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
+      if (role === "alumni") {
+        return NextResponse.redirect(new URL("/alumni", req.url));
+      }
+      if (role === "student") {
+        return NextResponse.redirect(new URL("/student", req.url));
+      }
+    }
+  }
+
+  // ✅ Default fallback
+  return NextResponse.next();
+};
+
+// ✅ Apply middleware to these routes
+export const config = {
+  matcher: [
+    "/admin/:path*",
+    "/alumni/:path*",
+    "/student/:path*",
+    "/login",
+    "/signup",
+    "/api/:path*", 
+  ],
+};

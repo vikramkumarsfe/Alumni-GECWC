@@ -52,7 +52,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "../../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/mongodb"
 
-export const POST = async( req: NextRequest) => {
+export const PUT = async( req: NextRequest) => {
     try {
         await connectDB();
         const session = await getServerSession(authOptions)
@@ -60,8 +60,8 @@ export const POST = async( req: NextRequest) => {
         if(!session)
             return res.json({message  : "Unauthorized User"}, { status : 404})
 
-        if(session.user.role !== "alumni")
-            return res.json({ message : "Unauthorized user"}, { status: 404 })
+        // if(session.user.role === "alumni" || session.user.role === "student")
+        //     return res.json({ message : "Unauthorized user"}, { status: 404 })
 
         const { password, newPassword } = await req.json()
 
@@ -73,9 +73,10 @@ export const POST = async( req: NextRequest) => {
 
         if(!isValidPassword)
             return res.json({ message : "Old password is not correct"}, { status: 404 })
+        
         const hashedPassword =await  bcrypt.hash(newPassword, 12)
 
-        const data = await UserModel.updateOne({_id : session.user.id}, {$set : { password : hashedPassword}})
+        const data = await UserModel.updateOne({_id : session.user.id}, {$set : { password : hashedPassword }})
 
         return res.json({ message : "Password Updated"})
     }

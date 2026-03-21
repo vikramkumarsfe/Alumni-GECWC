@@ -37,7 +37,7 @@ const roleRoutes: RoleType = {
   student: "/student",
 };
 
-const dashboardRoute = roleRoutes[role || ""] || "/";
+const dashboardRoute = roleRoutes[role || "/alumni"] || "/";
 
   // ✅ Proper typing here
   const items: MenuProps["items"] = [

@@ -303,40 +303,45 @@ export default function AlumniProfilePage() {
             </div>
 
             {/* Experience */}
-            <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-              <div className="flex items-center gap-2 text-[17px] font-semibold text-slate-900 border-b border-slate-100 pb-4 mb-5">
-                <Briefcase size={17} className="text-slate-400" />
-                Experience
-              </div>
-              <div className="flex flex-col gap-6">
-                { data && data.experience.map((exp : any, i : number) => (
-                  <div key={i} className="flex gap-4">
-                    {/* Icon box */}
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                        exp.current ? "bg-blue-50" : "bg-slate-100"
-                      }`}
-                    >
-                      <Building2
-                        size={22}
-                        className={exp.current ? "text-blue-500" : "text-slate-400"}
-                      />
+            {
+              data && data.experience.length > 0 ? 
+              <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div className="flex items-center gap-2 text-[17px] font-semibold text-slate-900 border-b border-slate-100 pb-4 mb-5">
+                  <Briefcase size={17} className="text-slate-400" />
+                  Experience
+                </div>
+                <div className="flex flex-col gap-6">
+                  { data && data.experience.map((exp : any, i : number) => (
+                    <div key={i} className="flex gap-4">
+                      {/* Icon box */}
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          exp.current ? "bg-blue-50" : "bg-slate-100"
+                        }`}
+                      >
+                        <Building2
+                          size={22}
+                          className={exp.current ? "text-blue-500" : "text-slate-400"}
+                        />
+                      </div>
+                      {/* Content */}
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <p className="font-semibold text-[16px] text-slate-900 leading-snug">
+                          {exp.designation}
+                        </p>
+                        <p className="text-[14px] text-blue-600 font-medium">{exp.company}</p>
+                        <p className="text-[13px] text-slate-400 mt-0.5">{exp.starting} - {exp.completion} </p>
+                        <p className="text-[14px] text-slate-600 leading-relaxed mt-1">
+                          {exp.description}
+                        </p>
+                      </div>
                     </div>
-                    {/* Content */}
-                    <div className="flex flex-col gap-0.5 min-w-0">
-                      <p className="font-semibold text-[16px] text-slate-900 leading-snug">
-                        {exp.designation}
-                      </p>
-                      <p className="text-[14px] text-blue-600 font-medium">{exp.company}</p>
-                      <p className="text-[13px] text-slate-400 mt-0.5">{exp.starting} - {exp.completion} </p>
-                      <p className="text-[14px] text-slate-600 leading-relaxed mt-1">
-                        {exp.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+              :
+              <></>
+            }
 
             {/* Education */}
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
@@ -507,7 +512,6 @@ export default function AlumniProfilePage() {
                 </a>
               </div>
             </div>
-
           </div>
         </div>
       </div>

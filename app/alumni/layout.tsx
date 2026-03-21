@@ -15,7 +15,7 @@ const AlumniLayout = async({
   }
 
   if (session.user.role !== "alumni") {
-    redirect("/login")
+    redirect("/")
   }
 
   return <>{children}</>

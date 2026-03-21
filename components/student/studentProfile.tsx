@@ -271,7 +271,7 @@ const StudentProfile = () => {
                             {socialLinks.map((link, idx) => (
                                 <div key={idx} className="flex items-center gap-3 p-3 border border-slate-100 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
                                     <span className={link.color}>{link.icon}</span>
-                                    <span className="flex-1 truncate">{link.label}</span>
+                                    <span className="flex-1 truncate">{link.label || "N/A"}</span>
                                 </div>
                             ))}
                         </CardContent>

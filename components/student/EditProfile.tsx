@@ -87,6 +87,8 @@ export default function EditProfile() {
     }
   };
 
+    const image = user.image 
+
   const onFinish = async (values: any) => {
     try {
       setLoading(true)
@@ -176,6 +178,24 @@ export default function EditProfile() {
 
     input.click()
     
+  };
+
+  const removeProfile =async () => {
+    try {
+      const payload = {
+        image : null
+      }
+      const data = await axios.put("/api/alumni", payload)
+
+        await update({
+        image :  null
+      })
+      message.success("image updated succesfully")
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
   }
 
   return (
@@ -202,7 +222,7 @@ export default function EditProfile() {
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
                 <div className="relative group">
                   <div className="w-[100px] h-[100px] rounded-full overflow-hidden border border-gray-200">
-                    <img src={"/images/user.png"} alt="Avatar" className="w-full h-full object-cover" />
+                    <img src={image || "/images/alumni.png"} alt="Avatar" className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
@@ -210,7 +230,7 @@ export default function EditProfile() {
                     <AntUpload showUploadList={false}>
                       <AntButton icon={<Upload size={14} />} onClick={handleProfilePicture}>Change Picture</AntButton>
                     </AntUpload>
-                    <AntButton danger type="text">Remove</AntButton>
+                    <AntButton danger type="text" onClick={removeProfile}>Remove</AntButton>
                   </div>
                   <p className="text-xs text-gray-500">Recommended size: 400x400px. Max size: 5MB.</p>
                 </div>

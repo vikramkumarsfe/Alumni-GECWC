@@ -196,7 +196,8 @@ export const PUT = async( req: NextRequest) => {
             bio : body.bio,
             branch : body.branch,
             batch : body.batch,
-            address : body.address
+            address : body.address,
+            image : body.image
         }
         console.log(payload)
         const user = await UserModel.findByIdAndUpdate({ _id : session.user.id}, { $set : payload}, { new : true})
