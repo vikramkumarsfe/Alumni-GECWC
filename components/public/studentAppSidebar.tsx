@@ -2,26 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, User, Users, MessageSquare, Compass, Calendar, Briefcase, Award, Settings, UserCircle } from 'lucide-react'
+import { LayoutDashboard, User, Users, MessageSquare,  Calendar,  Award, Settings, UserCircle, LogOut } from 'lucide-react'
 import { useEffect } from "react"
 
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  useSidebar
-} from '@/components/ui/sidebar'
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter, useSidebar } from '@/components/ui/sidebar'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Logo from '../shared/Logo'
+import { signOut } from 'next-auth/react'
 
 const mainNav = [
   { label: 'Dashboard', href: '/student', icon: LayoutDashboard },
@@ -173,17 +161,15 @@ const StudentAppSidebar = () => {
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="border-t border-slate-200 p-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F1" />
-            <AvatarFallback>AS</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col min-w-0">
-            <span className="text-sm font-semibold text-slate-800 truncate">Alex Sharma</span>
-            <span className="text-xs text-slate-400 truncate">Student · 3rd Year</span>
-          </div>
-        </div>
+      <SidebarFooter className="pb-6">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={()=>signOut()}>
+                <LogOut className="size-4" />
+                <span className="text-black">Logout</span> 
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
 
     </Sidebar>

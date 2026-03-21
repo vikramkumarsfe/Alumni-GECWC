@@ -246,7 +246,7 @@ export default function EditProfile() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6">
                 <Form.Item name="batch" label="Batch (Admission Year)" className="w-full" rules={[{ required: true }]}>
-                  <InputNumber size="large"  placeholder="2026" />
+                  <InputNumber size="large"  placeholder="2026" disabled/>
                 </Form.Item>
                 <Form.Item name="branch" label="Branch" className="w-full" rules={[{ required: true }]}>
                   <Select size="large" >
@@ -260,7 +260,7 @@ export default function EditProfile() {
                   </Select>
                 </Form.Item>
                 <Form.Item name="regNo" label="Registration No." className="w-full" rules={[{ required: true }]}>
-                  <Input size="large" />
+                  <Input size="large" disabled/>
                 </Form.Item>
               </div>
             </CardContent>

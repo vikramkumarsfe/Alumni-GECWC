@@ -1,12 +1,19 @@
 "use client";
 
-import { Skeleton, Button } from "antd"; // Added Button here
+import clientCatchError from "@/utils/clientCatchError";
+import { fetcher } from "@/utils/fetcher";
+import { Skeleton, Button, message } from "antd"; // Added Button here
+import axios from "axios";
 import { 
   Send, FileText, Users, MessagesSquare, BriefcaseBusiness, 
   UserRoundPlus, Handshake, CalendarDays, BadgeHelp, ClipboardList, 
-  UserPen, LifeBuoy, ArrowRightCircle 
+  UserPen, LifeBuoy, ArrowRightCircle, 
+  Clock
 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import useSWR, { mutate } from "swr";
+import ErrorState from "../shared/Errorstate";
 
 // ─── Check Item ───────────────────────────────────────────────────────────────
 
@@ -99,24 +106,63 @@ function InfoRow({ label, value }: { label: string; value: string | number }) {
 
 const BecomeAlumni = () => {
   const { data: session, status } = useSession()
+  const [loading, setLoading] = useState(false)
+  const { data , error, isLoading } = useSWR('/api/become-alumni/student', fetcher)
+  const [studentStatus, setStudentStatus ] = useState(false)
 
-      if (status === "loading") {
-          return (
-              <div className="max-w-7xl mx-auto p-8">
-                  <Skeleton active avatar paragraph={{ rows: 4 }} />
-                  <div className="grid grid-cols-12 gap-6 mt-6">
-                      <div className="col-span-8"><Skeleton active paragraph={{ rows: 6 }} /></div>
-                      <div className="col-span-4"><Skeleton active paragraph={{ rows: 6 }} /></div>
-                  </div>
+  useEffect(()=>{
+    if(data)
+    {
+      if(data.status === "pending")
+      {
+        setStudentStatus(true)
+      }
+    }
+  },[data])
+
+  if(isLoading)
+    return <Skeleton active/>
+
+  if(error)
+    return <ErrorState />
+
+  console.log(data)
+
+  if (status === "loading") {
+      return (
+          <div className="max-w-7xl mx-auto p-8">
+              <Skeleton active avatar paragraph={{ rows: 4 }} />
+              <div className="grid grid-cols-12 gap-6 mt-6">
+                  <div className="col-span-8"><Skeleton active paragraph={{ rows: 6 }} /></div>
+                  <div className="col-span-4"><Skeleton active paragraph={{ rows: 6 }} /></div>
               </div>
-          );
-      }
-  
-      if (!session || !session.user) {
-          return <div className="flex justify-center items-center h-screen">Not authenticated</div>;
-      }
-  
-      const user = session.user;
+          </div>
+      );
+  }
+
+  if (!session || !session.user) {
+      return <div className="flex justify-center items-center h-screen">Not authenticated</div>;
+  }
+
+  const user = session.user;
+
+  const handleRequest = async() => {
+    try {
+      setLoading(true)
+
+      const {data} = await axios.post('/api/become-alumni')
+
+      message.success("reuest is sent to the admin")
+      mutate('/api/become-alumni/student')
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+    finally{
+      setLoading(false)
+    }
+  }
       
 
   return (
@@ -155,14 +201,26 @@ const BecomeAlumni = () => {
 
                   <div className="flex gap-3 flex-wrap">
                     {/* Ant Design Button replace */}
-                    <Button 
-                      type="primary" 
-                      size="large"
-                      icon={<Send size={15} />}
-                      className="bg-blue-600 hover:!bg-blue-700 border-none shadow-md shadow-blue-100 h-11 px-6 rounded-lg text-[14px] font-medium"
-                    >
-                      Request Alumni Conversion
-                    </Button>
+                    {
+                      studentStatus ? 
+                      <button 
+                        disabled 
+                        className=" cursor-pointer flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-400 bg-slate-50 cursor-not-allowed"
+                      >
+                        <Clock size={14} /> Requested
+                      </button>
+                      :
+                      <Button 
+                        type="primary" 
+                        size="large"
+                        icon={<Send size={15} />}
+                        onClick={handleRequest}
+                        loading={loading}
+                        className="bg-blue-600 hover:!bg-blue-700 border-none shadow-md shadow-blue-100 h-11 px-6 rounded-lg text-[14px] font-medium"
+                      >
+                        Request Alumni Conversion
+                      </Button>
+                    }
                   </div>
                 </div>
               </div>
@@ -322,6 +380,7 @@ const BecomeAlumni = () => {
                   block
                   style={{ backgroundColor: '#60a5fa', borderColor: '#60a5fa' }} // blue-400
                   className="h-10 rounded-lg text-[15px] font-bold hover:!opacity-90"
+                  
                 >
                   Contact Office
                 </Button>

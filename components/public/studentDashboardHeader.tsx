@@ -8,8 +8,18 @@ import Link from "next/link";
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useSession } from 'next-auth/react'
+import { Skeleton } from 'antd'
+import AuthSection from '../authSection'
 
 const StudentDashboardHeader = () => {
+
+  const { data: session, status, update } = useSession()
+  
+    const name = session?.user.name
+
+    if(!name)
+      return <Skeleton active />
   return (
     <header className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-200 sticky top-0 z-20">
       {/* Left: sidebar trigger + breadcrumb */}
@@ -32,15 +42,12 @@ const StudentDashboardHeader = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center gap-2 h-9 px-2 hover:bg-slate-100">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src="https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F18-25%2FSouth%20Asian%2F1" />
-                <AvatarFallback>AS</AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium text-slate-700">Alex Sharma</span>
+              <AuthSection />
+              <span className="text-sm font-medium text-slate-700">{name}</span>
               <ChevronDown className="h-4 w-4 text-slate-400" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          {/* <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -51,7 +58,7 @@ const StudentDashboardHeader = () => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-500">Logout</DropdownMenuItem>
-          </DropdownMenuContent>
+          </DropdownMenuContent> */}
         </DropdownMenu>
       </div>
     </header>

@@ -62,8 +62,8 @@
 
 import { connectDB } from "@/lib/mongodb"
 import UserModel from "@/models/user.model"
-import { adminNewSignupNotification } from "@/utils/adminNotification.mail.template"
-import { registrationReceivedTemplate } from "@/utils/registrationReceived.template"
+import { adminNewSignupNotification } from "@/utils/emailTemplates/adminNotification.mail.template"
+import { registrationReceivedTemplate } from "@/utils/emailTemplates/registrationReceived.template"
 import { sendMail } from "@/utils/send-mail"
 import ServerCatchError from "@/utils/serverCatchError"
 import { NextRequest, NextResponse as res } from "next/server"

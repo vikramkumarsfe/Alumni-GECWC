@@ -7,6 +7,8 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 
+type RoleType = Record<string, string>
+
 const AuthSection = () => {
   const { data: session } = useSession()
   if (!session) {
@@ -29,12 +31,13 @@ const AuthSection = () => {
 
   const role = session.user?.role
 
-  const dashboardRoute =
-    role === "admin"
-      ? "/admin"
-      : role === "alumni"
-      ? "/alumni"
-      : "/"
+const roleRoutes: RoleType = {
+  admin: "/admin",
+  alumni: "/alumni",
+  student: "/student",
+};
+
+const dashboardRoute = roleRoutes[role || ""] || "/";
 
   // ✅ Proper typing here
   const items: MenuProps["items"] = [

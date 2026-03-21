@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/mongodb";
 import UserModel from "@/models/user.model"
-import { forgotPasswordTemplate } from "@/utils/forgot.password.mail.template"
+import { forgotPasswordTemplate } from "@/utils/emailTemplates/forgot.password.mail.template"
 import { sendMail } from "@/utils/send-mail"
 import bcrypt from "bcrypt"
 import { v4 as uuid } from 'uuid';
