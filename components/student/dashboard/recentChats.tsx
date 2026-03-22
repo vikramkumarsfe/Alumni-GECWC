@@ -1,3 +1,4 @@
+'use client'
 import ErrorState from "@/components/shared/Errorstate";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -6,62 +7,80 @@ import { fetcher } from "@/utils/fetcher";
 import { Skeleton } from "antd";
 import moment from "moment";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import useSWR from "swr";
 
-const RecentChats = () =>  {
-
-    const { data: connections, error, isLoading } = useSWR('/api/connection', fetcher)
-    const [chats, setChats] = useState<any | null>(null)
-
-    useEffect(() => {
-            if (connections) {
-                const chat = connections.slice(0,3)
-                setChats(chat)
-            }
-        }, [connections])
-
-    if (error) 
-    return <ErrorState />;
-
-  if (isLoading) 
-    return <Skeleton active className="p-10" />
-
-  console.log(connections)
-  return (
-    <Card className="border border-slate-200 shadow-none">
-      <CardHeader className="px-5 py-4 flex items-center justify-between space-y-0">
-        <CardTitle className="text-base font-semibold text-slate-800">Recent Chats</CardTitle>
-        <Button variant="link" className="text-blue-600 p-0 h-auto text-sm" asChild>
-          <Link href="/student/chat">Open Inbox</Link>
-        </Button>
-      </CardHeader>
-      <CardContent className="px-5 pb-4">
-        <div className="flex flex-col divide-y divide-slate-100">
-          {chats && chats.map((chat : any) => (
-            <div key={chat.user.fullname || "N/A"} className="flex items-start gap-3 py-3">
-              <Avatar className="w-14 h-14 rounded-full border border-slate-100 shadow-sm flex-shrink-0">
-                    <AvatarImage src={chat.user.image || "/images/alumni.png"} alt={chat.user.fullname || "N/A"} />
-                    <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-base">
-                        {chat.user.fullname
-                            .split(" ")
-                            .map((n : any) => n[0])
-                            .join("")}
-                    </AvatarFallback>
-                </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold text-slate-800">{chat.user.fullname}</span>
-                  <span className="text-[11px] text-slate-400">{moment(chat.updatedAt).fromNow()}</span>
-                </div>
-                <p className="text-xs text-slate-500 truncate mt-0.5">{chat.lastMsg}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
+interface childrenInterface {
+    link?: string
 }
 
-export default RecentChats
+const RecentChats: FC<childrenInterface> = ({ link = "/student/chats" }) => {
+    const { data: connections, error, isLoading } = useSWR('/api/connection', fetcher)
+    const [chats, setChats] = useState<any[] | null>(null)
+
+    useEffect(() => {
+        if (connections) {
+            // Slice to get only recent 3 chats
+            setChats(connections.slice(0, 3))
+        }
+    }, [connections])
+
+    if (error) return <ErrorState />;
+    if (isLoading) 
+      return <Card className="p-6 shadow-none border-slate-200"><Skeleton active /></Card>;
+
+    return (
+        <Card className="border border-slate-200 shadow-none bg-transparent">
+            <CardHeader className="px-6 py-2 flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="text-base font-bold text-slate-800 tracking-tight">
+                    Recent Messages
+                </CardTitle>
+                <Button variant="link" className="text-blue-600 p-0 h-auto text-sm font-semibold" asChild>
+                    <Link href={link}>Open Inbox</Link>
+                </Button>
+            </CardHeader>
+
+            <CardContent className="px-4 pb-4">
+                <div className="flex flex-col gap-3">
+                    {chats && chats.map((chat: any) => (
+                        <div 
+                            key={chat.user._id || chat.user.fullname} 
+                            className="group flex items-center gap-4 p-3 rounded-xl border border-slate-100 bg-white hover:border-blue-100 hover:bg-blue-50/30 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                        >
+                            {/* Avatar Section */}
+                            <Avatar className="w-12 h-12 rounded-full border border-slate-200 shadow-sm flex-shrink-0">
+                                <AvatarImage src={chat.user.image || "/images/alumni.png"} alt={chat.user.fullname} />
+                                <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-sm">
+                                    {chat.user.fullname?.split(" ").map((n: any) => n[0]).join("")}
+                                </AvatarFallback>
+                            </Avatar>
+
+                            {/* Content Section */}
+                            <div className="flex-1 min-w-0">
+                                <div className="flex justify-between items-center mb-0.5">
+                                    <span className="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+                                        {chat.user.fullname}
+                                    </span>
+                                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-tighter">
+                                        {moment(chat.updatedAt).fromNow(true)}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-500 truncate leading-relaxed">
+                                    {chat.lastMsg || "No messages yet"}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+
+                    {chats?.length === 0 && (
+                        <div className="py-10 text-center border-2 border-dashed border-slate-100 rounded-xl">
+                            <p className="text-sm text-slate-400">No recent chats found</p>
+                        </div>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default RecentChats;

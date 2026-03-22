@@ -162,7 +162,7 @@ const StudentAppSidebar = () => {
 
       {/* Footer */}
       <SidebarFooter className="pb-6">
-        <SidebarMenu>
+        <SidebarMenu> 
           <SidebarMenuItem>
             <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={()=>signOut()}>
                 <LogOut className="size-4" />

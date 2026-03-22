@@ -6,10 +6,14 @@ import { Skeleton } from "antd"
 import { Book, ChevronRight } from "lucide-react"
 import moment from "moment"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import useSWR from "swr"
 
-const UpcomingEvents = () => {
+interface childrenInterface {
+  link ?: string
+}
+
+const UpcomingEvents :FC<childrenInterface>=  ({ link = "/student/events"}) => {
     const { data, isLoading, error } = useSWR('/api/event', fetcher)
     const [upcomingEvents, setUpcomingEvents] = useState<any[]>([])
 
@@ -35,7 +39,7 @@ const UpcomingEvents = () => {
       <CardHeader className="px-5 py-4 flex items-center justify-between space-y-0">
         <CardTitle className="text-base font-semibold text-slate-800">Upcoming Events</CardTitle>
         <Button variant="link" className="text-blue-600 p-0 h-auto text-sm" asChild>
-          <Link href="/student/events">
+          <Link href="/alumni/events">
             <ChevronRight className="h-4 w-4" />
           </Link>
         </Button>
@@ -56,7 +60,7 @@ const UpcomingEvents = () => {
                   {event.venueAddress}
                 </div>
                 </div>
-                <Link href={`/student/events/${event._id}`}>
+                <Link href={`${link}/${event._id}`}>
                     <Button
                     size="sm"
                     className="h-7 px-3 text-xs bg-slate-50  hover:bg-slate-100 border-0 cursor-pointer"

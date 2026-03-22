@@ -1,7 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { Users,  MessageCircle, Calendar, Briefcase, Award, MapPin, ChevronRight } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { message, Skeleton, Typography } from 'antd'
@@ -11,36 +9,6 @@ import RecommendedAlumni from './dashboard/recomendedAlumni'
 import { useSession } from 'next-auth/react'
 
 const { Text } = Typography
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const stats = [
-  { label: 'Alumni Connections', value: 24,  icon: Users,         color: ''   },
-  { label: 'Unread Messages',    value: 5,   icon: MessageCircle, color: '' },
-  { label: 'Upcoming Events',    value: 3,   icon: Calendar,      color: '' },
-]
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
-
-function StatCards() {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-8">
-      {stats.map((s) => (
-        <Card key={s.label} className="border border-slate-200 shadow-none">
-          <CardContent className="p-5 flex justify-center items-center gap-8">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${s.color}`}>
-              <s.icon className="h-10 w-10" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-900">{s.value}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
-}
 
 function WelcomeCard() {
   const { data: session, status, update } = useSession();
@@ -83,8 +51,6 @@ function WelcomeCard() {
   )
 }
 
-
-
 function MentorshipCard() {
   return (
     <Card className="border border-slate-200 shadow-none">
@@ -124,7 +90,7 @@ export default function StudentDashboardPage() {
       <WelcomeCard />
 
       {/* Stats row */}
-      <StatCards />
+
 
       {/* Main 8/4 grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

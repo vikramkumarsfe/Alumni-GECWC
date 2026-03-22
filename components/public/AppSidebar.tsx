@@ -1,5 +1,5 @@
 'use client'
-import { LayoutDashboard, UserCircle, Users, Calendar, Briefcase, Bell, LogOut, GraduationCap, Settings } from "lucide-react"
+import { LayoutDashboard, UserCircle, Users, Calendar, Briefcase, Bell, LogOut, GraduationCap, Settings, MessageSquare } from "lucide-react"
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup} from "@/components/ui/sidebar"
 import Link from "next/link"
@@ -12,8 +12,11 @@ const items = [
   { title: "Dashboard", url: "/alumni", icon: LayoutDashboard },
   { title: "My Profile", url: "/alumni/profile", icon: UserCircle },
   { title: "Alumni Directory", url: "/alumni/directory", icon: Users },
-  { title: "Events", url: "/alumni/events", icon: Calendar },
+  { title: "Connections", url: "/alumni/connections", icon : UserCircle },
+  { title: "Chats", url: "/alumni/chats", icon: MessageSquare },
+  { title: "Events", url: "/alumni/events", icon: Calendar }, 
   { title: "Announcements", url: "/alumni/announcements", icon: Bell },
+  { title: "Settings", url: "/alumni/settings", icon: Settings },
 ]
 
 export function AppSidebar() {

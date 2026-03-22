@@ -1,122 +1,152 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { message, Skeleton } from "antd";
-import { useSession } from "next-auth/react";
-import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Pencil } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { 
+  Form, Input, Select, DatePicker, Button as AntButton, 
+  message, Upload as AntUpload, Divider, Tag, InputNumber, 
+  Skeleton
+} from "antd";
+import { 
+  Upload, Save, Linkedin, Github, Twitter, Plus, Mail, Phone, MapPin, 
+  Loader2
+} from "lucide-react";
+import dayjs from "dayjs";
+import { Card, CardContent, CardHeader } from "../ui/card";
 import clientCatchError from "@/utils/clientCatchError";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { isToday } from "date-fns";
 
-const profileSchema = z.object({
-  fullname: z.string().min(2, "Name must be at least 2 characters."),
-  mobile: z.string().regex(/^[0-9]{10}$/, "Enter a valid 10-digit mobile number."),
-  bio: z.string().max(160, "Bio must be under 160 characters.").optional(),
-  batch: z.number().min(2019),
-  branch: z.string().min(2, "Branch at least 2 characters"),
+// --- Shadcn-style Layout Components ---
+// const Card = ({ children }: { children: React.ReactNode }) => (
+//   <div className="bg-white border border-[#e2e8f0] rounded-xl shadow-sm overflow-hidden mb-6">{children}</div>
+// );
+// const CardHeader = ({ title }: { title: string }) => (
+//   <div className="px-6 py-5 border-b border-[#e2e8f0]"><h2 className="text-lg font-semibold text-[#0f172a]">{title}</h2></div>
+// );
+// const CardContent = ({ children }: { children: React.ReactNode }) => <div className="px-6 py-6">{children}</div>;
 
-  address: z.object({
-    street: z.string(),
-    city: z.string(),
-    state: z.string(),
-    country: z.string(),
-    pincode: z.string().regex(/^[0-9]{6}$/, "Enter valid pincode"),
-  })
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
-
-export default function AlumniEditForm() {
+export default function EditProfile() {
+  const [form] = Form.useForm();
+  const [skills, setSkills] = useState<string[]>([]);
+  const [newSkill, setNewSkill] = useState("");
   const { data: session, status, update } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
+  const [ loading , setLoading ] = useState(false)
+  const { Option } = Select;
 
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      fullname: "",
-      mobile: "",
-      bio: "",
-      batch: 2019,
-      branch: "",
-      address: {
-        street: "",
-        city: "",
-        state: "",
-        country: "",
-        pincode: ""
-      }
-    }
-  });
-
-  // Prefill form when session loads
   useEffect(() => {
-    if (session?.user) {
-      form.reset({
-        fullname: session.user.name || "",
-        mobile: (session.user as any).mobile || "",
-        bio: (session.user as any).bio || "",
-        batch: (session.user as any).batch || 2019,
-        branch: (session.user as any).branch || "",
-        address: {
-          street: (session.user as any).address?.street || "",
-          city: (session.user as any).address?.city || "",
-          state: (session.user as any).address?.state || "",
-          country: (session.user as any).address?.country || "",
-          pincode: (session.user as any).address?.pincode || ""
-        }
-      });
-    }
-  }, [session, form]);
-
-  if (status === "loading") {
-    return <Skeleton active />;
+  if (session?.user?.profile?.skills) {
+    setSkills(session.user.profile.skills);
   }
+}, [session]);
 
-  async function onSubmit(data: ProfileFormValues) {
-    setIsLoading(true);
+    if (status === "loading") {
+      return (
+          <div className="max-w-7xl mx-auto p-8">
+              <Skeleton active avatar paragraph={{ rows: 4 }} />
+              <div className="grid grid-cols-12 gap-6 mt-6">
+                  <div className="col-span-8"><Skeleton active paragraph={{ rows: 6 }} /></div>
+                  <div className="col-span-4"><Skeleton active paragraph={{ rows: 6 }} /></div>
+              </div>
+          </div>
+        );
+    }
+    
+    if (!session || !session.user) {
+        return <div className="flex justify-center items-center h-screen">Not authenticated</div>;
+    }
+  
+      
+    const user = session.user;
+    const initialData = {
+    fullname: user.name || "",
+    email: user.email || "",
+    mobile: user.mobile || "",
+    batch: user.batch ||2019,
+    branch: user.branch || "",
+    regNo: user.regNo || "",
+    DOB: user.DOB ? dayjs(user.DOB) : null,
+    bio : user.bio || "",
+    gender : user.gender || null,
+    profile: {
+      headline: user.profile?.headline || "",
+      skills: user.profile?.skills || [],
+      mentorship: user.profile?.mentorship || "",
+      company: user.profile?.company || ""
+    },
+    address: {
+      city: user.address?.city || "",
+      state: user.address?.state ||  "",
+      street : user.address?.street || "",
+      pincode: user.address?.pincode ||  ""
+    },
+    socialLinks: {
+      linkedIn: user.socialLinks?.linkedIn || "",
+      github: user.socialLinks?.github || "",
+      twitter: user.socialLinks?.twitter || ""
+    }
+  };
 
+    const image = user.image 
+
+  const onFinish = async (values: any) => {
     try {
-      await axios.put("/api/alumni", data);
+      setLoading(true)
+      // Merge the local skills state into the form values before sending to API
+      const payload = {
+        ...values,
+        profile: { ...values.profile, skills },
+        // DOB needs to be converted back to a Date object for Mongoose
+        DOB: values.DOB ? values.DOB.toDate() : null
+      }
+
+      await axios.put("/api/alumni", payload);
 
       await update({
-        name: data.fullname,
-        bio: data.bio,
-        mobile: data.mobile,
-        batch : data.batch,
-        branch : data.branch,
-        address : data.address
+        name: values.fullname,
+        mobile: values.mobile,
+        batch: values.batch,
+        branch: values.branch,
+        regNo: values.regNo,
+        DOB: values.DOB ? values.DOB.toISOString() : null,
+        bio: values.bio,
+        gender : values.gender,
+        profile: {
+          ...values.profile,
+          skills: skills, // Using your local state for skills
+        },
+        address: {
+          ...values.address,
+        },
+        socialLinks: {
+          ...values.socialLinks,
+        },
       });
-
+      console.log(payload)
       message.success("Profile updated successfully!");
-    } catch (error: any) {
-      message.error(error?.response?.data?.message || "Update failed");
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
-  if(!session)
-    return null
-  const initials = session.user.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+    finally{
+      setLoading(false)
+    }
+  };
+
+  const handleAddSkill = () => {
+    if (newSkill && !skills.includes(newSkill)) {
+      setSkills([...skills, newSkill]);
+      setNewSkill("");
+    }
+  };
 
   const handleProfilePicture = () => {
     const input = document.createElement("input")
     input.type = "file"
     input.accept = "image/*"
-
-    
 
     input.onchange = async (event: any) => {
       const file = event.target.files?.[0]
@@ -137,7 +167,6 @@ export default function AlumniEditForm() {
         await update({
         image :  data.data.public_link
       })
-      console.log(data.data.public_link)
       message.success("image updated succesfully")
       }
       catch(err)
@@ -149,218 +178,205 @@ export default function AlumniEditForm() {
 
     input.click()
     
-    
+  };
+
+  const removeProfile =async () => {
+    try {
+      const payload = {
+        image : null
+      }
+      const data = await axios.put("/api/alumni", payload)
+
+        await update({
+        image :  null
+      })
+      message.success("image updated succesfully")
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
   }
 
   return (
-    <Card className="max-w-2xl mx-auto border-none shadow-lg md:border md:shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold tracking-tight">
-          Edit Profile
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-
-            {/* Profile Image Upload */}
-            <div className="flex justify-center pb-4">
-              <div
-          onClick={handleProfilePicture}
-          className="relative cursor-pointer group"
-        >
-          <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
-            <AvatarImage
-              src={session.user.image || initials}
-              alt={initials}
-              className="object-cover"
-            />
-            <AvatarFallback className="text-2xl bg-muted">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-            <Pencil className="w-6 h-6" />
-          </div>
+    <div className="min-h-screen bg-[#fcfcfc] pb-12" style={{ fontFamily: "Inter, sans-serif" }}>
+      <div className="max-w-[1000px] mx-auto px-4 pt-8 flex flex-col gap-6">
+        
+        <div>
+          <h1 className="text-2xl font-bold text-[#0f172a]">Edit Profile</h1>
+          <p className="text-sm mt-1 text-[#64748b]">Manage your GECWC account details.</p>
         </div>
 
-            </div>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={initialData}
+          requiredMark={false}
+          className=" flex flex-col gap-5"
+        >
+          {/* ── Basic Info ── */}
+          <Card>
+            <CardHeader title="Account Details" />
+            <CardContent>
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
+                <div className="relative group">
+                  <div className="w-[100px] h-[100px] rounded-full overflow-hidden border border-gray-200">
+                    <img src={image || "/images/alumni.png"} alt="Avatar" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex gap-2">
+                    <AntUpload showUploadList={false}>
+                      <AntButton icon={<Upload size={14} />} onClick={handleProfilePicture}>Change Picture</AntButton>
+                    </AntUpload>
+                    <AntButton danger type="text" onClick={removeProfile}>Remove</AntButton>
+                  </div>
+                  <p className="text-xs text-gray-500">Recommended size: 400x400px. Max size: 5MB.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                <Form.Item name="fullname" label="Full Name" rules={[{ required: true }]}>
+                  <Input size="large" />
+                </Form.Item>
+                <Form.Item name="email" label="Email Address">
+                  <Input size="large" prefix={<Mail size={14} className="text-gray-400" />} disabled />
+                </Form.Item>
+                <Form.Item name="mobile" label="Mobile Number" rules={[{ required: true }]}>
+                  <Input size="large" prefix={<Phone size={14} className="text-gray-400" />} />
+                </Form.Item>
+                <Form.Item name="DOB" label="Date of Birth">
+                  <DatePicker size="large" className="w-full" />
+                </Form.Item>
 
-            <div className="grid gap-6">
-              <div className="grid md:grid-cols-2  gap-4 w-full">
-              <FormField
-                control={form.control}
-                name="fullname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <Form.Item name="gender" label="Gender" className="w-full" rules={[{ required: true }]}>
+                  <Select size="large" >
+                    <Option value="female">Female</Option>
+                    <Option value="male">Male</Option>
+                    <Option value="others">Others</Option>
+                  </Select>
+                </Form.Item>
+              </div>
+            </CardContent>
+          </Card>
 
-              <FormField
-                control={form.control}
-                name="mobile"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Mobile Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="9876543210" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* ── Academic Info (Required Fields) ── */}
+          <Card>
+            <CardHeader title="Academic Information" />
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6">
+                <Form.Item name="batch" label="Batch (Admission Year)" className="w-full" rules={[{ required: true }]}>
+                  <InputNumber size="large"  placeholder="2026" disabled/>
+                </Form.Item>
+                <Form.Item name="branch" label="Branch" className="w-full" rules={[{ required: true }]}>
+                  <Select size="large" >
+                    <Option value="Computer Science & Engineering">Computer Science & Engineering</Option>
+                    <Option value="Computer Science & Engineering(Cyber Security)">Computer Science & Engineering(Cyber Security)</Option>
+                    <Option value="Civil Engineering">Civil Engineering</Option>
+                    <Option value="VLSI">VLSI</Option>
+                    <Option value="Electronics & Communication">Electronics & Communication</Option>
+                    <Option value="Mechanical Engineering">Mechanical Engineering</Option>
+                    <Option value="Electrical Engineering">Electrical Engineering</Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="regNo" label="Registration No." className="w-full" rules={[{ required: true }]}>
+                  <Input size="large" disabled/>
+                </Form.Item>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ── Nested Address ── */}
+          <Card>
+            <CardHeader title="Contact Address" />
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                <Form.Item name={["address", "street"]} label="Street">
+                  <Input size="large" />
+                </Form.Item>
+                <Form.Item name={["address", "city"]} label="City">
+                  <Input size="large" />
+                </Form.Item>
+                <Form.Item name={["address", "state"]} label="State">
+                  <Input size="large" />
+                </Form.Item>
+                <Form.Item name={["address", "pincode"]} label="Pincode">
+                  <Input size="large" />
+                </Form.Item>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ── Professional Profile ── */}
+          <Card>
+            <CardHeader title="Profile & Bio" />
+            <CardContent>
+              <Form.Item name={["profile", "headline"]} label="Headline">
+                <Input size="large" />
+              </Form.Item>
+              
+              <div className="mb-6">
+                <label className="text-sm font-medium mb-2 block">Skills</label>
+                <div className="flex gap-2 mb-4">
+                  <Input 
+                    size="large" 
+                    placeholder="Add skill..." 
+                    value={newSkill}
+                    onChange={(e) => setNewSkill(e.target.value)}
+                    onPressEnter={(e) => { e.preventDefault(); handleAddSkill(); }}
+                  />
+                  <AntButton size="large" icon={<Plus size={16} />} onClick={handleAddSkill}>Add</AntButton>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {skills.map(skill => (
+                    <Tag key={skill} closable onClose={() => setSkills(skills.filter(s => s !== skill))} className="px-3 py-1 rounded-full">{skill}</Tag>
+                  ))}
+                </div>
               </div>
 
-              <FormField
-                control={form.control}
-                name="bio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bio</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Tell us about yourself"
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div className="grid md:grid-cols-2  gap-4 w-full">
+              <Form.Item name="bio" label="About Me (Bio)">
+                <Input.TextArea rows={4} />
+              </Form.Item>
 
-              <FormField
-                control={form.control}
-                name="batch"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Batch</FormLabel>
-                    <FormControl>
-                      <Input placeholder="2022" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid md:grid-cols-2  w-full gap-3">
+                <Form.Item name={["profile", "company"]} label="Working At:">
+                  <Input size="large" />
+                </Form.Item>
 
-              <FormField
-                control={form.control}
-                name="branch"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Branch</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Computer Science and Engineering(Cyber Security)" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <Form.Item name={["profile", "mentorship"]} label="Mentorship Status : ">
+                  <Input size="large" />
+                </Form.Item>
               </div>
 
-              <div className="grid  gap-4">
-                <h1 className="text-lg font-sm span-2">Address : </h1>
-              <FormField
-                control={form.control}
-                name="address.street"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Street</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Street address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            </CardContent>
+          </Card>
 
-              <FormField
-                control={form.control}
-                name="address.city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input placeholder="City" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address.state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="State" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address.country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Country" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address.pincode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pincode</FormLabel>
-                    <FormControl>
-                      <Input placeholder="700001" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+          {/* ── Social Links ── */}
+          <Card>
+            <CardHeader title="Social Presence" />
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6">
+                <Form.Item name={["socialLinks", "linkedIn"]} label="LinkedIn">
+                  <Input size="large" prefix={<Linkedin size={14} />} />
+                </Form.Item>
+                <Form.Item name={["socialLinks", "github"]} label="GitHub">
+                  <Input size="large" prefix={<Github size={14} />} />
+                </Form.Item>
+                <Form.Item name={["socialLinks", "twitter"]} label="Twitter">
+                  <Input size="large" prefix={<Twitter size={14} />} />
+                </Form.Item>
               </div>
+            </CardContent>
+          </Card>
 
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button
-                variant="ghost"
-                type="button"
-                onClick={() => form.reset()}
-              >
-                Reset
-              </Button>
-
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
-
-          </form>
+          <div className="flex justify-end gap-4 bg-white p-6 rounded-xl border border-gray-200">
+            <AntButton size="large" onClick={()=>form.resetFields()}>Cancel</AntButton>
+              <AntButton loading={loading} type="primary" size="large" htmlType="submit" className="bg-[#1565d8]" icon={<Save size={16} />}>
+                Save Profile
+              </AntButton>
+          </div>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
