@@ -13,6 +13,7 @@ import { Message } from "@/types/chat";
 import { useSession } from "next-auth/react";
 import { sendMessage } from "@/lib/sendMessage";
 import axios from "axios";
+import EmptyState from "../shared/emptyState";
 
 const { TextArea } = Input;
 
@@ -117,7 +118,7 @@ const ChatPage = () => {
     return <Skeleton active className="p-10" />;
 
   if (!connections || connections.length === 0) 
-    return <div className="p-10 text-center">No connections found.</div>;
+    return <div className="p-10 text-center"><EmptyState /></div>;
 
   if (!currentChat) 
     return <Skeleton active />;

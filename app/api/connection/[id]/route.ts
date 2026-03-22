@@ -31,9 +31,9 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             lastMessage : body.lastMessage
         }
         
-        const announcement = await ConnectionModel.findByIdAndUpdate(id, { $set : payload})
+        const connection = await ConnectionModel.findByIdAndUpdate(id, { $set : payload})
 
-        if(!announcement)
+        if(!connection)
             return res.json({ message : "something went wrong"}, { status : 500})
 
         return res.json({ message : "Announcement updated"})
@@ -71,6 +71,33 @@ export const GET = async( req: NextRequest, { params }: ContextInterface) =>{
             })
             
         return res.json(connection)
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}
+
+export const DELETE = async( req: NextRequest, { params }: ContextInterface) =>{
+    try
+    {
+        await connectDB();
+        const session = await getServerSession(authOptions)
+
+        if(!session)
+            return res.json({ message : "Unauthorized User"}, { status : 404})
+
+        const param = await params
+        const id = param.id
+        if(!id)
+            return res.json({message : "Id is required"})
+
+        const connection = await ConnectionModel.findByIdAndDelete(id)
+
+        if(!connection)
+            return res.json({ message : "something went wrong"}, { status : 500})
+
+        return res.json({ message : "Announcement updated"})
     }
     catch(err)
     {
