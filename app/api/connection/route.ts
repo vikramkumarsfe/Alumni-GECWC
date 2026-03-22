@@ -76,10 +76,7 @@ export const GET = async (req: NextRequest) => {
                 updatedAt: conn.updatedAt,
             };
         });
-
-        console.log(formattedConnections)
         return res.json(formattedConnections);
-
     }
     catch(err)
     {

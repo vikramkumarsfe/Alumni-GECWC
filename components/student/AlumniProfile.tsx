@@ -31,9 +31,8 @@ interface IMentorship {
 
 
 export default function AlumniProfilePage() {
-  const router = useRouter();
   const pathname = usePathname()
-  const { data: session, status, update } = useSession()
+  const { data: session } = useSession()
   const userId = session?.user.id
   const alumniId = pathname.split('/').pop()
   const [connection, setConnection] = useState<IConnection | null>(null);
@@ -353,8 +352,8 @@ export default function AlumniProfilePage() {
                 {data && data.education.map((edu : any, i : number) => (
                   <div key={i} className="flex gap-4">
                     {/* Icon box */}
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                      <BookOpen size={22} className="text-blue-500" />
+                    <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0">
+                      <BookOpen size={22} />
                     </div>
                     {/* Content */}
                     <div className="flex flex-col gap-0.5 min-w-0">
@@ -394,7 +393,7 @@ export default function AlumniProfilePage() {
                 /* STATE: No Request Sent */
                 <button 
                   className="cursor-pointer w-full flex items-center justify-center h-11 bg-blue-600 hover:bg-blue-700 rounded-lg text-[14px] font-semibold text-white transition-colors"
-                  onClick={() => handleMentorship(profile._id)}
+                  onClick={() => message.info("we are continuously working.")}
                 >
                   Request Mentorship
                 </button>

@@ -53,9 +53,6 @@ export const GET = async( req: NextRequest, { params }: ContextInterface) =>{
         if(!session)
             return res.json({ message : "Unauthorized User"}, { status : 404})
 
-        if( session.user.role !== "alumni")
-            return res.json({ message : "Unauthorized user"}, { status : 404})
-
         const param = await params
         const alumniId = param.id
         const id = session.user.id
