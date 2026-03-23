@@ -36,7 +36,7 @@ const AlumniEventDetails = () => {
         eventId : id
       }
 
-      const { data } = await axios.put('/api/event/add-rsvp', payload)
+      await axios.put('/api/event/add-rsvp', payload)
 
       message.success("You are now attending the Event")
       mutate(`/api/event/${id}`)
@@ -74,7 +74,7 @@ const AlumniEventDetails = () => {
   }
 
   return (
-    <main className="flex-1 overflow-y-auto p-4 md:px-8  md:py-6 bg-slate-50">
+    <main className="flex-1 overflow-y-auto p-2 md:px-8  md:py-6 bg-slate-50">
       <div className="mx-auto space-y-6">
         
         <Link href="/alumni/events" className="block mb-3">

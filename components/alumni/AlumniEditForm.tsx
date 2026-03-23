@@ -200,7 +200,7 @@ export default function EditProfile() {
 
   return (
     <div className="min-h-screen bg-[#fcfcfc] pb-12" style={{ fontFamily: "Inter, sans-serif" }}>
-      <div className="max-w-[1000px] mx-auto px-4 pt-8 flex flex-col gap-6">
+      <div className="max-w-[1000px] mx-auto md:px-4 px-2 pt-8 flex flex-col gap-6">
         
         <div>
           <h1 className="text-2xl font-bold text-[#0f172a]">Edit Profile</h1>

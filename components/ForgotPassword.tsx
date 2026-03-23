@@ -1,10 +1,8 @@
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
-import { Form, Input, Button, message, Skeleton, Spin } from "antd";
+import { Form, Input, Button, message, Spin } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
-import type { FormProps } from "antd";
 
 import forgotPasswordImage from "@/public/images/forgot.png";
 import axios from "axios";
@@ -35,7 +33,7 @@ const ForgotPassword = () => {
   return (
     <div className="flex">
       {/* Left Section */}
-      <div className="w-full md:w-[50%] flex items-center justify-center px-6">
+      <div className="w-full md:w-[50%] flex items-center justify-center p-6">
         <div className="w-full max-w-md">
           <h1 className="text-3xl font-semibold text-gray-800 mb-4">
             Forgot password?

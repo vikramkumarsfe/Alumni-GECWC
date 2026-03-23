@@ -181,7 +181,7 @@ const AlumniChatPage = () => {
 
       {/* --- Main Chat Section --- */}
       <div className={`${isMobileChatOpen ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-[#f8fafc]`}>
-        <header className="h-[72px] px-4 md:px-6 flex items-center justify-between bg-white border-b border-gray-200 shrink-0">
+        <header className="h-[72px]  md:px-6 flex items-center justify-between bg-white border-b border-gray-200 shrink-0 rounded-t-lg">
           <div className="flex items-center gap-2 md:gap-4 overflow-hidden">
             <Button 
               type="text" 

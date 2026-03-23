@@ -69,7 +69,7 @@ export default function AlumniProfilePage() {
 
   return (
     <div className="bg-slate-50 min-h-screen w-full">
-      <div className="px-8 py-6 flex flex-col gap-6 max-w-[1200px] mx-auto w-full">
+      <div className="flex flex-col gap-3 max-w-[1200px] mx-auto w-full p-2">
         
         <Link href="/alumni/directory">
           <button className="cursor-pointer flex items-center gap-2 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors w-fit">
@@ -78,7 +78,7 @@ export default function AlumniProfilePage() {
         </Link>
 
         {/* PROFILE HEADER CARD */}
-        <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-6 py-6 sm:px-8 sm:py-7">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm px-4 py-6 sm:px-8 sm:py-7">
           <div className="flex flex-col sm:flex-row sm:items-start gap-5 sm:gap-7">
             <div className="flex items-start justify-between sm:contents gap-4">
               <Avatar className="w-28 h-28 rounded-full border border-slate-100 shadow-sm flex-shrink-0">
@@ -88,7 +88,7 @@ export default function AlumniProfilePage() {
                 </AvatarFallback>
               </Avatar>
               
-              <div className="flex items-center gap-2 sm:hidden">
+              <div className="flex items-center gap-2 sm:hidden pt-3">
                 <button 
                   className="cursor-pointer flex items-center gap-1.5 px-3 h-9 border border-slate-200 rounded-lg text-[13px] font-medium text-slate-700 bg-white hover:bg-slate-50 transition-colors whitespace-nowrap"
                   onClick={() => handleAction('post', '/api/connection', { receiverId: profile._id }, "connection request is sent!")}
@@ -132,8 +132,8 @@ export default function AlumniProfilePage() {
         </div>
 
         {/* TWO COLUMN GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
-          <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-3 items-start">
+          <div className="flex flex-col gap-3">
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-2 text-[17px] font-semibold text-slate-900 border-b border-slate-100 pb-4 mb-5">
                 <User size={17} className="text-slate-400" /> About
@@ -150,7 +150,7 @@ export default function AlumniProfilePage() {
                 <div className="flex items-center gap-2 text-[17px] font-semibold text-slate-900 border-b border-slate-100 pb-4 mb-5">
                   {section.icon} {section.title}
                 </div>
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-3">
                   {section.data && section.data.length > 0 ? (
                     section.data.map((item: any, i: number) => (
                       <div key={i} className="flex gap-4">
@@ -173,7 +173,7 @@ export default function AlumniProfilePage() {
             ))}
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-3">
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-2 text-[17px] font-semibold text-slate-900 border-b border-slate-100 pb-4 mb-5">
                 <Compass size={17} className="text-slate-400" /> Mentorship

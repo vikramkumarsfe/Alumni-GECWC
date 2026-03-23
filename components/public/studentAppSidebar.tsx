@@ -24,6 +24,7 @@ const networkNav = [
 
 const opportunitiesNav = [
   { label: 'Events', href: '/student/events', icon: Calendar },
+  { label: 'Annoucements', href: '/student/announcements', icon: Calendar },
 ]
 
 const accountNav = [

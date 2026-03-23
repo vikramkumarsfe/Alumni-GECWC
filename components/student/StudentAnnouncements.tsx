@@ -14,7 +14,7 @@ import ErrorState from "../shared/Errorstate";
 import moment from 'moment'
 
 
-const AnnouncementFeed = () => {
+const StudentAnnouncementFeed = () => {
   const [ isExpanded, setIsExpanded ] = useState({expanded : false, index : 0})
   const pageSize = 10
   const [page, setPage] = useState(1)
@@ -149,4 +149,4 @@ const AnnouncementFeed = () => {
   )
 }
 
-export default AnnouncementFeed
+export default StudentAnnouncementFeed

@@ -134,7 +134,7 @@ const AlumniProfile = () => {
                                         {user?.name ?? "Student User"}
                                         <Verified className="text-blue-400 hover:text-blue-600 p-0" />
                                     </h1>
-                                    <p className="text-slate-600 mt-1">Student</p>
+                                    <p className="text-slate-600 mt-1">Alumni</p>
                                     <div className="flex flex-wrap gap-4 mt-3 text-sm text-slate-500">
                                         <span className="flex items-center gap-1">
                                             <Building2 size={16} /> {user?.branch ?? "Branch"}

@@ -26,17 +26,16 @@ const quickActions = [
   { label: 'Open Chats',     icon: MessageCircle , link : "/alumni/chats"},
 ]
 
-
 function HeroCard() {
   const { data: session, status, update } = useSession();
 
     if (status === "loading") {
         return (
-            <div className="max-w-7xl mx-auto p-8">
+            <div className="max-w-7xl mx-auto p-4 sm:p-8">
                 <Skeleton active avatar paragraph={{ rows: 4 }} />
-                <div className="grid grid-cols-12 gap-6 mt-6">
-                    <div className="col-span-8"><Skeleton active paragraph={{ rows: 6 }} /></div>
-                    <div className="col-span-4"><Skeleton active paragraph={{ rows: 6 }} /></div>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mt-6">
+                    <div className="col-span-1 md:col-span-8"><Skeleton active paragraph={{ rows: 6 }} /></div>
+                    <div className="col-span-1 md:col-span-4"><Skeleton active paragraph={{ rows: 6 }} /></div>
                 </div>
             </div>
         );
@@ -49,16 +48,16 @@ function HeroCard() {
     const name = session.user.name;
   return (
     <Card className="border border-slate-200 shadow-none">
-      <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-1">Welcome back, {name || "N/A"} ! 👋</h1>
-          <Text className="text-slate-500 text-sm">
+      <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="w-full">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 mb-1">Welcome back, {name || "N/A"} ! 👋</h1>
+          <Text className="text-slate-500 text-sm block">
             Connect with <strong>alumni and juniors</strong>, explore opportunities, and build your professional network.
           </Text>
         </div>
-        <div className="flex items-center gap-5 shrink-0">
-          <Link href="/alumni/edit-profile">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white shrink-0 cursor-pointer">
+        <div className="flex items-center gap-5 w-full sm:w-auto shrink-0">
+          <Link href="/alumni/edit-profile" className="w-full sm:w-auto">
+            <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white shrink-0 cursor-pointer">
               Complete Profile
             </Button>
           </Link>
@@ -72,8 +71,8 @@ function QuickActions() {
   return (
     <div className="flex gap-3 flex-wrap">
       {quickActions.map((a) => (
-        <Link href = {a.link} key={a.label}>
-          <button  className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-800 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm cursor-pointer">
+        <Link href={a.link} key={a.label} className="w-full sm:w-auto">
+          <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-800 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm cursor-pointer">
             <a.icon className="w-4 h-4 text-indigo-600" />
             {a.label}
           </button>
@@ -83,40 +82,19 @@ function QuickActions() {
   )
 }
 
-
 function MentorshipRequests() {
   return (
     <Card className="border border-slate-200 shadow-sm">
-      <CardHeader className="px-6 py-5">
+      <CardHeader className="px-4 sm:px-6 py-4 sm:py-5">
         <div className="flex justify-between items-center">
           <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
             <GraduationCap className="w-4 h-4 text-indigo-600" /> Mentorship Requests
           </CardTitle>
-          
         </div>
       </CardHeader>
-      <CardContent className="px-6 pb-6 flex flex-col divide-y divide-slate-100">
-        {/* {mentorshipRequests.map((r) => (
-          <div key={r.name} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-            <div className="flex items-center gap-3">
-              <Avatar className="w-11 h-11">
-                <AvatarImage src={r.avatar} />
-                <AvatarFallback>{r.name[0]}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-semibold text-slate-900">{r.name}</p>
-                <p className="text-xs text-slate-500 mt-0.5 max-w-[180px]">{r.sub}</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="h-8 text-xs cursor-pointer">Decline</Button>
-              <Button size="sm" className="h-8 text-xs bg-indigo-600 hover:bg-indigo-700 cursor-pointer">Approve</Button>
-            </div>
-          </div>
-        ))} */}
-
-        <div className='flex items-center justify-center'>
-          <p className='text-xl font-semibold '>We are coming soon.....</p>
+      <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 flex flex-col divide-y divide-slate-100">
+        <div className='flex items-center justify-center py-8'>
+          <p className='text-lg sm:text-xl font-semibold text-center'>We are coming soon.....</p>
         </div>
       </CardContent>
     </Card>
@@ -124,25 +102,24 @@ function MentorshipRequests() {
 }
 
 export default function AlumniDashboardPage() {
-
   return (
     <div className="flex overflow-hidden bg-slate-50">
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="max-w-[1200px] mx-auto flex flex-col gap-6">
+        <div className="flex-1 overflow-y-auto  sm:px-6 sm:py-6">
+          <div className="max-w-[1200px] mx-auto flex flex-col gap-3">
             <HeroCard />
             <QuickActions />
 
-            {/* Main 2-col grid */}
-            <div className="grid grid-cols-2 gap-6">
-              {/* Left */}
-              <div className="flex flex-col gap-6">
+            {/* Main grid: Stack on mobile (grid-cols-1), Side-by-side on desktop (lg:grid-cols-2) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+              {/* Left Column */}
+              <div className="flex flex-col gap-3">
                 <IncomingRequests />
                 <UpcomingEvents link="/alumni/events" />
               </div>
-              {/* Right */}
-              <div className="flex flex-col gap-6">
+              
+              {/* Right Column */}
+              <div className="flex flex-col gap-3">
                 <RecentChats link="/alumni/chats" />
-                
                 <MentorshipRequests />
               </div>
             </div>

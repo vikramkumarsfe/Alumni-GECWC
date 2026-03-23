@@ -141,10 +141,10 @@ export default function SettingsPage() {
           <CardContent className="flex items-center justify-between">
             <div>
               <p className="text-[15px] font-medium">Change Password</p>
-              <p className="text-[13px] text-slate-500">Update your password regularly.</p>
+              <p className="text-[13px] text-slate-500 md:flex hidden">Update your password regularly.</p>
             </div>
             <Button variant="outline" onClick={()=>setIsModalOpen(true)}>
-              <KeyRound className="mr-2 h-4 w-4" /> Update Password
+              <KeyRound className=" h-4" /> Update Password
             </Button>
           </CardContent>
         </Card>

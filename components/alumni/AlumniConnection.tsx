@@ -53,10 +53,10 @@ function ConnectionCard({ c }: { c: any }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Link href="/student/chat" className="flex-1 min-w-[100px]">
+        <Link href="/alumni/chats" className="flex-1 min-w-[100px]">
           <Button size="sm" className="w-full gap-1.5"><MessageCircle size={15} />Message</Button>
         </Link>
-        <Link href={`/student/alumni-profile/${c.otherUser._id}`} className="flex-1 min-w-[100px]">
+        <Link href={`/alumni/${c.otherUser._id}`} className="flex-1 min-w-[100px]">
           <Button size="sm" variant="outline" className="w-full gap-1.5"><User size={15} />Profile</Button>
         </Link>
         <Button 

@@ -67,7 +67,7 @@ export default function AlumniSettingsPage() {
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen py-8 px-1 md:px-4 md:ml-20">
+    <div className="bg-slate-50 min-h-screen py-3 px-1 md:px-4 md:ml-20">
       <Form
         layout="vertical"
         className="max-w-[900px] mx-auto flex flex-col gap-6"

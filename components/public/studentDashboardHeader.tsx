@@ -30,13 +30,6 @@ const StudentDashboardHeader = () => {
 
       {/* Right: actions */}
       <div className="flex items-center gap-3">
-        {/* Notifications */}
-        <Button variant="outline" size="icon" className="relative rounded-full h-9 w-9">
-          <Bell className="h-4 w-4" />
-          <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[10px] bg-blue-600">
-            5
-          </Badge>
-        </Button>
 
         {/* User dropdown */}
         <DropdownMenu>

@@ -35,7 +35,7 @@ const Signup = () => {
   return (
     <div
       style={{ minHeight: '100dvh' }}
-      className='flex w-full justify-center items-center bg-gray-100'
+      className='flex w-full justify-center items-center bg-gray-100 px-2'
     >
       <Card
         hoverable
