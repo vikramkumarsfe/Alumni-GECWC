@@ -47,3 +47,42 @@ export const POST = async (req: NextRequest) => {
         return ServerCatchError(err)
     }
 }
+
+export const GET = async (req: NextRequest) => {
+    try{
+        await connectDB()
+        const session = await  getServerSession(authOptions)
+
+        if(!session)
+            return res.json({message : "Unauthorized User"}, { status : 401})
+
+        if(session.user.role !== "admin")
+            return res.json({message : "Unauthorized User"}, { status : 401})
+        
+
+        const { searchParams } = new URL(req.url)
+
+        const page = Math.max(Number(searchParams.get("page")) || 1, 1)
+        const limit = Math.min(Number(searchParams.get("limit")) || 15, 100)
+
+        const skip = limit*(page-1)
+
+        const becomeAlumni = await BecomeAlumniModel.find()
+        .sort({ createdAt : -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("student", "-password")
+
+        if(!becomeAlumni)
+            return res.json({ message : "No data found!!"})
+
+        const total = await BecomeAlumniModel.countDocuments()
+
+        return res.json({becomeAlumni , total})
+
+    }
+    catch(err)
+    {
+        return ServerCatchError(err)
+    }
+}

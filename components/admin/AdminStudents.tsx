@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { Table, Avatar, Button, Tooltip, Select as AntSelect,Input as AntInput, Skeleton, message, Select } from 'antd';
+import { Table, Avatar, Button, Tooltip, Select as AntSelect,Input as AntInput, Skeleton, message } from 'antd';
 import { Search, Filter, Eye, Check, Trash2, Ban, Loader2} from 'lucide-react';
 import useSWR, { mutate } from 'swr';
 import { fetcher } from '@/utils/fetcher';
@@ -8,6 +8,7 @@ import ErrorState from '../shared/Errorstate';
 import Link from 'next/link';
 import clientCatchError from '@/utils/clientCatchError';
 import axios from 'axios';
+import { Select, Space } from 'antd';
 
 interface Alumni {
   key: string;
@@ -19,12 +20,12 @@ interface Alumni {
   avatar: string;
 }
 
-const AdminAlumni = () => {
+const AdminStudent = () => {
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = 12
   const { data : SWRData, isLoading, error } = useSWR(
-    `/api/admin/users?page=${page}&limit=${pageSize}`,
+    `/api/admin/users?page=${page}&limit=${pageSize}&student=true`,
     fetcher
   )
 
@@ -36,6 +37,8 @@ const AdminAlumni = () => {
   const total = SWRData?.pagination.total || 12
   const data = SWRData?.data || []
 
+  console.log(data)
+
   const handleRoleChange = async (id: string, value : string) => {
     try {
       setLoading(true)
@@ -45,7 +48,7 @@ const AdminAlumni = () => {
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )
 
       message.success("Role Updated")
-      mutate(`/api/admin/users?page=${page}&limit=${pageSize}`)
+      mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
     }
     catch(err)
     {
@@ -54,8 +57,7 @@ const AdminAlumni = () => {
     finally{
       setLoading(false)
     }
-  }
-
+  };
   const columns = [
     {
       title: 'Profile',
@@ -204,7 +206,7 @@ const AdminAlumni = () => {
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )
 
       message.success("Alumni approved")
-      mutate(`/api/admin/users?page=${page}&limit=${pageSize}`)
+      mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
     }
     catch(err)
     {
@@ -220,7 +222,7 @@ const AdminAlumni = () => {
       setLoading(true)
       await axios.delete(`/api/admin/users/${id}` )
       message.success("Alumni Deleted")
-      mutate(`/api/admin/users?page=${page}&limit=${pageSize}`)
+      mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
     }
     catch(err)
     {
@@ -242,7 +244,7 @@ const AdminAlumni = () => {
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )
 
       message.success("Alumni Suspended")
-      mutate(`/api/admin/users?page=${page}&limit=${pageSize}`)
+      mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
     }
     catch(err)
     {
@@ -256,8 +258,8 @@ const AdminAlumni = () => {
     <div className="space-y-6">
       {/* --- Page Header --- */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manage Alumni</h1>
-        <p className="text-slate-500 text-sm">View and manage registered alumni database</p>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manage Student</h1>
+        <p className="text-slate-500 text-sm">View and manage registered student database</p>
       </div>
 
       {/* --- Search & Filters (Shadcn Style) --- */}
@@ -318,4 +320,4 @@ const AdminAlumni = () => {
     </div>
   );
 }
-export default AdminAlumni
+export default AdminStudent

@@ -151,8 +151,6 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
                 html: accountDeactivatedTemplate(user.fullname)
               })
         }
-
-
         return res.json(user)
     }
     catch(err)

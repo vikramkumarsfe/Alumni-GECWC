@@ -106,7 +106,7 @@ export default function AlumniDirectory() {
         `/api/alumni?page=${currentPage}&limit=${pageSize}&branch=${branch}&batch=${batch}&sort=${sortOrder}`,
          fetcher,
         { keepPreviousData: true }
-        )
+    )
 
     if (isLoading) return <Skeleton active />
     if (error) return <ErrorState />

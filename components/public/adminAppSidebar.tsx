@@ -1,5 +1,5 @@
 'use client'
-import { LayoutDashboard, Users, Calendar, Briefcase, Megaphone, BarChart3, LogOut, GraduationCap, MessageSquareQuote } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Briefcase, Megaphone, BarChart3, LogOut, GraduationCap, MessageSquareQuote, UserCheck2Icon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
@@ -9,8 +9,10 @@ import Logo from "../shared/Logo"
 const items = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { title: "Manage Alumni", href: "/admin/alumni", icon: Users },
+  { title: "Manage Student", href: "/admin/student", icon: Users },
   { title: "Manage Events", href: "/admin/events", icon: Calendar },
   { title: "Manage Announcements", href: "/admin/announcements", icon: Megaphone },
+  { title: "Manage Become Alumni", href: "/admin/become-alumni", icon: UserCheck2Icon },
   { title: "Manage Feedback", href: "/admin/feedback", icon: MessageSquareQuote },
   { title: "Reports", href: "/admin/reports", icon: BarChart3 },
 ]

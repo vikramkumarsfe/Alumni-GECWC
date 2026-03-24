@@ -89,11 +89,17 @@ export const GET = async(req: NextRequest) => {
         const page = Math.max(Number(searchParams.get("page")) || 1, 1)
         const limit = Math.min(Number(searchParams.get("limit")) || 24, 100)
 
+        let role = "alumni"
+        const student = searchParams.get("student")
+
+        if(student)
+            role = "student"
+
         const skip = limit*(page-1)
 
-        const users = await UserModel.find({ role : "alumni"}).sort({ createdAt : -1 }).skip(skip).limit(limit);
+        const users = await UserModel.find({ role : role}).sort({ createdAt : -1 }).skip(skip).limit(limit);
 
-        const total = await UserModel.countDocuments({ role : "alumni"})
+        const total = await UserModel.countDocuments({ role : role})
 
         return res.json(
         {    data : users,
