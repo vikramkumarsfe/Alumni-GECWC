@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Modal, Tag, Avatar, Select, Input, Button, Table, Skeleton, Tooltip, message } from "antd";
+import { Modal, Tag, Avatar,  Input, Button, Table, Skeleton, Tooltip, message } from "antd";
 import {
   FileText, Clock, CheckCircle, Search, Eye, Check, X,
   Link as LinkIcon, UserCheck, RotateCcw, Smartphone, MapPin,
-  Calendar
+  Calendar,
+  Building
 } from "lucide-react";
 import useSWR, { mutate } from "swr";
 import { fetcher } from "@/utils/fetcher";
@@ -13,14 +14,9 @@ import ErrorState from "../shared/Errorstate";
 import moment from "moment";
 import clientCatchError from "@/utils/clientCatchError";
 import axios from "axios";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Separator } from "../ui/separator";
 
-// --- Configuration for Repetitive Elements ---
-
-const studentsData = [
-  { id: 1, name: "Rahul Sharma", email: "rahul.s@example.com", branch: "Computer Science", batch: "2024", regNo: "REG2020412", date: "Oct 15, 2024", status: "Pending", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=1" },
-  { id: 2, name: "Priya Patel", email: "priya.p@example.com", branch: "Mechanical", batch: "2024", regNo: "REG2020231", date: "Oct 14, 2024", status: "Pending", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=2" },
-  { id: 3, name: "Amit Kumar", email: "amit.k@example.com", branch: "Electrical", batch: "2024", regNo: "REG2020105", date: "Oct 12, 2024", status: "Approved", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=3" },
-];
 
 const statsConfig = [
   { label: "Total Requests", value: "450", icon: FileText, color: "bg-slate-50", iconColor: "text-slate-600" },
@@ -42,12 +38,13 @@ export default function AdminBecomeAlumniPage() {
     type: null
   });
   const [currentPage, setCurrentPage] = useState(1)
-  const [ pageSize, setPageSize] = useState(12)
+  const [ pageSize, setPageSize] = useState(10)
   const [ sortOrder, setSortOrder] = useState('newest')
   const [ branch , setBranch] = useState("all")
   const [batch, setBatch] = useState("all")
   const [studentData, setStudentdata] = useState<any|null>(null)
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState("")
 
   const { data, isLoading, error } = useSWR( 
           `/api/become-alumni?page=${currentPage}&limit=${pageSize}&branch=${branch}&batch=${batch}&sort=${sortOrder}`,
@@ -67,12 +64,13 @@ export default function AdminBecomeAlumniPage() {
       if(isLoading)
         return <Skeleton />
 
-  const handleApproveRequest = async(id: string) => {
+  const handleApproveRequest = async(id: string, studentId : string) => {
     try {
       setLoading(true)
 
       const payload = {
-        status : "approved"
+        status : "approved",
+        studentId : studentId
       }
 
       const data = await axios.put(`/api/become-alumni/${id}`, payload)
@@ -81,7 +79,7 @@ export default function AdminBecomeAlumniPage() {
 
       mutate(`/api/become-alumni?page=${currentPage}&limit=${pageSize}&branch=${branch}&batch=${batch}&sort=${sortOrder}`)
 
-      setIsActionModalOpen({ open : false, type : null})
+      
     }
     catch(err)
     {
@@ -89,6 +87,31 @@ export default function AdminBecomeAlumniPage() {
     }
     finally {
       setLoading(false)
+      setIsActionModalOpen({ open : false, type : null})
+    }
+  }
+
+  const handleRejectRequest = async(id: string, studentId : string) =>{
+    try {
+      setLoading(true)
+
+      const payload = {
+        status : "reject",
+        studentId : studentId
+      }
+
+      const data = await axios.put(`/api/become-alumni/${id}`, payload)
+
+      message.success("Status is updated !!")
+      
+    }
+    catch(err)
+    {
+      return clientCatchError(err)
+    }
+    finally {
+      setLoading(false)
+      setIsActionModalOpen({ open : false, type : null})
     }
   }
 
@@ -230,7 +253,7 @@ export default function AdminBecomeAlumniPage() {
         </div>
 
         {/* Stats - Mapped */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {statsConfig.map((stat, idx) => (
             <div key={idx} className="bg-white border border-gray-200 rounded-xl p-6 flex justify-between items-center shadow-sm">
               <div className="flex flex-col">
@@ -242,29 +265,115 @@ export default function AdminBecomeAlumniPage() {
               </div>
             </div>
           ))}
-        </div>
+        </div> */}
 
         {/* Table Container */}
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
           {/* Filters - Mapped */}
-          <div className="p-4 border-b border-gray-100 flex flex-wrap gap-4 justify-between items-center bg-white">
-            <Input
-              prefix={<Search size={16} className="text-gray-400" />}
-              placeholder="Search by name, email..."
-              className="w-full md:w-80 bg-slate-50 border-none h-10"
-            />
-            <div className="flex gap-3 overflow-x-auto">
-              {filters.map((f, i) => (
-                <Select key={i} placeholder={f.placeholder} className="min-w-[140px]" options={f.options.map(o => ({ label: o, value: o }))} />
-              ))}
-            </div>
+          <div className="border border-slate-200 rounded-xl px-3 md:px-4 py-3 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 bg-white shadow-sm">
+                    {/* Search */}
+                    <div className="w-full sm:flex-1 sm:min-w-[220px] flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg bg-white">
+                  <Search size={14} className="text-slate-400 flex-shrink-0" />
+                  <input
+                      type="text"
+                      placeholder="Search by name, company, or skill..."
+                      value={search}
+                      onChange={(e) => {
+                          setSearch(e.target.value);
+                          setCurrentPage(1);
+                      }}
+                      className="bg-transparent border-none outline-none text-[13px] text-slate-700 placeholder:text-slate-400 w-full"
+                  />
+              </div>
+
+              {/* Department */}
+              <Select onValueChange={(value) => setBranch(value)}>
+                  <SelectTrigger className="w-full sm:w-auto sm:min-w-[130px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
+                      <Building size={13} className="text-slate-400" />
+                      <SelectValue placeholder="Department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">all</SelectItem>
+                      <SelectItem value="Computer Science & Engineering">Computer Science</SelectItem>
+                      <SelectItem value="Computer Science & Engineering(Cyber Security)">Computer Science & Engineering(Cyber Security)</SelectItem>
+                      <SelectItem value="Civil Engineerin">Civil Engineerin</SelectItem>
+                      <SelectItem value="VLSI">VLSI</SelectItem>
+                      <SelectItem value="Electronics & Communication">Electronics & Communication</SelectItem>
+                      <SelectItem value="Mechanical Engineering">Mechanical Engineering</SelectItem>
+                      <SelectItem value="Electrical Engineering">Electrical Engineering</SelectItem>
+                  </SelectContent>
+              </Select>
+
+              {/* Batch Year */}
+              <Select onValueChange={(value) => setBatch(value)}>
+                  <SelectTrigger className="w-full sm:w-auto sm:min-w-[120px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
+                      <Calendar size={13} className="text-slate-400" />
+                      <SelectValue placeholder="Batch Year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="all">all</SelectItem>
+                      {[2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].map((y) => (
+                          <SelectItem key={y} value={String(y)}>
+                              {y}
+                          </SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
+
+              {/* Location for the future improvements
+              <Select>
+                  <SelectTrigger className="w-full sm:w-auto sm:min-w-[110px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
+                      <MapPin size={13} className="text-slate-400" />
+                      <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      <SelectItem value="us">United States</SelectItem>
+                      <SelectItem value="eu">Europe</SelectItem>
+                      <SelectItem value="uk">United Kingdom</SelectItem>
+                      <SelectItem value="me">Middle East</SelectItem>
+                  </SelectContent>
+              </Select> */}
+
+              <Separator orientation="vertical" className="h-5 mx-0.5" />
+
+              {/* Sort */}
+              <Select
+              value={sortOrder}
+              onValueChange={(v) => {
+                  setSortOrder(v);
+                  setCurrentPage(1);
+              }}
+              >
+              <SelectTrigger className="w-36 text-sm border-slate-200">
+                  <SelectValue placeholder="Newest First" />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+              </SelectContent>
+              </Select>
           </div>
+
 
           <Table 
             columns={columns} 
             dataSource={studentData} 
             className="custom-ant-table"
-            pagination={{ pageSize: 8 }}
+            pagination={{ 
+              current: currentPage,              
+              pageSize: pageSize,                
+              total: data?.total || data?.totalCount, 
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50'], 
+              onChange: (page, size) => {
+                setCurrentPage(page);           
+                if (size !== pageSize) {
+                  setPageSize(size);             
+                  setCurrentPage(1);             
+                }
+              },
+              position: ['bottomRight']
+            }}
           />
         </div>
       </div>
@@ -465,17 +574,34 @@ export default function AdminBecomeAlumniPage() {
             </p>
           </div>
           <div className="flex gap-3 w-full mt-2">
-            <Button block onClick={() => setIsActionModalOpen({ open: false, type: null })}>No, Keep it</Button>
-            <Button 
-              block 
-              type="primary" 
-              danger={isActionModalOpen.type === 'cancel'}
-              className={isActionModalOpen.type === 'approve' ? "bg-green-600 hover:bg-green-700 border-none" : ""}
-              onClick={()=>handleApproveRequest(selectedStudent._id)}
-              loading={loading}
-            >
-              Yes, Confirm
-            </Button>
+            {
+              isActionModalOpen.type === "approve" ?
+              <>
+                <Button block onClick={() => setIsActionModalOpen({ open: false, type: null })}>No, Keep it</Button>
+                <Button 
+                  block 
+                  type="primary" 
+                  className="bg-green-600 hover:bg-green-700 border-none"
+                  onClick={()=>handleApproveRequest(selectedStudent._id, selectedStudent.student._id)}
+                  loading={loading}
+                >
+                  Yes, Confirm
+                </Button>
+              </>
+              :
+              <>
+                <Button block onClick={() => setIsActionModalOpen({ open: false, type: null })}>No, Keep it</Button>
+              <Button 
+                block 
+                type="primary" 
+                danger
+                onClick={()=>handleRejectRequest(selectedStudent._id, selectedStudent.student._id)}
+                loading={loading}
+              >
+                Yes, Confirm
+              </Button>
+              </>
+            }
           </div>
         </div>
       </Modal>

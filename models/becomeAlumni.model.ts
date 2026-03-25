@@ -8,7 +8,7 @@ const BecomeAlumniSchema = new Schema({
     },
     status : {
         type: String,
-        enum: ["pending", "approved"],
+        enum: ["pending", "approved","reject"],
         default : "pending"
     },
     rejectionReason: {

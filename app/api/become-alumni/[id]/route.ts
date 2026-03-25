@@ -31,17 +31,31 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
             return res.json({ message : "body is required"}, { status : 404})
 
         const payload = {
-            status : "approved",
+            status : body.status,
         }
         const studentId = body.studentId
 
-        const user = await UserModel.findByIdAndUpdate(studentId, { $set : {
-            role : "alumni"
-        }})
+        let user
+        let becomeAlumni
 
-        const becomeAlumni = await BecomeAlumniModel.findByIdAndUpdate(id, { $set : payload})
+        if(body.status === "approve")
+        {
+            user = await UserModel.findByIdAndUpdate(studentId, { $set : {
+                role : "alumni"
+            }})
+    
+            becomeAlumni = await BecomeAlumniModel.findByIdAndUpdate(id, { $set : payload})
+        }
+        else {
+            user = await UserModel.findByIdAndUpdate(studentId, { $set : {
+                role : "student"
+            }})
+    
+            becomeAlumni = await BecomeAlumniModel.findByIdAndUpdate(id, { $set : payload})
+        }
 
-        if(!becomeAlumni)
+
+        if(!becomeAlumni ||  !user)
             return res.json({ message : "something went wrong"}, { status : 500})
 
         return res.json({ message : "Student Staus updated"})

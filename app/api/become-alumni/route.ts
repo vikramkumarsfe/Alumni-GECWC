@@ -67,6 +67,23 @@ export const GET = async (req: NextRequest) => {
 
         const skip = limit*(page-1)
 
+        // const branch = searchParams.get("branch");
+        // const batch = searchParams.get("batch");
+        // const search = searchParams.get("search");
+        // const sort = searchParams.get("sort") || "newest";
+
+        // let query: any = { };
+
+        // if (branch && branch !== "all") {
+        //     query.branch = branch;
+        // }
+
+        // if (batch && batch !== "all") {
+        //     query.batch = batch;
+        // }
+
+        // const sortOrder = sort === "oldest" ? 1 : -1;
+
         const becomeAlumni = await BecomeAlumniModel.find()
         .sort({ createdAt : -1 })
         .skip(skip)
