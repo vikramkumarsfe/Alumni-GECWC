@@ -83,7 +83,7 @@ const Signup = () => {
             </Col>
             <Col xs={24} md={8}>
               <Form.Item
-                label='Batch (Year)'
+                label='Batch (Admission Year)'
                 name='batch'
                 rules={[{ required: true, message: 'Select your admission year' }]}
               >
