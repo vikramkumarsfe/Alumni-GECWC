@@ -13,11 +13,6 @@ import IncomingRequests from './dashboard/upcomingRequest'
 
 const { Text } = Typography
 
-const connectionRequests = [
-  { name: 'Priya Sharma',    role: 'Product Manager at Google',    avatar: 'https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F18-25%2FSouth%20Asian%2F2' },
-  { name: 'David Miller',    role: 'Frontend Developer at Meta',   avatar: 'https://storage.googleapis.com/banani-avatars/avatar%2Fmale%2F25-35%2FEuropean%2F1' },
-  { name: 'Sarah Chen',      role: 'UX Designer at Apple',         avatar: 'https://storage.googleapis.com/banani-avatars/avatar%2Ffemale%2F25-35%2FEast%20Asian%2F3' },
-]
 
 const quickActions = [
   { label: 'Update Profile', icon: Edit3 , link : "/alumni/profile/edit"},
@@ -56,7 +51,7 @@ function HeroCard() {
           </Text>
         </div>
         <div className="flex items-center gap-5 w-full sm:w-auto shrink-0">
-          <Link href="/alumni/edit-profile" className="w-full sm:w-auto">
+          <Link href="/alumni/profile/edit" className="w-full sm:w-auto">
             <Button size="lg" className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white shrink-0 cursor-pointer">
               Complete Profile
             </Button>
@@ -105,7 +100,7 @@ export default function AlumniDashboardPage() {
   return (
     <div className="flex overflow-hidden bg-slate-50">
         <div className="flex-1 overflow-y-auto  sm:px-6 sm:py-6">
-          <div className="max-w-[1200px] mx-auto flex flex-col gap-3">
+          <div className="max-w-[1300px] mx-auto flex flex-col gap-3">
             <HeroCard />
             <QuickActions />
 

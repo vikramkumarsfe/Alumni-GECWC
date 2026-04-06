@@ -23,7 +23,7 @@ const StatCard = ({ title, value }: any) => {
 
 const AdminDashboard = () => {
   const { data : SWRData, isLoading, error } = useSWR(
-    `/api/admin/users?limit=8`,
+    `/api/admin/users?limit=5`,
     fetcher
   )
   const { 

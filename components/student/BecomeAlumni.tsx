@@ -383,7 +383,7 @@ const BecomeAlumni = () => {
                   block
                   style={{ backgroundColor: '#60a5fa', borderColor: '#60a5fa' }} // blue-400
                   className="h-10 rounded-lg text-[15px] font-bold hover:!opacity-90"
-                  
+                  href={`mailto:${process.env.NEXT_PUBLIC_SITE_MAIL_RECIEVER}`}
                 >
                   Contact Office
                 </Button>

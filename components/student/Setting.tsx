@@ -50,6 +50,7 @@ export default function SettingsPage() {
       const { data } = await axios.put('/api/user/change-password', payload)
 
       message.success("password Updated successfully!")
+      handleClose()
     }
     catch(err)
     {
@@ -57,6 +58,7 @@ export default function SettingsPage() {
     }
     finally{
       setLoading(false)
+      
     }
   }
 
@@ -143,7 +145,7 @@ export default function SettingsPage() {
               <p className="text-[15px] font-medium">Change Password</p>
               <p className="text-[13px] text-slate-500 md:flex hidden">Update your password regularly.</p>
             </div>
-            <Button variant="outline" onClick={()=>setIsModalOpen(true)}>
+            <Button variant="outline" onClick={()=>setIsModalOpen(true)} className="cursor-pointer">
               <KeyRound className=" h-4" /> Update Password
             </Button>
           </CardContent>

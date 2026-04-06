@@ -20,7 +20,7 @@ const Signup = () => {
         redirect: false,
       })
       if (res?.error) {
-        message.error("Invalid email or password, OR may be your account is not Active")
+        message.error("Invalid email or password, or your account may not be active.")
         return
       }
       message.success("Login successful")

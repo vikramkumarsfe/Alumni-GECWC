@@ -121,27 +121,29 @@ export const GET = async (req: NextRequest) => {
         const skip = limit * (page - 1);
 
         // 2. Filter Params
-        const branch = searchParams.get("branch");
+        const branch = searchParams.get("branch")?.trim();
         const batch = searchParams.get("batch");
-        const search = searchParams.get("search");
+        const search = searchParams.get("search")?.trim();
         const sort = searchParams.get("sort") || "newest";
 
         // 3. Dynamic Query Build Karein
         let query: any = { role: "alumni", isActive: "approved" };
 
         if (branch && branch !== "all") {
-            query.branch = branch;
+            query.branch = { $regex: `${branch}`, $options: "i" };
         }
 
         if (batch && batch !== "all") {
             query.batch = batch;
         }
+        
 
-        if (search) {
+        if (search && search.length > 0) {
+            const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
             query.$or = [
                 { fullname: { $regex: search, $options: "i" } },
                 { "profile.company": { $regex: search, $options: "i" } },
-                { "profile.skills": { $regex: search, $options: "i" } }
+                { "profile.skills": { $elemMatch: { $regex: escapedSearch, $options: "i" } } }
             ];
         }
 
@@ -149,6 +151,8 @@ export const GET = async (req: NextRequest) => {
         const sortOrder = sort === "oldest" ? 1 : -1;
 
         // 5. Database Operations
+
+        console.log(query)
         const [users, total] = await Promise.all([
             UserModel.find(query, { 
                 fullname: 1, 

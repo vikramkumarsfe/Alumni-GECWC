@@ -15,9 +15,9 @@ const Signup = () => {
   const register = async (values: any) => {
     try {
       setLoading(true)
-      const { data } = await axios.post('/api/user/signup', values)
-      message.success("Registration successful! Admin approval pending.")
-      router.push('/login')
+      await axios.post('/api/user/signup', values)
+      message.success("Awaiting approval. Confirmation email soon.")
+      router.push('/')
     }
     catch (err) {
       clientCatchError(err)
@@ -145,7 +145,7 @@ const Signup = () => {
                   <Skeleton.Button active block size='large' />
                 ) : (
                   <Button size='large' htmlType='submit' type='primary' block className='bg-blue-600'>
-                    Register as Alumni
+                    Register
                   </Button>
                 )}
               </Form.Item>

@@ -9,8 +9,10 @@ import { useSession } from 'next-auth/react';
 import { message, Skeleton, Space } from 'antd';
 import clientCatchError from "@/utils/clientCatchError";
 import axios from "axios";
+import { useState } from "react";
 
 const AlumniProfile = () => {
+    const [ previewImage , setPreviewImage ] = useState<null | string >(null)
     const { data: session, status, update } = useSession();
 
     if (status === "loading") {
@@ -86,6 +88,9 @@ const AlumniProfile = () => {
       if(!file)
         return
 
+      const Img = URL.createObjectURL(file);
+      setPreviewImage(Img)
+
       const formData = new FormData()
 
       formData.append("file", file)
@@ -121,7 +126,7 @@ const AlumniProfile = () => {
                 <CardContent className="relative pt-0 px-4 md:px-8 pb-8">
                     <div className="flex flex-col md:flex-row md:items-end gap-6 -mt-12 items-center md:items-end">
                         <Avatar className="w-28 h-28 rounded-full border-4 border-white shadow-sm flex-shrink-0">
-                            <AvatarImage src={user?.image || '/images/user.png'} alt={user?.name || ""} />
+                            <AvatarImage src={previewImage || user?.image || '/images/user.png'} alt={user?.name || ""} />
                             <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-xl">
                                 {initials}
                             </AvatarFallback>

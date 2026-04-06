@@ -35,7 +35,7 @@ export const accountApprovedTemplate = (
 <tr> 
   <td style="background-color:#f9fafb; padding:20px; text-align:center; font-size:12px; color:#9ca3af;">
     <p style="margin:0;"> © ${new Date().getFullYear()} Alumni GECWC Portal. All rights reserved. </p> 
-    <p style="margin:6px 0 0;"> Questions? Reach out at <a href="mailto:gecwc@gmail.com" style="color:#059669; text-decoration:none;">gecwc@gmail.com</a> </p> 
+    <p style="margin:6px 0 0;"> Questions? Reach out at <a href="mailto:gecwc@gmail.com" style="color:#059669; text-decoration:none;">${process.env.SITE_MAIL_RECIEVER}</a> </p> 
   </td> 
 </tr> 
 `;

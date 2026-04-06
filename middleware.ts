@@ -85,4 +85,4 @@ export const config = {
     "/signup",
     "/api/:path*", 
   ],
-};
+}

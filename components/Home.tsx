@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,9 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Row, Col, Statistic, ConfigProvider } from 'antd';
 import { Users, CalendarDays, Briefcase, UserCircle, HandHeart, ArrowRight,Bell } from 'lucide-react';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
 
 
 const Home = () => {
+  const { data: session } = useSession()
 
   const defaultData = [
     { label: 'Alumni', value: 1000, suffix: '+' },
@@ -51,7 +54,6 @@ const Home = () => {
         token: {
           colorPrimary: '#1e3a8a',
           borderRadius: 8,
-          // Plus Jakarta Sans for Ant Components
           fontFamily: "'Plus Jakarta Sans', sans-serif",
         },
       }}
@@ -75,11 +77,20 @@ const Home = () => {
                   A modern alumni management system for Government Engineering College West Champaran to connect graduates, faculty, and the institution under one unified platform.
                 </p>
                 <div className="flex gap-4 pt-4 ">
+                  {
+                    session ?
+                    <Link href="/login">
+                    <Button size="lg" className="bg-blue-900 hover:bg-blue-800 shadow-xl shadow-blue-900/20 px-3 font-bold h-14 cursor-pointer">
+                      Go to dashboard
+                    </Button>
+                  </Link>
+                  :
                   <Link href="/login">
                     <Button size="lg" className="bg-blue-900 hover:bg-blue-800 shadow-xl shadow-blue-900/20 px-3 font-bold h-14 cursor-pointer">
                       Join Alumni Network
                     </Button>
                   </Link>
+                  }
                   <Link href="/alumni/events" >
                     <Button variant="outline" size="lg" className="px-5 text-slate-700 border-slate-200 font-bold h-14 hover:bg-slate-50 cursor-pointer">
                       Explore Events

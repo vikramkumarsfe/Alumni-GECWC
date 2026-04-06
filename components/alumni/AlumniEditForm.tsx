@@ -27,6 +27,7 @@ import { isToday } from "date-fns";
 // const CardContent = ({ children }: { children: React.ReactNode }) => <div className="px-6 py-6">{children}</div>;
 
 export default function EditProfile() {
+  const [ previewImage , setPreviewImage ] = useState<null | string >(null)
   const [form] = Form.useForm();
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
@@ -153,6 +154,8 @@ export default function EditProfile() {
 
       if(!file)
         return
+      const Img = URL.createObjectURL(file);
+      setPreviewImage(Img)
 
       const formData = new FormData()
 
@@ -222,7 +225,7 @@ export default function EditProfile() {
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
                 <div className="relative group">
                   <div className="w-[100px] h-[100px] rounded-full overflow-hidden border border-gray-200">
-                    <img src={image || "/images/alumni.png"} alt="Avatar" className="w-full h-full object-cover" />
+                    <img src={previewImage ||image || "/images/alumni.png"} alt="Avatar" className="w-full h-full object-cover" />
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">

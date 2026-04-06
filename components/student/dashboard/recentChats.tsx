@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetcher } from "@/utils/fetcher";
-import { Skeleton } from "antd";
+import { Empty, Skeleton } from "antd";
 import moment from "moment";
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
@@ -31,7 +31,7 @@ const RecentChats: FC<childrenInterface> = ({ link = "/student/chats" }) => {
 
     return (
         <Card className="border border-slate-200 shadow-none bg-transparent">
-            <CardHeader className="px-6 py-2 flex flex-row items-center justify-between space-y-0">
+            <CardHeader className="px-6 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-base font-bold text-slate-800 tracking-tight">
                     Recent Messages
                 </CardTitle>
@@ -72,11 +72,7 @@ const RecentChats: FC<childrenInterface> = ({ link = "/student/chats" }) => {
                         </div>
                     ))}
 
-                    {chats?.length === 0 && (
-                        <div className="py-10 text-center border-2 border-dashed border-slate-100 rounded-xl">
-                            <p className="text-sm text-slate-400">No recent chats found</p>
-                        </div>
-                    )}
+                    {chats?.length === 0 && <Empty/>}
                 </div>
             </CardContent>
         </Card>

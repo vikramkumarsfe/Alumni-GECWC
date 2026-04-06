@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { Table, Avatar, Button, Tooltip, Select as AntSelect,Input as AntInput, Skeleton, message } from 'antd';
+import { Table,  Button, Tooltip, Select as AntSelect,Input as AntInput, Skeleton, message, Popconfirm } from 'antd';
 import { Search, Filter, Eye, Check, Trash2, Ban, Loader2} from 'lucide-react';
 import useSWR, { mutate } from 'swr';
 import { fetcher } from '@/utils/fetcher';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 import clientCatchError from '@/utils/clientCatchError';
 import axios from 'axios';
 import { Select, Space } from 'antd';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface Alumni {
   key: string;
@@ -17,13 +18,13 @@ interface Alumni {
   batch: string;
   department: string;
   isActive: 'approved' | 'pending' | 'inactive';
-  avatar: string;
+  image: string;
 }
 
 const AdminStudent = () => {
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
-  const pageSize = 12
+  const pageSize = 10
   const { data : SWRData, isLoading, error } = useSWR(
     `/api/admin/users?page=${page}&limit=${pageSize}&student=true`,
     fetcher
@@ -34,7 +35,7 @@ const AdminStudent = () => {
   if (error) 
     return <ErrorState />
 
-  const total = SWRData?.pagination.total || 12
+  const total = SWRData?.pagination.total || 10
   const data = SWRData?.data || []
 
   console.log(data)
@@ -65,11 +66,12 @@ const AdminStudent = () => {
       key: 'fullname',
       render: (text: string, record: Alumni) => (
         <div className="flex items-center gap-3">
-          <Avatar
-            src={record.avatar}
-            size={40}
-            className="border border-slate-200 shadow-sm"
-          />
+          <Avatar className="w-10 h-10 rounded-full border border-slate-100 shadow-sm mb-2">
+            <AvatarImage src={record.image } alt={record.name || "N/A"} />
+            <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-lg">
+              {text?.split(" ").map((n: any) => n[0]).join("")}
+            </AvatarFallback>
+          </Avatar>
           <div className="flex flex-col">
             <span className="font-semibold text-slate-900 text-sm leading-tight">{text}</span>
             <span className="text-xs text-slate-500">{record.email}</span>
@@ -181,15 +183,21 @@ const AdminStudent = () => {
             </Tooltip>
           )}
 
-          <Tooltip title="Delete">
-            <Button 
-              size="small" 
-              danger 
-              icon={<Trash2 size={14} />} 
-              className="flex items-center justify-center border-red-100"
-              onClick={()=>deleteAlumni(_._id)}
-            />
-          </Tooltip>
+          <Popconfirm
+            title="Delete Alumni"
+            description="This action cannot be undone."
+            okText="Delete"
+            okType="danger"
+            cancelText="Cancel"
+            onConfirm={() => deleteAlumni(_._id)}
+          >
+              <Button 
+                size="small" 
+                danger 
+                icon={<Trash2 size={14} />} 
+                className="flex items-center justify-center border-red-100"
+              />
+          </Popconfirm>
         </div>
       ),
     },

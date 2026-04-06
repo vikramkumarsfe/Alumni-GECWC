@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Form, Input, Button, message, Spin } from "antd";
 import clientCatchError from "@/utils/clientCatchError";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LoadingOutlined } from '@ant-design/icons';
 import axios from "axios";
 import { use, useState } from "react";
@@ -11,6 +11,7 @@ const ResetPassword = () => {
   const [form] = Form.useForm();
   const [ loading, setLoading] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
 
   const setPassword = async(values : any) => {
     try 
@@ -24,6 +25,7 @@ const ResetPassword = () => {
 
       await axios.post('/api/user/set-password', payload)
       message.success("Password updated successfully")
+      router.push('/login')
     }
     catch(err)
     {

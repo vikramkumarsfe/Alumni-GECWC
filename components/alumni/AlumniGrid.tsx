@@ -6,13 +6,14 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Empty, Pagination, Skeleton } from 'antd';
+import { Empty, Form, Pagination, Skeleton , Button as AntdButton } from 'antd';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
-import { GraduationCap, MessageSquare, Calendar, MapPin, Search, Building, SlidersHorizontal } from "lucide-react";
+import { GraduationCap, Calendar, MapPin, Search, Building,} from "lucide-react";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import ErrorState from "../shared/Errorstate";
 import Link from "next/link";
+import { debounce } from "lodash";
 
 // ─── Alumni Card ──────────────────────────────────────────────────────────────
 
@@ -100,11 +101,12 @@ export default function AlumniDirectory() {
     const [currentPage, setCurrentPage] = useState(1);
     const [ pageSize, setPageSize] = useState(12)
     const [ sortOrder, setSortOrder] = useState('newest')
-    const [ branch , setBranch] = useState("all")
-    const [batch, setBatch] = useState("all")
+    const [ branch , setBranch] = useState("")
+    const [batch, setBatch] = useState("")
+    const [form] = Form.useForm();
     const { data: SwrData, isLoading, error } = useSWR( 
-        `/api/alumni?page=${currentPage}&limit=${pageSize}&branch=${branch}&batch=${batch}&sort=${sortOrder}`,
-         fetcher,
+        `/api/alumni?page=${currentPage}&limit=${pageSize}&branch=${branch}&batch=${batch}&sort=${sortOrder}&search=${search}`,
+        fetcher,
         { keepPreviousData: true }
     )
 
@@ -115,7 +117,23 @@ export default function AlumniDirectory() {
 
     const total = SwrData?.pagination.total || 10
 
-    console.log(data)
+    if (!SwrData && isLoading) return <Skeleton active />
+
+    const handleSearch = (values: any) => {
+        if( values.search && values.search.length > 0 )
+        {
+            console.log("hii")
+            setSearch(values.search)
+            form.resetFields()
+            setCurrentPage(1)
+        }
+        else
+        {
+            setSearch("")
+        }
+    }
+
+    console.log(branch)
 
     return (
         <div className="flex-1 flex flex-col bg-slate-50 min-h-screen">
@@ -135,21 +153,32 @@ export default function AlumniDirectory() {
                 <div className="border border-slate-200 rounded-xl px-3 md:px-4 py-3 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 bg-white shadow-sm">
                     {/* Search */}
                     <div className="w-full sm:flex-1 sm:min-w-[220px] flex items-center gap-2 px-3 py-2 border border-slate-200 rounded-lg bg-white">
-                        <Search size={14} className="text-slate-400 flex-shrink-0" />
-                        <input
-                            type="text"
-                            placeholder="Search by name, company, or skill..."
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            className="bg-transparent border-none outline-none text-[13px] text-slate-700 placeholder:text-slate-400 w-full"
-                        />
+                        
+                        <Form 
+                            onFinish={handleSearch} 
+                            form={form}
+                            className="flex justify-between w-full !m-0 !p-0"
+                            size="small"
+                        >
+                            <Form.Item 
+                                name="search"
+                                className="flex-1 w-full m-0 p-0 "
+                                style={{ marginBottom: 0 }}
+                            >
+                                <input
+                                    type="text"
+                                    placeholder="Search by name, company, or skill..."
+                                    className="bg-transparent border-none outline-none text-[13px] text-slate-700 placeholder:text-slate-400 w-full"
+                                />
+                            </Form.Item>
+                            <AntdButton htmlType="submit">
+                                <Search size={14} className="text-slate-400 flex-shrink-0" />
+                            </AntdButton>
+                        </Form>
                     </div>
 
                     {/* Department */}
-                    <Select onValueChange={(value) => setBranch(value)}>
+                    <Select onValueChange={(value) => setBranch(value)} value={branch}>
                         <SelectTrigger className="w-full sm:w-auto sm:min-w-[130px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
                             <Building size={13} className="text-slate-400" />
                             <SelectValue placeholder="Department" />
@@ -158,7 +187,7 @@ export default function AlumniDirectory() {
                             <SelectItem value="all">all</SelectItem>
                             <SelectItem value="Computer Science & Engineering">Computer Science</SelectItem>
                             <SelectItem value="Computer Science & Engineering(Cyber Security)">Computer Science & Engineering(Cyber Security)</SelectItem>
-                            <SelectItem value="Civil Engineerin">Civil Engineerin</SelectItem>
+                            <SelectItem value="Civil Engineering">Civil Engineering</SelectItem>
                             <SelectItem value="VLSI">VLSI</SelectItem>
                             <SelectItem value="Electronics & Communication">Electronics & Communication</SelectItem>
                             <SelectItem value="Mechanical Engineering">Mechanical Engineering</SelectItem>
@@ -167,13 +196,13 @@ export default function AlumniDirectory() {
                     </Select>
 
                     {/* Batch Year */}
-                    <Select onValueChange={(value) => setBatch(value)}>
+                    <Select onValueChange={(value) => setBatch(value)} value={batch}>
                         <SelectTrigger className="w-full sm:w-auto sm:min-w-[120px] border-slate-200 text-[13px] text-slate-600 font-medium h-9 gap-1.5 rounded-lg">
                             <Calendar size={13} className="text-slate-400" />
                             <SelectValue placeholder="Batch Year" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">all</SelectItem>
+                            <SelectItem value="all" >all</SelectItem>
                             {[2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022].map((y) => (
                                 <SelectItem key={y} value={String(y)}>
                                     {y}

@@ -24,6 +24,7 @@ import {
   Empty,
   message,
   Skeleton,
+  Popconfirm,
 } from "antd";
 
 import { AnnouncementModal } from "./AdminAddEditAnnouncementModel";
@@ -208,19 +209,25 @@ const AdminAnnouncements = () => {
                             <Pencil size={16} />
                           </Button>
                         </Tooltip>
-
-                        <Tooltip title="Delete">
-                          <Button
+                        
+                        <Popconfirm
+                          title="Delete Event"
+                          description="Are you sure you want to delete this event?"
+                          onConfirm={() =>
+                              handleDelete(item._id)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                            <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
-                            onClick={() =>
-                              handleDelete(item._id)
-                            }
+
                           >
                             <Trash2 size={16} />
                           </Button>
-                        </Tooltip>
+
+                        </Popconfirm>
                       </Space>
                     </TableCell>
                   </TableRow>

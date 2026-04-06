@@ -47,9 +47,10 @@ export default function AlumniSettingsPage() {
         password : values.currentPassword,
         newPassword : values.newPassword
       }
-      const { data } = await axios.put('/api/user/change-password', payload)
+      await axios.put('/api/user/change-password', payload)
 
       message.success("password Updated successfully!")
+      handleClose()
     }
     catch(err)
     {

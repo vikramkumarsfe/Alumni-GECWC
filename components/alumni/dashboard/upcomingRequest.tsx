@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { fetcher } from "@/utils/fetcher"
-import { Skeleton } from "antd"
+import { Empty, Skeleton } from "antd"
 import { UserPlus } from "lucide-react"
 import Link from "next/link"
 import useSWR from "swr"
@@ -25,7 +25,7 @@ const IncomingRequests = () =>{
 
   return (
     <Card className="border border-slate-200 shadow-sm">
-      <CardHeader className="px-6 py-5">
+      <CardHeader className="px-6">
         <div className="flex justify-between items-center">
           <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
             <UserPlus className="w-4 h-4 text-indigo-600" /> Incoming Requests
@@ -38,7 +38,10 @@ const IncomingRequests = () =>{
         </div>
       </CardHeader>
       <CardContent className="px-6 pb-6 flex flex-col divide-y divide-slate-100">
-        {PENDING.map((r : any) => (
+        {PENDING.length === 0 ?
+        <Empty />
+        :
+        PENDING.map((r : any) => (
           <div key={r.otherUser.fullname || "N/A"} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
             <div className="flex items-center gap-3">
               <Avatar className="w-11 h-11">
