@@ -65,16 +65,12 @@ const AdminAlumni = () => {
       render: (text: string, record: Alumni) => (
         <div className="flex items-center gap-3">
           <Avatar className="w-10 h-10 rounded-full border border-slate-100 shadow-sm mb-2">
-                    <AvatarImage src={record.image } alt={record.name || "N/A"} />
-                    <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-lg">
-                      {text?.split(" ").map((n: any) => n[0]).join("")}
-                    </AvatarFallback>
-                  </Avatar>
-          {/* <Avatar
-            src={record.image}
-            size={40}
-            className="border border-slate-200 shadow-sm"
-          /> */}
+            <AvatarImage src={record.image } alt={record.name || "N/A"} />
+            <AvatarFallback className="bg-slate-200 text-slate-600 font-semibold text-lg">
+              {text?.split(" ").map((n: any) => n[0]).join("")}
+            </AvatarFallback>
+          </Avatar>
+
           <div className="flex flex-col">
             <span className="font-semibold text-slate-900 text-sm leading-tight">{text}</span>
             <span className="text-xs text-slate-500">{record.email}</span>
