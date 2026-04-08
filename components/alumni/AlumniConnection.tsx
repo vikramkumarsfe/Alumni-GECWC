@@ -16,14 +16,19 @@ function ConnectionCard({ c }: { c: any }) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleCancelRequest = async (id: string) => {
-    try {
+    try
+    {
       setLoadingId(id);
       await axios.delete(`/api/connection/${id}`);
       mutate('/api/connection/all');
       message.success("Connection removed");
-    } catch (err) {
+    }
+    catch (err) 
+    {
       return clientCatchError(err);
-    } finally {
+    }
+    finally 
+    {
       setLoadingId(null);
     }
   };

@@ -1,7 +1,6 @@
 'use client'
 
-import { Users, UserPlus, MessageSquare, GraduationCap, Briefcase, Search, Edit3, MessageCircle, Bell, ChevronDown, Network, Clock, MapPin, Video, Award, CalendarCheck, X, Check } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Users, GraduationCap,  Search, Edit3, MessageCircle} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSession } from 'next-auth/react'
@@ -10,9 +9,12 @@ import RecentChats from '../student/dashboard/recentChats'
 import UpcomingEvents from '../student/dashboard/events'
 import Link from 'next/link'
 import IncomingRequests from './dashboard/upcomingRequest'
+import clientCatchError from '@/utils/clientCatchError'
+import axios from 'axios'
+import { usePushNotifications } from "@/hooks/usePushNotifications";
+
 
 const { Text } = Typography
-
 
 const quickActions = [
   { label: 'Update Profile', icon: Edit3 , link : "/alumni/profile/edit"},
@@ -23,6 +25,8 @@ const quickActions = [
 
 function HeroCard() {
   const { data: session, status, update } = useSession();
+  const { token } = usePushNotifications();
+
 
     if (status === "loading") {
         return (
@@ -41,6 +45,23 @@ function HeroCard() {
     }
 
     const name = session.user.name;
+
+    const handleNotification = async () => {
+    try {
+      if (!token) {
+        alert("Enable notifications first");
+        return;
+      }
+
+      await axios.post("/api/send-notification", {
+        token,
+      });
+
+      console.log("Notification sent");
+    } catch (err) {
+      return clientCatchError(err);
+    }
+  };
   return (
     <Card className="border border-slate-200 shadow-none">
       <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -56,6 +77,9 @@ function HeroCard() {
               Complete Profile
             </Button>
           </Link>
+          <Button onClick={handleNotification}>
+            send Notification
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -97,6 +121,7 @@ function MentorshipRequests() {
 }
 
 export default function AlumniDashboardPage() {
+
   return (
     <div className="flex overflow-hidden bg-slate-50">
         <div className="flex-1 overflow-y-auto  sm:px-6 sm:py-6">
