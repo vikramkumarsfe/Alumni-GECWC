@@ -40,7 +40,7 @@ const menus = [
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
 
-  const isBlacklist = ['/login', '/signup'].some(path =>
+  const isBlacklist = ['/login', '/signup', '/thankyou'].some(path =>
     pathname.startsWith(path)
   )
 

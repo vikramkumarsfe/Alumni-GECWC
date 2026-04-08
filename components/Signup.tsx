@@ -17,7 +17,7 @@ const Signup = () => {
       setLoading(true)
       await axios.post('/api/user/signup', values)
       message.success("Awaiting approval. Confirmation email soon.")
-      router.push('/')
+      router.push('/thankyou') 
     }
     catch (err) {
       clientCatchError(err)
