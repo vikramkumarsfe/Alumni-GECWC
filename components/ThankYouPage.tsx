@@ -81,7 +81,7 @@ export default function ThankYou() {
 
                 {/* RIGHT (same illustration, no change needed) */}
                 <div
-                    className="reveal order-first flex items-center justify-center md:order-last"
+                    className=" hidden reveal order-first flex items-center justify-center md:order-last "
                     style={{ opacity: 0, transform: "translateY(22px)", transition: "opacity 0.5s ease, transform 0.5s ease" }}
                 >
                     <div
