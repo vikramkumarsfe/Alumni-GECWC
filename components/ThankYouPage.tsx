@@ -93,7 +93,7 @@ export default function ThankYou() {
                         }}
                     >
                         <Image
-                            src="/images/thankyou.jpg"   
+                            src="/images/thankyou.png"   
                             alt="Thank You Illustration"
                             width={400}
                             height={400}
