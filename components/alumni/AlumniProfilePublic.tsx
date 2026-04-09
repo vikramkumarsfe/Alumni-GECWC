@@ -44,6 +44,8 @@ export default function AlumniProfilePage() {
 
   const profile = data?.user;
 
+  console.log(profile)
+
   const handleAction = async (method: 'post' | 'put' | 'delete', url: string, payload: any, successMsg: string, isMentorship = false) => {
     try {
       if (method === 'post') await axios.post(url, payload);
@@ -51,6 +53,16 @@ export default function AlumniProfilePage() {
       else if (method === 'delete') await axios.delete(url);
 
       message.success(successMsg);
+
+      // 2. Send notification ONLY for connection request
+    if (method === "post" && url === "/api/connection") {
+      if (profile?.FCM) {
+        const payload = {
+          token: profile.FCM,
+        }
+        await axios.post("/api/send-notification",payload );
+      }
+    }
       mutate(isMentorship ? `/api/mentorship/${alumniId}` : `/api/connection/${alumniId}`);
     } catch (err) {
       return clientCatchError(err);

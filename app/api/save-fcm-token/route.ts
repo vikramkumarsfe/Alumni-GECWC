@@ -23,7 +23,7 @@ export const POST = async (req: NextRequest) => {
       FCM: token,
     }, { new : true});
     console.log(data)
-
+    
     return res.json({ success: true });
   } catch (err) {
     return ServerCatchError(err)
