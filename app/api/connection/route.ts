@@ -55,8 +55,8 @@ export const GET = async (req: NextRequest) => {
                 { receiver: id }
             ]
         })
-        .populate('sender', 'fullname image profile')   // First, populate the sender
-        .populate('receiver', 'fullname image profile') // Second, populate the receiver
+        .populate('sender', 'fullname image profile FCM')   // First, populate the sender
+        .populate('receiver', 'fullname image profile FCM') // Second, populate the receiver
         .sort({ updatedAt : -1})
         
         if(!connection)

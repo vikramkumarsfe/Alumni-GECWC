@@ -12,6 +12,7 @@ const items = [
   { title: "Dashboard", url: "/alumni", icon: LayoutDashboard },
   { title: "My Profile", url: "/alumni/profile", icon: UserCircle },
   { title: "Alumni Directory", url: "/alumni/directory", icon: Users },
+  { title: "Explore Students", url: "/alumni/explore-students", icon: Users },
   { title: "Connections", url: "/alumni/connections", icon : UserCircle },
   { title: "Chats", url: "/alumni/chats", icon: MessageSquare },
   { title: "Events", url: "/alumni/events", icon: Calendar }, 

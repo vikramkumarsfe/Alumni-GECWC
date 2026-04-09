@@ -59,7 +59,7 @@ const AdminAppSidebar = () => {
       <SidebarFooter className="pb-6">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={()=>signOut()}>
+            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer" onClick={()=>signOut()}>
                 <LogOut className="size-4" />
                 <span className="text-black">Logout</span> 
             </SidebarMenuButton>

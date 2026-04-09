@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { useSession } from 'next-auth/react'
 import { Skeleton } from 'antd'
 import AuthSection from '../authSection'
+import NotificationBell from '../shared/NotificationBell'
 
 const StudentDashboardHeader = () => {
 
@@ -30,6 +31,8 @@ const StudentDashboardHeader = () => {
 
       {/* Right: actions */}
       <div className="flex items-center gap-3">
+
+      <NotificationBell redirectUrl="/student/announcements" />
 
         {/* User dropdown */}
         <DropdownMenu>

@@ -24,7 +24,7 @@ const Signup = () => {
         return
       }
       message.success("Login successful")
-      router.push('/alumni/dashboard')
+      router.push('/alumni')
     } catch (err) {
       clientCatchError(err)
     } finally {

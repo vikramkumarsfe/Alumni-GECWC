@@ -78,7 +78,6 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   if (isBlacklist) 
     return <> {children} </>
 
-  usePushNotifications();
 
   // --- STUDENT SYSTEM ---
   if (isStudentSystem) {
