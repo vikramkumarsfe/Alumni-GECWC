@@ -218,6 +218,7 @@ export async function GET(
     const education = await AcademicModel.find({ user: id })
     const experience = await ExperienceModel.find({ user: id})
 
+
     if (!user)
       return res.json({ message: "User not found" }, { status: 404 })
 

@@ -11,7 +11,9 @@ import {
   ArrowLeft, MapPin, GraduationCap, Building, Briefcase, 
   User, Compass, Award, Link2, Mail, Github, Linkedin, 
   UserPlus, MessageSquare, CheckCircle2, BookOpen, 
-  Building2, TwitterIcon, Clock, Check, Zap 
+  Building2, TwitterIcon, Clock, Check, Zap, 
+  PhoneCall,
+  Phone
 } from "lucide-react";
 
 import { fetcher } from "@/utils/fetcher";
@@ -45,7 +47,7 @@ export default function AlumniProfilePage() {
 
   const profile = data?.user;
 
-
+  console.log(profile)
   const handleAction = async (method: 'post' | 'put' | 'delete', url: string, payload: any, successMsg: string, isMentorship = false) => {
     try {
       if (method === 'post') await axios.post(url, payload);
@@ -78,9 +80,10 @@ export default function AlumniProfilePage() {
 
   const socialLinks = [
     { icon: <Mail size={15} className="text-slate-500" />, value: profile.email, href: `mailto:${profile.email}`, isExternal: false },
-    { icon: <Linkedin size={15} className="text-slate-500" />, value: profile.socialLinks?.linkedIn, href: `https://${profile.socialLinks?.linkedIn}`, isExternal: true },
-    { icon: <Github size={15} className="text-slate-500" />, value: profile.socialLinks?.github, href: `https://${profile.socialLinks?.github}`, isExternal: true },
-    { icon: <TwitterIcon size={15} className="text-slate-500" />, value: profile.socialLinks?.twitter, href: `https://${profile.socialLinks?.twitter}`, isExternal: true },
+    { icon: <Phone size={15} className="text-slate-500" />, value: profile.mobile, href: `tel:${profile.mobile}`, isExternal: false },
+    { icon: <Linkedin size={15} className="text-slate-500" />, value: profile.socialLinks?.linkedIn, href: `${profile.socialLinks?.linkedIn}`, isExternal: true },
+    { icon: <Github size={15} className="text-slate-500" />, value: profile.socialLinks?.github, href: `${profile.socialLinks?.github}`, isExternal: true },
+    { icon: <TwitterIcon size={15} className="text-slate-500" />, value: profile.socialLinks?.twitter, href: `${profile.socialLinks?.twitter}`, isExternal: true },
   ].filter(link => link.value);
 
   return (
@@ -226,7 +229,7 @@ export default function AlumniProfilePage() {
               <div className="flex flex-col gap-4">
                 {socialLinks.length > 0 ? (
                   socialLinks.map((link, i) => (
-                    <a key={i} href={link.href} className="flex items-center gap-3 group" target={link.isExternal ? "_blank" : undefined}>
+                    <a key={i} href={link.href} className="flex items-center gap-3 group cursor-pointer" target={link.isExternal ? "_blank" : undefined}>
                       <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">{link.icon}</div>
                       <span className="text-[14px] text-slate-700 group-hover:text-blue-600 transition-colors truncate">{link.value}</span>
                     </a>
@@ -234,6 +237,7 @@ export default function AlumniProfilePage() {
                 ) : (
                   <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No contact links" />
                 )}
+
               </div>
             </div>
           </div>
