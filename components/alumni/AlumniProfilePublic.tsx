@@ -37,8 +37,10 @@ export default function AlumniProfilePage() {
     if (mentorshipData) setMentorship(mentorshipData);
   }, [connectionData, mentorshipData]);
 
-  if (error) return <ErrorState />;
-  if (isLoading) return <div className="p-10"><Skeleton active /></div>;
+  if (error) 
+    return <ErrorState />;
+  if (isLoading) 
+    return <div className="p-10"><Skeleton active /></div>;
 
   const profile = data?.user;
 
@@ -70,7 +72,7 @@ export default function AlumniProfilePage() {
   return (
     <div className="bg-slate-50 min-h-screen w-full">
       <div className="flex flex-col gap-3 max-w-[1200px] mx-auto w-full p-2">
-        
+
         <Link href="/alumni/directory">
           <button className="cursor-pointer flex items-center gap-2 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors w-fit">
             <ArrowLeft size={15} /> Back to Directory

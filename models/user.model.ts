@@ -110,6 +110,10 @@ const UserSchema = new Schema({
     DOB : {
         type : Date,
         default : null
+    },
+    FCM : {
+        type : String,
+        default : null
     }
 },{timestamps :  true})
 

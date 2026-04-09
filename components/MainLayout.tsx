@@ -76,10 +76,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (isBlacklist) 
-    return 
-    <>
-      {children}
-    </>
+    return <> {children} </>
 
   usePushNotifications();
 

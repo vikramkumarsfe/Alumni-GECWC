@@ -5,6 +5,9 @@ import {
   requestNotificationPermission,
   onMessageListener,
 } from "@/lib/firebase";
+import clientCatchError from "@/utils/clientCatchError";
+import axios from "axios";
+import { message } from "antd";
 
 export function usePushNotifications() {
   const [token, setToken] = useState<string | null>(null);
@@ -87,12 +90,20 @@ export function usePushNotifications() {
     try {
       const t = await requestNotificationPermission();
 
-      if (t) {
+      if (t) 
+      {
         setToken(t);
         localStorage.setItem("fcmToken", t);
+        const payload = {
+          token : t
+        }
+
+        await axios.post('/api/save-fcm-token',payload)
+        
+        message.success("notifcation enabled")
       }
     } catch (err) {
-      console.error("Enable notification error:", err);
+      return clientCatchError(err)
     }
   };
 
