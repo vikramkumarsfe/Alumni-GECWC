@@ -18,6 +18,7 @@ const mainNav = [
 
 const networkNav = [
   { label: 'Alumni Directory', href: '/student/directory', icon: Users },
+  { label: 'Explore Students', href: '/student/explore-students', icon: Users },
   { label: 'connections', href: '/student/connection', icon: UserCircle },
   { label: 'Chat with Alumni', href: '/student/chat', icon: MessageSquare },
 ]
@@ -59,7 +60,7 @@ const StudentAppSidebar = () => {
         <Logo />
       </SidebarHeader>
 
-      <SidebarContent className="px-3 py-4">
+      <SidebarContent className="px-3">
 
         {/* Main */}
         <SidebarGroup>
@@ -86,7 +87,7 @@ const StudentAppSidebar = () => {
 
         {/* Network */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-2 mb-1">
+          <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-2">
             Network
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -111,7 +112,7 @@ const StudentAppSidebar = () => {
 
         {/* Opportunities */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-2 mb-1">
+          <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-2 ">
             Opportunities
           </SidebarGroupLabel>
           <SidebarGroupContent>

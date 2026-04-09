@@ -49,6 +49,17 @@ export default function AlumniProfilePage() {
       else if (method === 'delete') await axios.delete(url);
 
       message.success(successMsg);
+
+        // 2. Send notification ONLY for connection request
+      if (method === "post" && url === "/api/connection") {
+        if (profile?.FCM) {
+          const payload = {
+            token: profile.FCM,
+          }
+          await axios.post("/api/send-notification",payload );
+        }
+      }
+      
       mutate(isMentorship ? `/api/mentorship/${alumniId}` : `/api/connection/${alumniId}`);
     } catch (err) {
       return clientCatchError(err);
@@ -103,7 +114,7 @@ export default function AlumniProfilePage() {
                 <h1 className="text-[22px] sm:text-[28px] font-bold text-slate-900 leading-tight">{profile.fullname}</h1>
                 {profile.isActive === "approved" && (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-50 text-blue-400 text-[12px] sm:text-[13px] font-semibold whitespace-nowrap">
-                    <CheckCircle2 size={12} /> Verified Alumni
+                    <CheckCircle2 size={12} />{ profile.role === "alumni" ?  "Verified Alumni" : "Verified Student"}
                   </span>
                 )}
               </div>

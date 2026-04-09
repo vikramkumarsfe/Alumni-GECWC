@@ -59,7 +59,8 @@ export const authOptions: NextAuthOptions = {
           DOB: user.DOB,
           isActive: user.isActive,
 
-          gender: user.gender
+          gender: user.gender,
+          FCM : user.FCM
         }
       }
     }),
@@ -104,6 +105,7 @@ export const authOptions: NextAuthOptions = {
           user.socialLinks = newUser.socialLinks
           user.DOB = newUser.DOB
           user.isActive = newUser.isActive
+          user.FCM = newUser.FCM
         } else {
           user.id = existingUser._id.toString()
           user.role = existingUser.role
@@ -118,6 +120,7 @@ export const authOptions: NextAuthOptions = {
           user.socialLinks = existingUser.socialLinks
           user.DOB = existingUser.DOB
           user.isActive = existingUser.isActive
+          user.FCM = existingUser.FCM
         }
       }
       return true
@@ -143,6 +146,7 @@ export const authOptions: NextAuthOptions = {
         token.DOB = user.DOB
         token.isActive = user.isActive
         token.gender = user.gender
+        token.FCM = user.FCM
       }
 
       // Update session
@@ -161,7 +165,8 @@ export const authOptions: NextAuthOptions = {
           "socialLinks",
           "DOB",
           "isActive",
-          "gender"
+          "gender",
+          "FCM"
         ]
 
         allowedUpdates.forEach((key) => {
@@ -197,6 +202,8 @@ export const authOptions: NextAuthOptions = {
       session.user.DOB = token.DOB as any
       session.user.isActive = token.isActive as any
       session.user.gender = token.gender as any
+
+      session.user.FCM = token.FCM as any
 
       return session
     }

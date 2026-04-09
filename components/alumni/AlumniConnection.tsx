@@ -16,14 +16,19 @@ function ConnectionCard({ c }: { c: any }) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleCancelRequest = async (id: string) => {
-    try {
+    try
+    {
       setLoadingId(id);
       await axios.delete(`/api/connection/${id}`);
       mutate('/api/connection/all');
       message.success("Connection removed");
-    } catch (err) {
+    }
+    catch (err) 
+    {
       return clientCatchError(err);
-    } finally {
+    }
+    finally 
+    {
       setLoadingId(null);
     }
   };
@@ -89,11 +94,22 @@ function RequestRow({ r, type }: { r: any, type: "pending" | "sent" }) {
     }
   };
 
-  const handleApprove = async (id: string) => {
+  const handleApprove = async (id: string, fcmToken : string) => {
     try {
       setLoadingId(id);
       await axios.put(`/api/connection/${id}`, { status: "approved" });
       message.success("Request approved");
+
+      if (fcmToken) {
+        const payload = {
+          token: fcmToken,
+          title : "Alumni GECWC",
+          body : `Connection Successful 🎉. Your alumni request is approved.`
+        }
+
+        await axios.post("/api/send-notification", payload )
+      }
+
       mutate('/api/connection/all');
     } catch (err) {
       return clientCatchError(err);
@@ -130,7 +146,7 @@ function RequestRow({ r, type }: { r: any, type: "pending" | "sent" }) {
             >Reject</AntdButton>
             <Button 
               className="flex-1 sm:flex-none" 
-              onClick={() => handleApprove(r._id)}
+              onClick={() => handleApprove(r._id, r.otherUser.FCM)}
               disabled={loadingId === r._id}
             >Accept</Button>
           </>
@@ -152,8 +168,10 @@ export default function AlumniConnectionsPage() {
   const [activeTab, setActiveTab] = useState(0);
   const { data, isLoading, error } = useSWR('/api/connection/all', fetcher);
 
-  if (isLoading) return <div className="p-8"><Skeleton active avatar paragraph={{ rows: 4 }} /></div>;
-  if (error) return <ErrorState />;
+  if (isLoading) 
+    return <div className="p-8"><Skeleton active avatar paragraph={{ rows: 4 }} /></div>;
+  if (error) 
+    return <ErrorState />;
 
   const PENDING = data?.received || [];
   const CONNECTIONS = data?.connected || [];

@@ -11,7 +11,9 @@ import {
   ArrowLeft, MapPin, GraduationCap, Building, Briefcase, 
   User, Compass, Award, Link2, Mail, Github, Linkedin, 
   UserPlus, MessageSquare, CheckCircle2, BookOpen, 
-  Building2, TwitterIcon, Clock, Check, Zap 
+  Building2, TwitterIcon, Clock, Check, Zap, 
+  PhoneCall,
+  Phone
 } from "lucide-react";
 
 import { fetcher } from "@/utils/fetcher";
@@ -32,16 +34,20 @@ export default function AlumniProfilePage() {
   const { data: connectionData } = useSWR(`/api/connection/${alumniId}`, fetcher);
   const { data: mentorshipData } = useSWR(`/api/mentorship/${alumniId}`, fetcher);
 
+  
   useEffect(() => {
     if (connectionData) setConnection(connectionData);
     if (mentorshipData) setMentorship(mentorshipData);
   }, [connectionData, mentorshipData]);
 
-  if (error) return <ErrorState />;
-  if (isLoading) return <div className="p-10"><Skeleton active /></div>;
+  if (error) 
+    return <ErrorState />;
+  if (isLoading) 
+    return <div className="p-10"><Skeleton active /></div>;
 
   const profile = data?.user;
 
+  console.log(profile)
   const handleAction = async (method: 'post' | 'put' | 'delete', url: string, payload: any, successMsg: string, isMentorship = false) => {
     try {
       if (method === 'post') await axios.post(url, payload);
@@ -49,6 +55,18 @@ export default function AlumniProfilePage() {
       else if (method === 'delete') await axios.delete(url);
 
       message.success(successMsg);
+
+      // 2. Send notification ONLY for connection request
+    if (method === "post" && url === "/api/connection") {
+      if (profile?.FCM) {
+        const payload = {
+          token: profile.FCM,
+          title : "New Connection Alert 🔔",
+          body : `${session?.user.name} has sent you a connection request.`
+        }
+        await axios.post("/api/send-notification",payload );
+      }
+    }
       mutate(isMentorship ? `/api/mentorship/${alumniId}` : `/api/connection/${alumniId}`);
     } catch (err) {
       return clientCatchError(err);
@@ -62,15 +80,16 @@ export default function AlumniProfilePage() {
 
   const socialLinks = [
     { icon: <Mail size={15} className="text-slate-500" />, value: profile.email, href: `mailto:${profile.email}`, isExternal: false },
-    { icon: <Linkedin size={15} className="text-slate-500" />, value: profile.socialLinks?.linkedIn, href: `https://${profile.socialLinks?.linkedIn}`, isExternal: true },
-    { icon: <Github size={15} className="text-slate-500" />, value: profile.socialLinks?.github, href: `https://${profile.socialLinks?.github}`, isExternal: true },
-    { icon: <TwitterIcon size={15} className="text-slate-500" />, value: profile.socialLinks?.twitter, href: `https://${profile.socialLinks?.twitter}`, isExternal: true },
+    { icon: <Phone size={15} className="text-slate-500" />, value: profile.mobile, href: `tel:${profile.mobile}`, isExternal: false },
+    { icon: <Linkedin size={15} className="text-slate-500" />, value: profile.socialLinks?.linkedIn, href: `${profile.socialLinks?.linkedIn}`, isExternal: true },
+    { icon: <Github size={15} className="text-slate-500" />, value: profile.socialLinks?.github, href: `${profile.socialLinks?.github}`, isExternal: true },
+    { icon: <TwitterIcon size={15} className="text-slate-500" />, value: profile.socialLinks?.twitter, href: `${profile.socialLinks?.twitter}`, isExternal: true },
   ].filter(link => link.value);
 
   return (
     <div className="bg-slate-50 min-h-screen w-full">
       <div className="flex flex-col gap-3 max-w-[1200px] mx-auto w-full p-2">
-        
+
         <Link href="/alumni/directory">
           <button className="cursor-pointer flex items-center gap-2 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors w-fit">
             <ArrowLeft size={15} /> Back to Directory
@@ -103,7 +122,7 @@ export default function AlumniProfilePage() {
                 <h1 className="text-[22px] sm:text-[28px] font-bold text-slate-900 leading-tight">{profile.fullname}</h1>
                 {profile.isActive === "approved" && (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-50 text-blue-400 text-[12px] sm:text-[13px] font-semibold whitespace-nowrap">
-                    <CheckCircle2 size={12} /> Verified Alumni
+                    <CheckCircle2 size={12} /> { profile.role === "alumni" ? "Verified Alumni" : "Verified Student"}
                   </span>
                 )}
               </div>
@@ -210,7 +229,7 @@ export default function AlumniProfilePage() {
               <div className="flex flex-col gap-4">
                 {socialLinks.length > 0 ? (
                   socialLinks.map((link, i) => (
-                    <a key={i} href={link.href} className="flex items-center gap-3 group" target={link.isExternal ? "_blank" : undefined}>
+                    <a key={i} href={link.href} className="flex items-center gap-3 group cursor-pointer" target={link.isExternal ? "_blank" : undefined}>
                       <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">{link.icon}</div>
                       <span className="text-[14px] text-slate-700 group-hover:text-blue-600 transition-colors truncate">{link.value}</span>
                     </a>
@@ -218,6 +237,7 @@ export default function AlumniProfilePage() {
                 ) : (
                   <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No contact links" />
                 )}
+
               </div>
             </div>
           </div>

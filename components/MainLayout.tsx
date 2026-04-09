@@ -28,6 +28,7 @@ import AdminDashboardHeader from './public/adminDashboardHeader';
 import { AppSidebar } from './public/AppSidebar';
 import StudentAppSidebar from './public/studentAppSidebar';
 import StudentDashboardHeader from './public/studentDashboardHeader';
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const { Text } = Typography
 
@@ -39,6 +40,7 @@ const menus = [
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname()
+  
 
   const isBlacklist = ['/login', '/signup', '/thankyou'].some(path =>
     pathname.startsWith(path)
@@ -73,7 +75,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     ]
   }
 
-  if (isBlacklist) return <>{children}</>
+  if (isBlacklist) 
+    return <> {children} </>
+
 
   // --- STUDENT SYSTEM ---
   if (isStudentSystem) {
