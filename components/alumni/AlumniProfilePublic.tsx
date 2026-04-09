@@ -61,6 +61,7 @@ export default function AlumniProfilePage() {
           token: profile.FCM,
         }
         await axios.post("/api/send-notification",payload );
+        
       }
     }
       mutate(isMentorship ? `/api/mentorship/${alumniId}` : `/api/connection/${alumniId}`);

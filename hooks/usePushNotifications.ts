@@ -16,9 +16,10 @@ export function usePushNotifications() {
     body?: string;
   } | null>(null);
 
-  // ✅ Register service worker (safe)
+  //  Register service worker (safe)
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") 
+      return;
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -29,7 +30,7 @@ export function usePushNotifications() {
     }
   }, []);
 
-  // ✅ Load token from localStorage
+  //  Load token from localStorage
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -37,80 +38,67 @@ export function usePushNotifications() {
     if (saved) setToken(saved);
   }, []);
 
-  // ✅ Listen for foreground messages (safe + cleanup)
+  //  Listen for foreground messages (safe + cleanup)
   useEffect(() => {
-    let isMounted = true;
+  let unsubscribe: any;
 
-    const listen = async () => {
-      try {
-        const payload: any = await onMessageListener();
-        if (!payload || !isMounted) return;
+  const init = async () => {
+    unsubscribe = await onMessageListener((payload: any) => {
+      const title = payload.notification?.title || "New Notification";
+      const body = payload.notification?.body || "";
 
-        const title = payload.notification?.title || "New Notification";
-        const body = payload.notification?.body || "";
+      setNotification({ title, body });
 
-        // In-app notification
-        setNotification({ title, body });
-
-        // System notification
-        if (
-          typeof window !== "undefined" &&
-          "Notification" in window &&
-          Notification.permission === "granted"
-        ) {
-          const notif = new Notification(title, {
-            body,
-            icon: "/icon-192x192.png",
-          });
-
-          notif.onclick = () => {
-            window.focus();
-            notif.close();
-          };
-        }
-
-        // Auto hide toast
-        setTimeout(() => {
-          if (isMounted) setNotification(null);
-        }, 4000);
-      } catch (err) {
-        console.error("FCM listener error:", err);
+      if (Notification.permission === "granted") {
+        new Notification(title, { body });
       }
-    };
+    });
+  };
 
-    listen();
+  init();
 
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  return () => {
+    if (unsubscribe) unsubscribe();
+  };
+}, []);
 
-  // ✅ Enable notifications
+  //  Enable notifications
   const enableNotifications = async () => {
-    try {
-      const t = await requestNotificationPermission();
+  try {
+    if (token) {
+      message.info("Already enabled");
+      return;
+    }
 
-      if (t) 
-      {
-        setToken(t);
-        localStorage.setItem("fcmToken", t);
-        const payload = {
-          token : t
-        }
+    const t = await requestNotificationPermission();
 
-        await axios.post('/api/save-fcm-token',payload)
-        
-        message.success("notifcation enabled")
-      }
-    } catch (err) {
-      return clientCatchError(err)
+    if (!t) {
+      message.error("Permission denied");
+      return;
+    }
+
+    setToken(t);
+    localStorage.setItem("fcmToken", t);
+
+    await axios.post("/api/save-fcm-token", { token: t });
+
+    message.success("Notification enabled");
+  } catch (err) {
+    return clientCatchError(err);
     }
   };
 
-  // ✅ Clear token
-  const clearToken = () => {
-    setToken(null);
-    localStorage.removeItem("fcmToken");
+  const clearToken = async () => {
+    try {
+      await axios.post("/api/remove-fcm-token");
+
+      setToken(null);
+      localStorage.removeItem("fcmToken");
+
+      message.success("Notifications disabled");
+    } catch (err) {
+      return clientCatchError(err);
+    }
   };
 
   return {

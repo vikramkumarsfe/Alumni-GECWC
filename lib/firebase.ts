@@ -53,13 +53,22 @@ export const requestNotificationPermission = async () => {
   }
 };
 
-export const onMessageListener = async () => {
+// export const onMessageListener = async () => {
+//   const messaging = await getFirebaseMessaging();
+//   if (!messaging) return;
+
+//   return new Promise((resolve) => {
+//     onMessage(messaging, (payload) => {
+//       resolve(payload);
+//     });
+//   });
+// };
+
+export const onMessageListener = async (callback: any) => {
   const messaging = await getFirebaseMessaging();
   if (!messaging) return;
 
-  return new Promise((resolve) => {
-    onMessage(messaging, (payload) => {
-      resolve(payload);
-    });
+  return onMessage(messaging, (payload) => {
+    callback(payload);
   });
 };

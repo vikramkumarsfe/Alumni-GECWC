@@ -1,17 +1,12 @@
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { Search, Bell, Mail } from "lucide-react"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { Search,  Mail } from "lucide-react"
 import { useSession } from "next-auth/react";
 import { Skeleton } from "antd";
-import Link from "next/link";
 import AuthSection from "./authSection";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
+import NotificationBell from "./shared/NotificationBell";
 
 const DashboardHeader = () =>  {
   const { data: session } = useSession();
-
-  // ADD THIS
-  const { token, enableNotifications } = usePushNotifications();
 
   const name = session?.user.name;
   if (!name) return <Skeleton active />;
@@ -37,29 +32,7 @@ const DashboardHeader = () =>  {
 
         <Mail className="h-5 w-5 text-muted-foreground cursor-pointer" />
 
-        {/* 🔔 Notification Bell + Enable Button */}
-        <div className="flex items-center gap-2">
-          <Link href="/alumni/announcements">
-            <Bell className="h-5 w-5 text-muted-foreground cursor-pointer" />
-          </Link>
-
-          {/* ✅ ENABLE BUTTON */}
-          {!token && (
-            <button
-              onClick={enableNotifications}
-              className="text-xs bg-violet-600 text-white px-2 py-1 rounded"
-            >
-              Enable
-            </button>
-          )}
-
-          {/* ✅ Enabled State */}
-          {token && (
-            <span className="text-xs text-green-600 font-medium">
-              ON
-            </span>
-          )}
-        </div>
+        <NotificationBell redirectUrl="/alumni/announcements" />
 
         {/* USER */}
         <div className="flex items-center gap-2 cursor-pointer">

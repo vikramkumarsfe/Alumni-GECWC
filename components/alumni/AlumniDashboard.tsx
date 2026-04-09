@@ -25,7 +25,6 @@ const quickActions = [
 
 function HeroCard() {
   const { data: session, status, update } = useSession();
-  const { token } = usePushNotifications();
 
 
     if (status === "loading") {
@@ -46,22 +45,6 @@ function HeroCard() {
 
     const name = session.user.name;
 
-    const handleNotification = async () => {
-    try {
-      if (!token) {
-        alert("Enable notifications first");
-        return;
-      }
-
-      await axios.post("/api/send-notification", {
-        token,
-      });
-
-      console.log("Notification sent");
-    } catch (err) {
-      return clientCatchError(err);
-    }
-  };
   return (
     <Card className="border border-slate-200 shadow-none">
       <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -77,9 +60,6 @@ function HeroCard() {
               Complete Profile
             </Button>
           </Link>
-          <Button onClick={handleNotification}>
-            send Notification
-          </Button>
         </div>
       </CardContent>
     </Card>
