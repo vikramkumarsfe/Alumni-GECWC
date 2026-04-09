@@ -169,7 +169,7 @@ const ContactPage = () => {
                           <SelectItem value="registration">Alumni Registration</SelectItem>
                           <SelectItem value="mentorship">Mentorship</SelectItem>
                           <SelectItem value="jobs">Jobs & Internships</SelectItem>
-                          <SelectItem value="jobs">Others</SelectItem>
+                          <SelectItem value="others">Others</SelectItem>
                         </SelectContent>
 
                       </Select>
