@@ -32,6 +32,7 @@ export default function AlumniProfilePage() {
   const { data: connectionData } = useSWR(`/api/connection/${alumniId}`, fetcher);
   const { data: mentorshipData } = useSWR(`/api/mentorship/${alumniId}`, fetcher);
 
+  
   useEffect(() => {
     if (connectionData) setConnection(connectionData);
     if (mentorshipData) setMentorship(mentorshipData);
@@ -44,7 +45,6 @@ export default function AlumniProfilePage() {
 
   const profile = data?.user;
 
-  console.log(profile)
 
   const handleAction = async (method: 'post' | 'put' | 'delete', url: string, payload: any, successMsg: string, isMentorship = false) => {
     try {
@@ -59,9 +59,10 @@ export default function AlumniProfilePage() {
       if (profile?.FCM) {
         const payload = {
           token: profile.FCM,
+          title : "New Connection Alert 🔔",
+          body : `${session?.user.name} has sent you a connection request.`
         }
         await axios.post("/api/send-notification",payload );
-        
       }
     }
       mutate(isMentorship ? `/api/mentorship/${alumniId}` : `/api/connection/${alumniId}`);
@@ -118,7 +119,7 @@ export default function AlumniProfilePage() {
                 <h1 className="text-[22px] sm:text-[28px] font-bold text-slate-900 leading-tight">{profile.fullname}</h1>
                 {profile.isActive === "approved" && (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-slate-50 text-blue-400 text-[12px] sm:text-[13px] font-semibold whitespace-nowrap">
-                    <CheckCircle2 size={12} /> Verified Alumni
+                    <CheckCircle2 size={12} /> { profile.role === "alumni" ? "Verified Alumni" : "Verified Student"}
                   </span>
                 )}
               </div>

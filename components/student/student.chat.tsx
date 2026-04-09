@@ -105,6 +105,18 @@ const ChatPage = () => {
       }
 
       await axios.put(`/api/connection/${activeChatId}`,payload)
+
+      const fcmToken = currentChat.user.FCM
+
+      if (fcmToken) {
+        const payload = {
+          token: fcmToken,
+          title : "✨ You’ve Got a Messag",
+          body : `${session?.user?.name} sent you a message`
+        }
+        await axios.post("/api/send-notification", payload )
+      }
+      
       form.resetFields();
     } catch (err) {
       antMessage.error("Failed to send message");

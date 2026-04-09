@@ -90,7 +90,8 @@ const AlumniChatPage = () => {
       return;
 
     try {
-      if (!currentChat?.user?._id || !userId) return null;
+      if (!currentChat?.user?._id || !userId) 
+        return null;
 
       const message = {
         senderId: userId,
@@ -105,6 +106,18 @@ const AlumniChatPage = () => {
       }
 
       await axios.put(`/api/connection/${activeChatId}`,payload)
+      //for the FCM message
+      const fcmToken = currentChat.user.FCM
+
+      if (fcmToken) {
+        const payload = {
+          token: fcmToken,
+          title : "✨ You’ve Got a Messag",
+          body : `${session?.user?.name} sent you a message`
+        }
+        await axios.post("/api/send-notification", payload )
+      }
+
       form.resetFields();
     } catch (err) {
       antMessage.error("Failed to send message");

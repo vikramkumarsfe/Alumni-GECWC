@@ -21,8 +21,8 @@ export const GET = async (req: NextRequest) => {
                 { receiver: id }
             ]
         })
-        .populate('sender', 'fullname image profile role batch branch address')   // First, populate the sender
-        .populate('receiver', 'fullname image profile role batch branch address') // Second, populate the receiver
+        .populate('sender', 'fullname image profile role batch branch address FCM')   // First, populate the sender
+        .populate('receiver', 'fullname image profile role batch branch address FCM') // Second, populate the receiver
         .sort({ updatedAt : -1})
         
         if(!connection)

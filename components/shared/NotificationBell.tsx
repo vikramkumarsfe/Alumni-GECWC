@@ -1,20 +1,13 @@
 "use client";
-
-import Link from "next/link";
-import { Bell, BellRing, BellOff, CheckCircle2 } from "lucide-react";
+import {  BellRing, BellOff,  } from "lucide-react";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import axios from "axios";
 
 // Shadcn UI
 import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Badge as AntBadge } from "antd";
 import clientCatchError from "@/utils/clientCatchError";
 
 type Props = {
