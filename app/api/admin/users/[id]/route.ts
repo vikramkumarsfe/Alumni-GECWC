@@ -162,7 +162,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
                 sendTo : body.email,
                 subject : "Your Alumni GECWC Portal Role Has Been Upgraded to Alumni 🎓",
                 text : "conguralations",
-                html : roleUpgradedToAlumniTemplate(user.fullname, process.env.server || "")
+                html : roleUpgradedToAlumniTemplate(user.fullname, process.env.SERVER || "")
             })
         }
 
@@ -173,7 +173,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
                 sendTo : body.email,
                 subject : "Your Alumni GECWC Portal Role Has Been Changed to Student",
                 text : "conguralations",
-                html : roleDowngradedToStudentTemplate(user.fullname, process.env.server || "")
+                html : roleDowngradedToStudentTemplate(user.fullname, process.env.SERVER || "")
             })
         }
 
