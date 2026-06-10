@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /api/alumni/users/{id}:
+ * /api/alumni/{id}:
  *   get:
  *     summary: Get single alumni user by ID (Admin only)
  *     tags: [Admin]
