@@ -101,6 +101,8 @@ import { accountRejectedTemplate } from "@/utils/emailTemplates/accountRejected.
 import { accountDeactivatedTemplate } from "@/utils/emailTemplates/accountDeavtived.mail.template"
 import { connectDB } from "@/lib/mongodb"
 import ExperienceModel from "@/models/experience.model"
+import { roleUpgradedToAlumniTemplate } from "@/utils/emailTemplates/accountUpgraded.mail.templete"
+import { roleDowngradedToStudentTemplate } from "@/utils/emailTemplates/roleDowngrade.mail.template"
 
 
 
@@ -132,7 +134,7 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
         }
         const user = await UserModel.findByIdAndUpdate(id, { $set : payload},{ new : true})
 
-        if(body.isActive === "approved")
+        if(body.isActive === "approved") 
         {
             const data = await sendMail({
                 email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
@@ -142,7 +144,8 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
                 html: accountApprovedTemplate( user.fullname, `${process.env.SERVER}/login`)
               })
         }
-        else {
+        if(body.isActive === "inactive")
+        {
              const data = await sendMail({
                 email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
                 sendTo: body.email,
@@ -151,6 +154,29 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
                 html: accountDeactivatedTemplate(user.fullname)
               })
         }
+
+        if(body.role === "alumni")
+        {
+            await sendMail({
+                email : `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+                sendTo : body.email,
+                subject : "Your Alumni GECWC Portal Role Has Been Upgraded to Alumni 🎓",
+                text : "conguralations",
+                html : roleUpgradedToAlumniTemplate(user.fullname, process.env.server || "")
+            })
+        }
+
+        if(body.role === "student")
+        {
+            await sendMail({
+                email : `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+                sendTo : body.email,
+                subject : "Your Alumni GECWC Portal Role Has Been Changed to Student",
+                text : "conguralations",
+                html : roleDowngradedToStudentTemplate(user.fullname, process.env.server || "")
+            })
+        }
+
         return res.json(user)
     }
     catch(err)

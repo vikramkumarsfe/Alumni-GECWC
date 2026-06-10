@@ -40,13 +40,14 @@ const AdminStudent = () => {
 
   console.log(data)
 
-  const handleRoleChange = async (id: string, value : string) => {
+  const handleRoleChange = async (id: string, value : string, email:string) => {
     try {
       setLoading(true)
       const payload = {
         role : value,
+        email
       }
-      const { data } = await axios.put(`/api/admin/users/${id}`,payload )
+      await axios.put(`/api/admin/users/${id}`,payload )
 
       message.success("Role Updated")
       mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
@@ -113,7 +114,7 @@ const AdminStudent = () => {
           defaultValue={role}
           style={{ width: 120 }}
           // 2. onChange gives you the new 'value'. Grab '_id' from the 'record'.
-          onChange={(value) => handleRoleChange(record._id, value)}
+          onChange={(value) => handleRoleChange(record._id, value, record.email)}
           options={[
             { value: 'student', label: 'Student' },
             { value: 'alumni', label: 'Alumni' },

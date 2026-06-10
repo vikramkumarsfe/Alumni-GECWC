@@ -4,25 +4,25 @@ import { rateLimit } from "@daveyplate/next-rate-limit";
 
 export const middleware = async (req: NextRequest) => {
   // ✅ Apply rate limiting FIRST
-  const rateLimitResponse = await rateLimit({
-    request: req,
-    response: NextResponse.next(),
-    sessionLimit: 50,
-    ipLimit: 150,
-    sessionWindow: 10,
-    ipWindow: 10,
-    upstash: {
-      enabled: true,
-      url: process.env.UPSTASH_REDIS_REST_URL!,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-      analytics: true,
-    },
-  });
+  // const rateLimitResponse = await rateLimit({
+  //   request: req,
+  //   response: NextResponse.next(),
+  //   sessionLimit: 50,
+  //   ipLimit: 150,
+  //   sessionWindow: 10,
+  //   ipWindow: 10,
+  //   upstash: {
+  //     enabled: true,
+  //     url: process.env.UPSTASH_REDIS_REST_URL!,
+  //     token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+  //     analytics: true,
+  //   },
+  // });
 
-  // If rate limit blocks → return immediately
-  if (rateLimitResponse.status === 429) {
-    return rateLimitResponse;
-  }
+  // // If rate limit blocks → return immediately
+  // if (rateLimitResponse.status === 429) {
+  //   return rateLimitResponse;
+  // }
 
   // ✅ Auth logic
   const session = await getToken({
