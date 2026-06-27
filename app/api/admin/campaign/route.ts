@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     await Promise.all(
       batches.map((batch) =>
         qstash.publishJSON({
-          url: `https://3krccpnj-3000.inc1.devtunnels.ms/api/queue/send-email`,
+          url: `${process.env.SERVER}/api/queue/send-email`,
           body: {
             users: batch,
             month
