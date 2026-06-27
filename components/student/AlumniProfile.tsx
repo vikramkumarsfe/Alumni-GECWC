@@ -11,7 +11,8 @@ import {
   ArrowLeft, MapPin, GraduationCap, Building, Briefcase, 
   User, Compass, Award, Link2, Mail, Github, Linkedin, 
   UserPlus, MessageSquare, CheckCircle2, BookOpen, 
-  Building2, TwitterIcon, Clock, Check, Zap 
+  Building2, TwitterIcon, Clock, Check, Zap, 
+  Phone
 } from "lucide-react";
 
 import { fetcher } from "@/utils/fetcher";
@@ -41,6 +42,8 @@ export default function AlumniProfilePage() {
   if (isLoading) return <div className="p-10"><Skeleton active /></div>;
 
   const profile = data?.user;
+
+  console.log(profile)
 
   const handleAction = async (method: 'post' | 'put' | 'delete', url: string, payload: any, successMsg: string, isMentorship = false) => {
     try {
@@ -76,6 +79,7 @@ export default function AlumniProfilePage() {
     { icon: <Linkedin size={15} className="text-slate-500" />, value: profile.socialLinks?.linkedIn, href: `https://${profile.socialLinks?.linkedIn}`, isExternal: true },
     { icon: <Github size={15} className="text-slate-500" />, value: profile.socialLinks?.github, href: `https://${profile.socialLinks?.github}`, isExternal: true },
     { icon: <TwitterIcon size={15} className="text-slate-500" />, value: profile.socialLinks?.twitter, href: `https://${profile.socialLinks?.twitter}`, isExternal: true },
+    { icon: <Phone size={15} className="text-slate-500" />, value: profile.mobile, href: `callto:${profile.mobile}`, isExternal: false }
   ].filter(link => link.value);
 
   return (

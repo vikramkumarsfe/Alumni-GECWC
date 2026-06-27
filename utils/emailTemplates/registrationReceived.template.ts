@@ -4,7 +4,7 @@ export const registrationReceivedTemplate = (
 <tr>
   <td style="background:linear-gradient(135deg,#6366f1,#4338ca); padding:24px; text-align:center; color:#ffffff;"> 
     <h1 style="margin:0; font-size:24px;">Alumni GECWC Portal</h1> 
-    <p style="margin:8px 0 0; font-size:14px; opacity:0.9;">Application Received</p> 
+    <p style="margin:8px 0 0; font-size:14px; opacity:0.9;">Testing in Progress</p> 
   </td> 
 </tr> 
 <tr> 

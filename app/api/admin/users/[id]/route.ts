@@ -176,7 +176,6 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
                 html : roleDowngradedToStudentTemplate(user.fullname, process.env.SERVER || "")
             })
         }
-
         return res.json(user)
     }
     catch(err)

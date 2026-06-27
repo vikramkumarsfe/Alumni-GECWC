@@ -1,7 +1,4 @@
-export const accountApprovedTemplate = (
-  userName: string,
-  loginLink: string
-) => `
+export const accountApprovedTemplate = ( userName: string,loginLink: string) => `
 <tr>
   <td style="background:linear-gradient(135deg,#059669,#10b981); padding:24px; text-align:center; color:#ffffff;"> 
     <h1 style="margin:0; font-size:24px;">Alumni GECWC Portal</h1> 

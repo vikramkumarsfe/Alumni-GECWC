@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import useSWR, { mutate } from "swr";
@@ -11,8 +11,7 @@ import {
   ArrowLeft, MapPin, GraduationCap, Building, Briefcase, 
   User, Compass, Award, Link2, Mail, Github, Linkedin, 
   UserPlus, MessageSquare, CheckCircle2, BookOpen, 
-  Building2, TwitterIcon, Clock, Check, Zap, 
-  PhoneCall,
+  Building2, TwitterIcon, Clock, Check, Zap,
   Phone
 } from "lucide-react";
 
