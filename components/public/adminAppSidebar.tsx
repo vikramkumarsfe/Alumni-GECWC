@@ -14,6 +14,7 @@ const items = [
   { title: "Manage Announcements", href: "/admin/announcements", icon: Megaphone },
   { title: "Manage Become Alumni", href: "/admin/become-alumni", icon: UserCheck2Icon },
   { title: "Manage Feedback", href: "/admin/feedback", icon: MessageSquareQuote },
+  { title: "Campain", href: "/admin/campaign", icon: MessageSquareQuote },
   { title: "Reports", href: "/admin/reports", icon: BarChart3 },
 ]
 

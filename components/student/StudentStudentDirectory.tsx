@@ -9,6 +9,7 @@ import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import ErrorState from "../shared/Errorstate";
 import { AlumniCard } from "../shared/AlumniCard";
+import { StudentCard } from "../shared/StudentCard";
 
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -59,7 +60,7 @@ export default function StudentStudentDirectory() {
                 {/* ── Page Header ── */}
                 <div>
                     <h1 className="text-xl md:text-[22px] font-bold text-slate-900 mb-1">
-                        Alumni Directory
+                        Student Directory
                     </h1>
                     <p className="text-slate-400 text-[14px]">
                         Connect with alumni from your institution
@@ -165,7 +166,8 @@ export default function StudentStudentDirectory() {
                 {data.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
                         {data && data.map((item : any ) => (
-                            <AlumniCard key={item._id} alumni={item} />
+                            // <AlumniCard key={item._id} student={item} />
+                            <StudentCard key={item._id} student={item}/>
                         ))}
                     </div>
                 ) : (

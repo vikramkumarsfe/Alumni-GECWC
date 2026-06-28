@@ -14,25 +14,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendMail({
-  email,
-  sendTo,
-  subject,
-  text,
-  html,
-}: {
-  email: string;
-  sendTo?: string;
-  subject: string;
-  text: string;
-  html?: string;
-}) {
-  try {
-    const isVerified = await transporter.verify();
-  } catch (error) {
-    console.error('Something Went Wrong', SMTP_SERVER_USERNAME, SMTP_SERVER_PASSWORD, error);
-    return;
-  }
+export async function sendMail({email, sendTo, subject, text, html,}: { email: string; sendTo?: string; subject: string; text: string; html?: string;}) {
   const info = await transporter.sendMail({
     from: email,
     to: sendTo || SITE_MAIL_RECIEVER,
@@ -40,7 +22,5 @@ export async function sendMail({
     text: text,
     html: html ? html : '',
   });
-  console.log('Message Sent', info.messageId);
-  console.log('Mail sent to', SITE_MAIL_RECIEVER);
   return info;
 }
