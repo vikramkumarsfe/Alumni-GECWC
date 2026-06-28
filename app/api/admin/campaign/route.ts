@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
         email: 1,
         fullname: 1,
       }
-    ).limit(1)
+    ).lean()
 
     console.log(month)
 
