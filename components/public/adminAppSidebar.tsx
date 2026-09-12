@@ -1,5 +1,5 @@
 'use client'
-import { LayoutDashboard, Users, Calendar, Briefcase, Megaphone, BarChart3, LogOut, GraduationCap, MessageSquareQuote, UserCheck2Icon } from "lucide-react"
+import { LayoutDashboard, Users, Calendar, Megaphone, BarChart3, LogOut, MessageSquareQuote, UserCheck2Icon } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar"
@@ -8,13 +8,13 @@ import Logo from "../shared/Logo"
 
 const items = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { title: "Manage Alumni", href: "/admin/alumni", icon: Users },
-  { title: "Manage Student", href: "/admin/student", icon: Users },
-  { title: "Manage Events", href: "/admin/events", icon: Calendar },
-  { title: "Manage Announcements", href: "/admin/announcements", icon: Megaphone },
-  { title: "Manage Become Alumni", href: "/admin/become-alumni", icon: UserCheck2Icon },
-  { title: "Manage Feedback", href: "/admin/feedback", icon: MessageSquareQuote },
-  { title: "Campain", href: "/admin/campaign", icon: MessageSquareQuote },
+  { title: "Alumni", href: "/admin/alumni", icon: Users },
+  { title: "Students", href: "/admin/student", icon: Users },
+  { title: "Events", href: "/admin/events", icon: Calendar },
+  { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
+  { title: "Alumni Requests", href: "/admin/become-alumni", icon: UserCheck2Icon },
+  { title: "Feedback", href: "/admin/feedback", icon: MessageSquareQuote },
+  { title: "Email Campaigns", href: "/admin/campaign", icon: MessageSquareQuote },
   { title: "Reports", href: "/admin/reports", icon: BarChart3 },
 ]
 
@@ -34,18 +34,18 @@ const AdminAppSidebar = () => {
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarMenu>
+          <SidebarMenu className="gap-1.5">
             {items.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(`${item.href}/`))
               return (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
                     tooltip={item.title}
                     isActive={isActive}
-                    className={isActive ? "text-violet-600 bg-violet-50 hover:bg-violet-100" : ""}
+                    className={`h-11 rounded-lg px-3 font-medium transition-colors ${isActive ? "text-violet-600 bg-violet-50 hover:bg-violet-100" : ""}`}
                   >
-                    <Link href={item.href}>
+                    <Link href={item.href} aria-current={isActive ? "page" : undefined}>
                       <item.icon className={isActive ? "text-violet-600" : ""} />
                       <span>{item.title}</span>
                     </Link>
@@ -60,7 +60,7 @@ const AdminAppSidebar = () => {
       <SidebarFooter className="pb-6">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer" onClick={()=>signOut()}>
+            <SidebarMenuButton className="h-11 rounded-lg text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer" onClick={()=>signOut()}>
                 <LogOut className="size-4" />
                 <span className="text-black">Logout</span> 
             </SidebarMenuButton>

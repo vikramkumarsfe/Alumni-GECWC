@@ -93,7 +93,7 @@ export function AnnouncementModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[650px] max-h-[95vh] overflow-y-auto border-none shadow-xl">
+      <DialogContent className="admin-dialog sm:max-w-[650px] max-h-[95vh] overflow-y-auto border-none shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             {isEditMode

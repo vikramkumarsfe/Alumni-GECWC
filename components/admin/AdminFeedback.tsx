@@ -156,7 +156,7 @@ const AdminFeedback = () =>  {
   }
 
   return (
-    <div className="flex flex-col gap-6 bg-slate-50 min-h-screen">
+    <div className="flex flex-col gap-6 bg-slate-50 min-h-0">
 
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-slate-800">
@@ -212,7 +212,7 @@ const AdminFeedback = () =>  {
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="admin-toolbar">
             <Select
               value={statusFilter}
               onValueChange={(v) => {

@@ -70,8 +70,8 @@ const AdminAlumniProfilePage = () => {
 
 
   return (
-    <div className="bg-slate-50 min-h-screen w-full">
-      <div className="flex flex-col gap-3 max-w-[1200px] mx-auto w-full p-2">
+    <div className="bg-slate-50 min-h-0 w-full">
+      <div className="flex flex-col gap-6 w-full">
         
           <button 
             className="cursor-pointer flex items-center gap-2 text-[14px] font-medium text-slate-500 hover:text-slate-800 transition-colors w-fit"
@@ -120,12 +120,12 @@ const AdminAlumniProfilePage = () => {
 
             <div className="hidden md:flex items-center my-auto gap-3 flex-shrink-0">
                {!connection ? (
-                <button className="cursor-pointer flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors" onClick={() => handleAction('post', '/api/connection', { receiverId: profile._id }, "connection request is sent!")}><UserPlus size={14} /> Connect</button>
+                <button className="cursor-pointer flex items-center gap-1.5 px-4 py-2.5 border border-slate-200 rounded-lg font-semibold text-slate-700 bg-white hover:bg-slate-50 transition-colors" onClick={() => handleAction('post', '/api/connection', { receiverId: profile._id }, "connection request is sent!")}><UserPlus size={14} /> Connect</button>
               ) : connection.status === "pending" ? (
                 connection.sender === userId ? (
-                  <button disabled className="flex items-center gap-1.5 px-8 py-4 border border-slate-200 rounded-lg font-semibold text-slate-400 bg-slate-50 cursor-not-allowed"><Clock size={14} /> Requested</button>
+                  <button disabled className="flex items-center gap-1.5 px-4 py-2.5 border border-slate-200 rounded-lg font-semibold text-slate-400 bg-slate-50 cursor-not-allowed"><Clock size={14} /> Requested</button>
                 ) : (
-                  <button className="cursor-pointer flex items-center gap-1.5 px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white transition-colors" onClick={() => handleAction('put', `/api/connection/${connection._id}`, { status: "approved" }, "accepted")}><Check size={14} /> Accept</button>
+                  <button className="cursor-pointer flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white transition-colors" onClick={() => handleAction('put', `/api/connection/${connection._id}`, { status: "approved" }, "accepted")}><Check size={14} /> Accept</button>
                 )
               ) : (
                 <Link href="/student/chat"><button className="cursor-pointer flex items-center gap-1.5 px-3 h-9 bg-blue-600 hover:bg-blue-700 rounded-lg text-[13px] font-semibold text-white"><MessageSquare size={14} /> Message</button></Link>
@@ -135,7 +135,7 @@ const AdminAlumniProfilePage = () => {
         </div>
 
         {/* TWO COLUMN GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-3 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 items-start">
           <div className="flex flex-col gap-3">
             <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-2 text-[17px] font-semibold text-slate-900 border-b border-slate-100 pb-4 mb-5">

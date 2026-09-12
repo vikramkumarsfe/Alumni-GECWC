@@ -271,7 +271,7 @@ const AdminAlumni = () => {
 
       {/* --- Search & Filters (Shadcn Style) --- */}
       <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 min-w-[300px]">
+        <div className="relative w-full flex-1 min-w-0 sm:min-w-[240px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <AntInput 
             placeholder="Search by name or email..." 
@@ -281,7 +281,7 @@ const AdminAlumni = () => {
         
         <AntSelect 
           defaultValue="all-status" 
-          className="w-[160px] h-10"
+          className="w-full sm:w-[160px] h-10"
           options={[
             { value: 'all-status', label: 'All Status' },
             { value: 'approved', label: 'Approved' },
@@ -292,7 +292,7 @@ const AdminAlumni = () => {
 
         <AntSelect 
           defaultValue="all-batches" 
-          className="w-[160px] h-10"
+          className="w-full sm:w-[160px] h-10"
           options={[
             { value: 'all-batches', label: 'All Batches' },
             { value: '2024', label: '2024' },

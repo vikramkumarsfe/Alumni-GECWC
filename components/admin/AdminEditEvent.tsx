@@ -100,7 +100,7 @@ const AdminEventForm: FC<EventFormProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-[700px] p-0 flex flex-col h-full gap-0">
+      <SheetContent className="admin-dialog w-full sm:max-w-[700px] p-0 flex flex-col h-full gap-0">
         <SheetHeader className="p-6 border-b shrink-0 bg-white">
           <SheetTitle className="text-xl font-bold">
             {mode === 'create' ? 'Create New Event' : 'Edit Event'}

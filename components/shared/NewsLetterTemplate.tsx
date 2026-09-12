@@ -50,6 +50,7 @@ export default function NewsletterTemplateModal({open, onClose, onSelect, }: Pro
 
   return (
     <Modal
+      rootClassName="admin-dialog"
       title="📬 Select Newsletter Template"
       open={open}
       onCancel={onClose}

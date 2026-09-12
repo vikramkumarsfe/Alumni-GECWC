@@ -152,7 +152,7 @@ const AdminEvents = () => {
   ]
 
   return (
-    <div className="bg-slate-50 min-h-screen space-y-6">
+    <div className="bg-slate-50 min-h-0 space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Manage Events</h1>
@@ -176,7 +176,8 @@ const AdminEvents = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <Table 
+          <Table
+            scroll={{ x: 720 }}
             columns={columns} 
             dataSource={data.filter(event => 
                 event.title.toLowerCase().includes(searchQuery.toLowerCase())
