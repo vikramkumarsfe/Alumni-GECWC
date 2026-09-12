@@ -1,405 +1,239 @@
 "use client";
-import React, { useState } from "react";
-import dynamic from "next/dynamic";
-import { Mail, Send, Users, FileText, Plus, Search, Eye, Copy, Pencil, Trash2, TrendingUp } from "lucide-react";
-import { Modal, Form, Input, Radio, Select, Button } from "antd";
-import NewsletterTemplateModal from "../shared/NewsLetterTemplate";
 
-// Safely import ReactQuill dynamically for Next.js SSR compatibility
-const ReactQuill = dynamic(() => import("react-quill-new"), {
-  ssr: false,
-  loading: () => <div className="h-32 w-full bg-slate-50 border border-slate-200 rounded-md animate-pulse" />,
-});
+import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Empty, Input, Modal, Select, Skeleton, Tag, message } from "antd";
+import { Bold, Code, Eye, FileText, Italic, Link as LinkIcon, Mail, Monitor, Plus, RefreshCw, Save, Send, Smartphone, Users } from "lucide-react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import useSWR from "swr";
 
-
-const stats = [
-  { label: "Total Campaigns", value: "48", trend: "+6 this month", icon: Mail, bg: "bg-blue-50 text-blue-600" },
-  { label: "Emails Sent", value: "18,240", trend: "+1.2k this month", icon: Send, bg: "bg-green-50 text-green-600" },
-  { label: "Active Recipients", value: "3,412", trend: "+84 new this week", icon: Users, bg: "bg-purple-50 text-purple-600" },
-  { label: "Draft Campaigns", value: "7", trend: "Awaiting publish", icon: FileText, bg: "bg-amber-50 text-amber-600", neutral: true },
-];
-
-const campaigns = [
-  { id: 1, name: "Annual Reunion 2024", type: "Event Invitation", subject: "You're invited to the Annual Alumni Reunion!", audience: "All Alumni", count: "3,412", status: "Sent", created: "Oct 01, 2024", scheduled: "Oct 05, 2024" },
-  { id: 2, name: "Profile Completion Reminder", type: "Profile Completion", subject: "Complete your alumni profile today", audience: "Batch 2022", count: "480", status: "Scheduled", created: "Oct 15, 2024", scheduled: "Oct 20, 2024" },
-  { id: 3, name: "Tech Workshop Invitation", type: "Event Invitation", subject: "Join our upcoming AI & ML Workshop", audience: "CSE Dept", count: "620", status: "Sent", created: "Sep 25, 2024", scheduled: "Sep 28, 2024" },
-  { id: 4, name: "November Newsletter", type: "Newsletter", subject: "Alumni Monthly Digest — November 2024", audience: "All Alumni", count: "3,412", status: "Draft", created: "Oct 18, 2024", scheduled: "—" },
-  { id: 5, name: "Graduation Reminder — 2024", type: "Graduation Reminder", subject: "Important: Your graduation ceremony details", audience: "Batch 2024", count: "512", status: "Cancelled", created: "Oct 10, 2024", scheduled: "Oct 14, 2024" },
-  { id: 6, name: "Alumni Spotlight — October", type: "Alumni Spotlight", subject: "Meet this month's featured alumni", audience: "All Alumni", count: "3,412", status: "Draft", created: "Oct 19, 2024", scheduled: "—" },
-];
-
-const batches = ["2019", "2020", "2021", "2022", "2023", "2024"];
+interface Audience { role: "all" | "alumni" | "student"; batches: number[]; branches: string[] }
+interface Content { name: string; subject: string; html: string; audience: Audience }
+interface CampaignRow { _id: string; name: string; subject: string; audience: Audience; status: "draft" | "queued" | "queue_failed"; revision: number; total: number; sent: number; failed: number; skipped: number; createdAt: string }
+interface History { campaigns: CampaignRow[]; batches: number[]; branches: string[] }
+const emptyAudience: Audience = { role: "all", batches: [], branches: [] };
+const starter = `<div style="background-color:#f8fafc;padding:32px 16px;font-family:Arial,sans-serif;color:#0f172a;">
+  <table role="presentation" style="width:100%;max-width:600px;margin:0 auto;background-color:#ffffff;border-radius:12px;" cellpadding="0" cellspacing="0">
+    <tr><td style="padding:32px;">
+      <p style="color:#2563eb;font-size:13px;font-weight:bold;">GECWC ALUMNI PORTAL</p>
+      <h1 style="font-size:26px;line-height:1.3;">A little update from your community</h1>
+      <p style="font-size:16px;line-height:1.7;">Hello {{fullname}},</p>
+      <p style="font-size:16px;line-height:1.7;">Write your message here. Share an event, a story, or an opportunity with the GECWC community.</p>
+      <p style="font-size:14px;line-height:1.6;">Warm regards,<br>GECWC Alumni Team</p>
+    </td></tr>
+  </table>
+</div>`;
+async function api<T>(body: unknown): Promise<T> {
+  const response = await fetch("/api/admin/campaign", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || "Request failed");
+  return data;
+}
+async function getData<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || "Could not load campaigns");
+  return data;
+}
+function previewDocument(html: string) {
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src https: http:; style-src 'unsafe-inline';"><style>body{margin:0;overflow-wrap:break-word;}img{max-width:100%;}*{box-sizing:border-box;}</style></head><body>${html}</body></html>`;
+}
+function statusLabel(row: CampaignRow) {
+  if (row.status === "draft") return "Draft";
+  if (row.sent + row.skipped === row.total && row.total > 0) return row.skipped ? "Completed with skips" : "Sent";
+  if (row.status === "queue_failed") return "Queue interrupted";
+  if (row.failed > 0) return "Delivery issues";
+  return "Sending / queued";
+}
+function errorText(error: unknown) { return error instanceof Error ? error.message : "Something went wrong"; }
 
 export default function AdminEmailCampaign() {
-  const [open, setOpen] = useState(false);
-  const [selectedBatches, setSelectedBatches] = useState(["2019", "2020"]);
-  const [form] = Form.useForm();
+  const { data, error, isLoading, mutate } = useSWR<History>("/api/admin/campaign", getData, { refreshInterval: 10000 });
+  const [toast, toastContext] = message.useMessage();
+  const [modal, modalContext] = Modal.useModal();
+  const [id, setId] = useState<string>();
+  const [revision, setRevision] = useState(0);
+  const [name, setName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [html, setHtml] = useState(starter);
+  const [audience, setAudience] = useState<Audience>(emptyAudience);
+  const [mode, setMode] = useState<"html" | "visual">("html");
+  const [preview, setPreview] = useState("");
+  const [previewError, setPreviewError] = useState("");
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [mobilePreview, setMobilePreview] = useState(false);
+  const [recipientCount, setRecipientCount] = useState<number | null>(null);
+  const [audienceError, setAudienceError] = useState("");
+  const [busy, setBusy] = useState("");
+  const [dirty, setDirty] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkText, setLinkText] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [review, setReview] = useState<{ id: string; revision: number; total: number; preview: string } | null>(null);
+  const sourceRef = useRef<HTMLTextAreaElement>(null);
+  const selectionRef = useRef({ start: 0, end: 0 });
+  const locked = Boolean(busy || review);
+  const editor = useEditor({
+    extensions: [StarterKit.configure({ link: { openOnClick: false } })],
+    immediatelyRender: false,
+    content: "",
+    editorProps: { attributes: { class: "min-h-[380px] p-5 outline-none prose max-w-none text-sm leading-7" } },
+    onUpdate: ({ editor }) => { setHtml(editor.getHTML()); setDirty(true); },
+  });
+  useEffect(() => { editor?.setEditable(!locked); }, [editor, locked]);
+  useEffect(() => {
+    let current = true;
+    const timer = setTimeout(() => {
+      setPreviewLoading(true);
+      api<{ preview: string }>({ action: "preview", html })
+        .then(result => { if (current) { setPreview(result.preview); setPreviewError(""); } })
+        .catch(error => { if (current) { setPreview(""); setPreviewError(errorText(error)); } })
+        .finally(() => { if (current) setPreviewLoading(false); });
+    }, 600);
+    return () => { current = false; clearTimeout(timer); };
+  }, [html]);
+  useEffect(() => {
+    let current = true;
+    setRecipientCount(null);
+    setAudienceError("");
+    const timer = setTimeout(() => {
+      api<{ total: number }>({ action: "audience", audience })
+        .then(result => { if (current) setRecipientCount(result.total); })
+        .catch(error => { if (current) setAudienceError(errorText(error)); });
+    }, 250);
+    return () => { current = false; clearTimeout(timer); };
+  }, [audience]);
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (event: BeforeUnloadEvent) => { event.preventDefault(); };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 
-  const toggleBatch = (batch: string) => {
-    setSelectedBatches(prev => prev.includes(batch) ? prev.filter(b => b !== batch) : [...prev, batch]);
-  };
-
-  const getStatusBadgeClass = (status: string) => {
-    switch(status) {
-      case "Sent": return "bg-green-100 text-green-700";
-      case "Scheduled": return "bg-yellow-100 text-yellow-800";
-      case "Draft": return "bg-slate-100 text-slate-600";
-      case "Cancelled": return "bg-red-100 text-red-800";
-      default: return "bg-slate-100 text-slate-600";
-    }
-  };
-
-  const handleFormSubmit = (values: any) => {
-    console.log("Form Values Submitted:", { ...values, selectedBatches });
-    setOpen(false);
-    form.resetFields();
-  };
+  const content = (): Content => ({ name, subject, html, audience });
+  async function saveDraft() {
+    const saved = await api<{ id: string; revision: number; html: string }>({ action: "save", id, revision, content: content() });
+    setId(saved.id); setRevision(saved.revision); setDirty(false);
+    void mutate();
+    return saved;
+  }
+  async function run(action: string, work: () => Promise<void>) {
+    setBusy(action);
+    try { await work(); } catch (error) { toast.error(errorText(error)); } finally { setBusy(""); }
+  }
+  async function openReview() {
+    await run("review", async () => {
+      const saved = await saveDraft();
+      const [count, rendered] = await Promise.all([
+        api<{ total: number }>({ action: "audience", audience }),
+        api<{ preview: string }>({ action: "preview", html: saved.html }),
+      ]);
+      if (!count.total) throw new Error("No approved members match this audience.");
+      if (count.total > 5000) throw new Error("Narrow your audience to 5,000 recipients or fewer.");
+      setReview({ ...saved, total: count.total, preview: rendered.preview });
+    });
+  }
+  function newCampaign() {
+    setId(undefined); setRevision(0); setName(""); setSubject(""); setHtml(starter);
+    setAudience({ ...emptyAudience }); setMode("html"); setDirty(false);
+  }
+  async function openCampaign(row: CampaignRow) {
+    await run(row._id, async () => {
+      const result = await getData<{ campaign: Content & { _id: string; revision: number; status: string } }>(`/api/admin/campaign?id=${row._id}`);
+      const campaign = result.campaign;
+      const draft = campaign.status === "draft";
+      setId(draft ? campaign._id : undefined); setRevision(draft ? campaign.revision : 0);
+      setName(draft ? campaign.name : `${campaign.name} (copy)`); setSubject(campaign.subject);
+      setHtml(campaign.html); setAudience(campaign.audience); setMode("html"); setDirty(!draft);
+      document.getElementById("campaign-composer")?.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+  function rememberSelection() {
+    const source = sourceRef.current;
+    if (source) selectionRef.current = { start: source.selectionStart, end: source.selectionEnd };
+  }
+  function insertHtml(markup: string) {
+    const { start, end } = selectionRef.current;
+    setHtml(html.slice(0, start) + markup + html.slice(end)); setDirty(true);
+    requestAnimationFrame(() => { sourceRef.current?.focus(); sourceRef.current?.setSelectionRange(start + markup.length, start + markup.length); });
+  }
+  function insertLink() {
+    try {
+      const url = new URL(linkUrl.trim());
+      if (!["https:", "http:", "mailto:", "tel:"].includes(url.protocol)) throw new Error();
+      if (!linkText.trim()) { toast.error("Enter the link text"); return; }
+      const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+      if (mode === "html") insertHtml(`<a href="${escape(url.href)}" style="color:#2563eb;text-decoration:underline;">${escape(linkText.trim())}</a>`);
+      else editor?.chain().focus().insertContent({ type: "text", text: linkText.trim(), marks: [{ type: "link", attrs: { href: url.href } }] }).run();
+      setLinkOpen(false); setLinkText(""); setLinkUrl("");
+    } catch { toast.error("Enter a valid https://, http://, mailto: or tel: link"); }
+  }
 
   return (
-    <div className="max-w-7xl mx-auto flex flex-col gap-6">
-      
-      {/* ===== PAGE HEADER ===== */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-50 text-blue-600 rounded-md flex items-center justify-center">
-              <Mail size={16} />
-            </div>
-            Email Campaigns
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Create and send personalized email campaigns to alumni and students.
-          </p>
-        </div>
-
-        {/* ===== ANTD MODAL TRIGGER ===== */}
-        <button 
-          onClick={() => setOpen(true)} 
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2 rounded-md shadow-sm transition flex items-center gap-1.5 cursor-pointer"
-        >
-          <Plus size={15} /> Create Campaign
-        </button>
-
-        {/* ===== ANTD MODAL COMPONENT ===== */}
-{/* <Modal
-  title={
-    <div className="text-base font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-4 -mx-6 px-6">
-      <div className="w-7 h-7 bg-blue-50 text-blue-600 rounded-md flex items-center justify-center">
-        <Mail size={16} />
+    <div className="space-y-6">
+      {toastContext}
+      {modalContext}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div><h1 className="text-slate-900">Email campaigns</h1><p className="text-sm text-slate-500">Create something worth opening. Write, preview, and reach the right members.</p></div>
+        <Button icon={<Plus size={16} />} disabled={locked} onClick={() => {
+          if (dirty) modal.confirm({ rootClassName: "admin-dialog", title: "Discard unsaved changes?", content: "Your current edits have not been saved.", okText: "Discard changes", okButtonProps: { danger: true }, onOk: newCampaign });
+          else newCampaign();
+        }}>New campaign</Button>
       </div>
-      Create New Campaign
-    </div>
-  }
-  open={isModalOpen}
-  onCancel={() => setIsModalOpen(false)}
-  width={780}
-  centered
-  destroyOnClose
-  className="custom-antd-modal"
-  footer={[
-    <Button 
-      key="cancel" 
-      onClick={() => setIsModalOpen(false)} 
-      className="rounded-lg h-9 border-slate-200 text-slate-600 hover:text-slate-900 font-medium transition"
-    >
-      Cancel
-    </Button>,
-    <Button 
-      key="draft" 
-      onClick={() => setIsModalOpen(false)} 
-      className="rounded-lg h-9 border-slate-200 text-slate-600 hover:text-slate-900 font-medium transition"
-    >
-      Save Draft
-    </Button>,
-    <Button 
-      key="preview" 
-      type="default" 
-      className="rounded-lg h-9 border-blue-600 text-blue-600 hover:bg-blue-50/50 font-medium transition"
-    >
-      Preview Email
-    </Button>,
-    <Button 
-      key="submit" 
-      type="primary" 
-      className="rounded-lg h-9 bg-blue-600 hover:bg-blue-700 font-medium inline-flex items-center gap-1.5 shadow-sm transition" 
-      onClick={() => form.submit()}
-    >
-      <Send size={14} /> Send Campaign
-    </Button>
-  ]}
->
-  <Form
-    form={form}
-    layout="vertical"
-    onFinish={handleFormSubmit}
-    initialValues={{ audience: "All Alumni", delivery: "Send Immediately", timezone: "IST (UTC+5:30)" }}
-    className="pt-4 max-h-[68vh] overflow-y-auto px-1 flex flex-col gap-6 scrollbar-thin"
-  >
-
-    <div className="bg-slate-50/40 border border-slate-100/80 rounded-xl p-5">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-4 pb-1 border-b border-slate-100">
-        Basic Information
-      </div>
-      <div className="grid grid-cols-2 gap-x-5">
-        <Form.Item 
-          name="name" 
-          label={<span className="font-semibold text-slate-700 text-xs">Campaign Name</span>} 
-          rules={[{ required: true, message: 'Please enter a campaign name' }]}
-        >
-          <Input 
-            placeholder="e.g. Annual Reunion 2024" 
-            className="bg-white border-slate-200 hover:border-blue-400 focus:border-blue-500 rounded-lg py-2 transition" 
-          />
-        </Form.Item>
-        <Form.Item 
-          name="subject" 
-          label={<span className="font-semibold text-slate-700 text-xs">Email Subject</span>} 
-          rules={[{ required: true, message: 'Please enter an email subject' }]}
-        >
-          <Input 
-            placeholder="e.g. You're invited!" 
-            className="bg-white border-slate-200 hover:border-blue-400 focus:border-blue-500 rounded-lg py-2 transition" 
-          />
-        </Form.Item>
-        <Form.Item 
-          name="category" 
-          label={<span className="font-semibold text-slate-700 text-xs">Campaign Category</span>} 
-          className="col-span-2 mb-1"
-        >
-          <Select placeholder="Select a category..." className="h-10 custom-select-rounded">
-            <Select.Option value="General">General Announcement</Select.Option>
-            <Select.Option value="Spotlight">Alumni Spotlight</Select.Option>
-            <Select.Option value="Invitation">Event Invitation</Select.Option>
-            <Select.Option value="Newsletter">Newsletter</Select.Option>
-          </Select>
-        </Form.Item>
-      </div>
-    </div>
-
-    <div>
-      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 pb-1 border-b border-slate-100">
-        Email Composer
-      </div>
-      <Form.Item
-  name="body"
-  valuePropName="value"
-  getValueFromEvent={(value) => value}
-  rules={[
-    { required: true, message: "Please compose your email content" }
-  ]}
->
-  <ReactQuill
-    theme="snow"
-    onChange={(value) => form.setFieldValue("body", value)}
-  />
-</Form.Item>
-    </div>
-
-
-    <div className="bg-slate-50/40 border border-slate-100/80 rounded-xl p-5">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-4 pb-1 border-b border-slate-100">
-        Recipient Selection
-      </div>
-      <Form.Item name="audience" className="mb-4">
-        <Radio.Group className="grid grid-cols-2 gap-3 w-full">
-          {[
-            { label: "All Alumni", value: "All Alumni" },
-            { label: "All Students", value: "All Students" },
-            { label: "Specific Batch", value: "Specific Batch" },
-            { label: "Specific Department", value: "Specific Department" }
-          ].map((item) => (
-            <Radio 
-              key={item.value} 
-              value={item.value} 
-              className="font-medium text-slate-700 bg-white border border-slate-200 hover:border-blue-300 rounded-lg p-3 m-0 transition flex items-center [&.ant-radio-wrapper-checked]:border-blue-500 [&.ant-radio-wrapper-checked]:bg-blue-50/30"
-            >
-              {item.label}
-            </Radio>
-          ))}
-        </Radio.Group>
-      </Form.Item>
-      
-      <div className="mt-2 bg-white border border-slate-200 rounded-lg p-4">
-        <div className="text-xs font-semibold text-slate-500 mb-2.5">Target Batch Years:</div>
-        <div className="flex flex-wrap gap-2">
-          {batches.map((batch) => {
-            const isSelected = selectedBatches.includes(batch);
-            return (
-              <span 
-                key={batch} 
-                onClick={() => toggleBatch(batch)}
-                className={`px-3.5 py-1.5 border rounded-lg text-xs font-semibold cursor-pointer select-none transition ${
-                  isSelected 
-                  ? "bg-blue-600 border-blue-600 text-white shadow-xs" 
-                  : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                }`}
-              >
-                {batch}
-              </span>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-
-    <div className="bg-slate-50/40 border border-slate-100/80 rounded-xl p-5 mb-2">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-4 pb-1 border-b border-slate-100">
-        Delivery Options
-      </div>
-      <Form.Item name="delivery" className="mb-4">
-        <Radio.Group className="flex gap-4">
-          <Radio 
-            value="Send Immediately" 
-            className="font-medium text-slate-700 bg-white border border-slate-200 hover:border-blue-300 rounded-lg px-4 py-2.5 m-0 transition flex items-center [&.ant-radio-wrapper-checked]:border-blue-500 [&.ant-radio-wrapper-checked]:bg-blue-50/30"
-          >
-            Send Immediately
-          </Radio>
-          <Radio 
-            value="Schedule Email" 
-            className="font-medium text-slate-700 bg-white border border-slate-200 hover:border-blue-300 rounded-lg px-4 py-2.5 m-0 transition flex items-center [&.ant-radio-wrapper-checked]:border-blue-500 [&.ant-radio-wrapper-checked]:bg-blue-50/30"
-          >
-            Schedule Email
-          </Radio>
-        </Radio.Group>
-      </Form.Item>
-      
-      <div className="grid grid-cols-3 gap-4 bg-white border border-slate-200 rounded-lg p-4">
-        <Form.Item name="scheduleDate" label={<span className="text-xs font-semibold text-slate-600">Schedule Date</span>} className="mb-0">
-          <Input defaultValue="Nov 05, 2024" className="border-slate-200 rounded-md py-1.5" />
-        </Form.Item>
-        <Form.Item name="scheduleTime" label={<span className="text-xs font-semibold text-slate-600">Schedule Time</span>} className="mb-0">
-          <Input defaultValue="10:00 AM" className="border-slate-200 rounded-md py-1.5" />
-        </Form.Item>
-        <Form.Item name="timezone" label={<span className="text-xs font-semibold text-slate-600">Timezone</span>} className="mb-0">
-          <Select className="w-full h-9 custom-select-rounded">
-            <Select.Option value="IST (UTC+5:30)">IST (UTC+5:30)</Select.Option>
-            <Select.Option value="UTC">UTC</Select.Option>
-          </Select>
-        </Form.Item>
-      </div>
-    </div>
-  </Form>
-</Modal> */}
-      </div>
-
-      {/* ===== METRICS ROW ===== */}
-      <div className="grid grid-cols-4 gap-4">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 flex items-start justify-between shadow-sm">
-            <div className="flex flex-col gap-1">
-              <span className="text-xs text-slate-400 font-medium">{stat.label}</span>
-              <span className="text-2xl font-bold text-slate-900 tracking-tight">{stat.value}</span>
-              <span className={`text-xs font-semibold flex items-center gap-0.5 mt-0.5 ${stat.neutral ? "text-slate-400" : "text-green-600"}`}>
-                {!stat.neutral && <TrendingUp size={12} />}
-                {stat.trend}
-              </span>
-            </div>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${stat.bg}`}>
-              <stat.icon size={20} />
-            </div>
-          </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {[{ label: "Campaigns in recent history", value: data?.campaigns.length ?? "?", icon: Mail }, { label: "Saved drafts in recent history", value: data?.campaigns.filter(c => c.status === "draft").length ?? "?", icon: FileText }, { label: "Matching approved recipients", value: recipientCount ?? "?", icon: Users }].map(stat => (
+          <div key={stat.label} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5"><div><p className="text-sm text-slate-500">{stat.label}</p><p className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">{stat.value}</p></div><span className="rounded-xl bg-blue-50 p-3 text-blue-600"><stat.icon size={22} /></span></div>
         ))}
       </div>
-
-      {/* ===== DATA TABLE CARD ===== */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {/* Table Filters Subheader */}
-        <div className="p-5 border-b border-slate-200 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-md px-3 py-1.5 w-60">
-              <Search size={15} className="text-slate-400 shrink-0" />
-              <input type="text" placeholder="Search campaigns..." className="bg-transparent text-sm text-slate-900 placeholder-slate-400 w-full focus:outline-none" />
+      <div id="campaign-composer" className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="min-w-0 rounded-2xl border border-slate-200 bg-white">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4"><div><h2 className="font-semibold text-slate-900">Compose your email</h2><p className="mt-1 text-xs text-slate-500">{id ? "Editing saved draft" : "New campaign"} ? {dirty ? "Unsaved changes" : "Ready to edit"}</p></div><Tag color="blue">{id ? "Draft" : "Composer"}</Tag></div>
+          <div className="grid gap-5 p-5 sm:grid-cols-2">
+            <label className="space-y-2 text-sm font-medium text-slate-700">Campaign name<Input maxLength={120} value={name} disabled={locked} onChange={e => { setName(e.target.value); setDirty(true); }} placeholder="e.g. Alumni reunion invitation" /></label>
+            <label className="space-y-2 text-sm font-medium text-slate-700">Email subject<Input maxLength={200} value={subject} disabled={locked} onChange={e => { setSubject(e.target.value); setDirty(true); }} placeholder="What should appear in the inbox?" /></label>
+          </div>
+          <div className="px-5 pb-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-xl border border-slate-200 bg-slate-50 p-3">
+              <div className="flex gap-2"><Button type={mode === "html" ? "primary" : "default"} icon={<Code size={15} />} disabled={locked} onClick={() => setMode("html")}>HTML template</Button><Button type={mode === "visual" ? "primary" : "default"} icon={<FileText size={15} />} disabled={locked} onClick={() => { editor?.commands.setContent(html, { emitUpdate: false }); setMode("visual"); }}>Write visually</Button></div>
+              <Button icon={<LinkIcon size={15} />} disabled={locked} onClick={() => { if (mode === "html") { rememberSelection(); setLinkText(html.slice(selectionRef.current.start, selectionRef.current.end)); } else setLinkText(editor?.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to) || ""); setLinkOpen(true); }}>Insert link</Button>
             </div>
-            <select className="bg-white border border-slate-200 rounded-md p-2 text-xs text-slate-700 font-medium focus:outline-none cursor-pointer">
-              <option>All Statuses</option>
-            </select>
-            <select className="bg-white border border-slate-200 rounded-md p-2 text-xs text-slate-700 font-medium focus:outline-none cursor-pointer">
-              <option>All Audiences</option>
-            </select>
-            <select className="bg-white border border-slate-200 rounded-md p-2 text-xs text-slate-700 font-medium focus:outline-none cursor-pointer">
-              <option>All Dates</option>
-            </select>
+            {mode === "html" ? <textarea ref={sourceRef} aria-label="Email HTML template" spellCheck={false} value={html} disabled={locked} onSelect={rememberSelection} onChange={e => { setHtml(e.target.value); setDirty(true); }} className="block min-h-[420px] w-full resize-y rounded-b-xl border border-t-0 border-slate-200 bg-white p-4 font-mono text-[13px] leading-6 text-slate-700 focus:outline-blue-500 disabled:opacity-60" /> : <div className="rounded-b-xl border border-t-0 border-slate-200"><div className="flex gap-2 border-b border-slate-100 px-3 py-2"><Button aria-label="Bold" icon={<Bold size={16} />} disabled={locked} onClick={() => editor?.chain().focus().toggleBold().run()} /><Button aria-label="Italic" icon={<Italic size={16} />} disabled={locked} onClick={() => editor?.chain().focus().toggleItalic().run()} /><Button disabled={locked} onClick={() => editor?.chain().focus().toggleBulletList().run()}>Bullet list</Button></div><EditorContent className="campaign-visual-editor" editor={editor} /></div>}
+            <p className="mt-3 text-xs leading-5 text-slate-500">{mode === "html" ? "Paste the full HTML template from Claude, including its styles. Markdown code fences are accepted. Use {{fullname}} to personalize each email." : "Use the visual editor for simple emails. Editing here simplifies imported layouts, including tables and custom styles. Keep complex templates in HTML mode."}</p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-medium">Sort By:</span>
-            <select className="bg-white border border-slate-200 rounded-md p-2 text-xs text-slate-700 font-medium focus:outline-none cursor-pointer">
-              <option>Latest</option>
-              <option>Oldest</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Pure Data Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border-collapse">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <th className="p-4 pl-5">Campaign Name</th>
-                <th className="p-4">Email Subject</th>
-                <th className="p-4">Audience</th>
-                <th className="p-4">Recipients</th>
-                <th className="p-4">Status</th>
-                <th className="p-4">Created On</th>
-                <th className="p-4">Scheduled Date</th>
-                <th className="p-4 pr-5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-900">
-              {campaigns.map((camp) => (
-                <tr key={camp.id} className="hover:bg-slate-50/40 transition">
-                  <td className="p-4 pl-5">
-                    <div className="font-semibold text-slate-900">{camp.name}</div>
-                    <div className="text-xs text-slate-400 mt-0.5">{camp.type}</div>
-                  </td>
-                  <td className="p-4 max-w-[180px] truncate text-slate-800">{camp.subject}</td>
-                  <td className="p-4 text-slate-600">{camp.audience}</td>
-                  <td className="p-4 font-semibold">{camp.count}</td>
-                  <td className="p-4">
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusBadgeClass(camp.status)}`}>
-                      {camp.status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-slate-400 text-xs">{camp.created}</td>
-                  <td className="p-4 text-slate-400 text-xs">{camp.scheduled}</td>
-                  <td className="p-4 pr-5">
-                    <div className="flex items-center justify-end gap-1">
-                      <button title="View" className="w-7 h-7 border border-slate-200 rounded flex items-center justify-center text-slate-400 hover:text-slate-900 bg-white transition"><Eye size={13} /></button>
-                      <button title="Duplicate" className="w-7 h-7 border border-slate-200 rounded flex items-center justify-center text-slate-400 hover:text-slate-900 bg-white transition"><Copy size={13} /></button>
-                      <button title="Edit" className="w-7 h-7 border border-slate-200 rounded flex items-center justify-center text-slate-400 hover:text-slate-900 bg-white transition"><Pencil size={13} /></button>
-                      <button title="Delete" className="w-7 h-7 border border-red-100 rounded flex items-center justify-center text-red-500 hover:bg-red-50 bg-red-50/30 transition"><Trash2 size={13} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Table Pagination Toolbar */}
-        <div className="p-4 px-5 border-t border-slate-200 flex items-center justify-between text-xs font-medium text-slate-400 bg-white">
-          <span>Showing 1 to 6 of 48 campaigns</span>
-          <div className="flex items-center gap-1">
-            <button className="px-3 py-1.5 border border-slate-200 text-slate-700 rounded-md hover:bg-slate-50 transition">Previous</button>
-            <button className="px-3 py-1.5 bg-blue-600 text-white border border-blue-600 rounded-md shadow-xs">1</button>
-            <button className="px-3 py-1.5 border border-slate-200 text-slate-700 rounded-md hover:bg-slate-50 transition">2</button>
-            <button className="px-3 py-1.5 border border-slate-200 text-slate-700 rounded-md hover:bg-slate-50 transition">3</button>
-            <span className="px-1 text-slate-300">...</span>
-            <button className="px-3 py-1.5 border border-slate-200 text-slate-700 rounded-md hover:bg-slate-50 transition">8</button>
-            <button className="px-3 py-1.5 border border-slate-200 text-slate-700 rounded-md hover:bg-slate-50 transition">Next</button>
-          </div>
-        </div>
+        </section>
+        <aside className="space-y-5">
+          <section className="rounded-2xl border border-slate-200 bg-white p-5">
+            <h2 className="flex items-center gap-2 font-semibold text-slate-900"><Users size={18} className="text-blue-600" /> Target audience</h2><p className="mt-2 text-xs leading-5 text-slate-500">Only approved alumni and students receive campaigns. Leave a filter empty to include all.</p>
+            <div className="mt-5 space-y-5">
+              <div><label id="campaign-role" className="mb-2 block text-sm font-medium text-slate-700">Members</label><Select aria-labelledby="campaign-role" className="w-full" value={audience.role} disabled={locked} onChange={role => { setAudience({ ...audience, role }); setDirty(true); }} options={[{ value: "all", label: "Alumni & students" }, { value: "alumni", label: "Alumni only" }, { value: "student", label: "Students only" }]} /></div>
+              <div><label id="campaign-batches" className="mb-2 block text-sm font-medium text-slate-700">Batch years</label><Select aria-labelledby="campaign-batches" mode="multiple" allowClear className="w-full" placeholder="All batches" value={audience.batches} disabled={locked || isLoading} onChange={batches => { setAudience({ ...audience, batches }); setDirty(true); }} options={data?.batches.map(value => ({ value, label: String(value) }))} /></div>
+              <div><label id="campaign-branches" className="mb-2 block text-sm font-medium text-slate-700">Branches</label><Select aria-labelledby="campaign-branches" mode="multiple" allowClear className="w-full" placeholder="All branches" value={audience.branches} disabled={locked || isLoading} onChange={branches => { setAudience({ ...audience, branches }); setDirty(true); }} options={data?.branches.map(value => ({ value, label: value }))} /></div>
+            </div>
+            <div className="mt-5 rounded-xl bg-blue-50 p-4"><p className="text-2xl font-semibold text-blue-600">{recipientCount ?? "?"}</p><p className="mt-1 text-xs text-blue-600">matching recipients ? duplicate emails removed</p></div>
+            <p className="mt-3 text-xs leading-5 text-slate-500">Selected batches AND selected branches must match. Multiple choices within each filter are combined.</p>
+            {audienceError && <Alert className="mt-3" type="error" title={audienceError} />}
+          </section>
+          <section className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5">
+            <Button block icon={<Save size={16} />} loading={busy === "save"} disabled={locked} onClick={() => run("save", async () => { await saveDraft(); toast.success("Draft saved"); })}>Save draft</Button>
+            <Button block icon={<Mail size={16} />} loading={busy === "test"} disabled={locked} onClick={() => run("test", async () => { const result = await api<{ message: string }>({ action: "test", content: content() }); toast.success(result.message); })}>Send test to myself</Button>
+            <Button block type="primary" icon={<Send size={16} />} loading={busy === "review"} disabled={locked || !recipientCount || recipientCount > 5000} onClick={openReview}>Review & send</Button>
+            <p className="text-xs leading-5 text-slate-500">Save changes before opening another campaign. Sending uses a fixed recipient list and runs in the background.</p>
+          </section>
+        </aside>
       </div>
-
-
-      <NewsletterTemplateModal
-        open={open}
-        onClose={() => setOpen(false)}
-        onSelect={(month) => {
-          console.log(month);
-          // Fetch template here
-        }}
-      />
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4"><div><h2 className="flex items-center gap-2 font-semibold text-slate-900"><Eye size={18} className="text-blue-600" /> Email preview</h2><p className="mt-1 text-xs text-slate-500">{previewLoading ? "Updating preview?" : "Personalization example: Alex Kumar. Links are disabled in preview."}</p></div><div className="flex gap-2"><Button aria-label="Desktop preview" type={!mobilePreview ? "primary" : "default"} icon={<Monitor size={16} />} onClick={() => setMobilePreview(false)} /><Button aria-label="Mobile preview" type={mobilePreview ? "primary" : "default"} icon={<Smartphone size={16} />} onClick={() => setMobilePreview(true)} /></div></div>
+        {previewError ? <div className="p-5"><Alert type="warning" title={previewError} /></div> : <div className="overflow-x-auto bg-slate-100 p-3 sm:p-6"><iframe title="Email preview" sandbox="" referrerPolicy="no-referrer" srcDoc={previewDocument(preview)} className="mx-auto block h-[560px] border-0 bg-white shadow-sm" style={{ width: mobilePreview ? 375 : "100%", maxWidth: mobilePreview ? undefined : 900 }} /></div>}
+        <p className="px-5 py-3 text-xs text-slate-500">Preview uses the same sanitized HTML as sending. Email apps may render styles differently; check a test email before sending.</p>
+      </section>
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-100 p-5"><div><h2 className="font-semibold text-slate-900">Campaign history</h2><p className="mt-1 text-xs text-slate-500">Latest 50 campaigns. Delivery progress refreshes every 10 seconds.</p></div><Button aria-label="Refresh campaigns" icon={<RefreshCw size={16} />} onClick={() => mutate()} /></div>
+        {error ? <div className="p-5"><Alert type="error" title={errorText(error)} action={<Button onClick={() => mutate()}>Retry</Button>} /></div> : isLoading ? <div className="p-5"><Skeleton active /></div> : !data?.campaigns.length ? <div className="p-8"><Empty description="Your saved drafts and sent campaigns will appear here" /></div> : <div className="overflow-x-auto"><table className="w-full min-w-[740px] text-left text-sm"><thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr>{["Campaign", "Audience", "Status", "Delivery", "Actions"].map(title => <th key={title} className="px-5 py-4">{title}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{data.campaigns.map(row => <tr key={row._id} className="hover:bg-slate-50/50"><td className="px-5 py-4"><p className="font-semibold text-slate-900">{row.name}</p><p className="mt-1 max-w-64 truncate text-xs text-slate-500">{row.subject}</p><p className="mt-1 text-xs text-slate-400">{new Date(row.createdAt).toLocaleDateString()}</p></td><td className="max-w-56 px-5 py-4 text-xs leading-5 text-slate-500"><p className="capitalize">{row.audience.role === "all" ? "Alumni & students" : row.audience.role}</p><p>{row.audience.batches.join(", ") || "All batches"}</p><p>{row.audience.branches.join(", ") || "All branches"}</p></td><td className="px-5 py-4"><Tag color={row.status === "draft" ? "default" : row.total === row.sent + row.skipped ? "green" : row.failed || row.status === "queue_failed" ? "orange" : "blue"}>{statusLabel(row)}</Tag></td><td className="px-5 py-4 text-xs text-slate-500">{row.status === "draft" ? "Not sent" : <><p>{row.sent} / {row.total} sent</p><p className="mt-1">{row.failed} failed ? {row.skipped} skipped ? {row.total - row.sent - row.failed - row.skipped} pending</p></>}</td><td className="px-5 py-4"><div className="flex flex-wrap gap-2"><Button disabled={locked || dirty} loading={busy === row._id} onClick={() => openCampaign(row)}>{row.status === "draft" ? "Edit draft" : "Use as template"}</Button>{row.status !== "draft" && row.sent + row.skipped < row.total && <Button disabled={locked} onClick={() => run("retry", async () => { const result = await api<{ queueFailed: boolean }>({ action: "retry", id: row._id }); if (result.queueFailed) toast.warning("Some batches could not be queued. Try again shortly."); else toast.success("Unsent recipients queued again"); void mutate(); })}>Retry unsent</Button>}</div></td></tr>)}</tbody></table></div>}
+      </section>
+      <Modal rootClassName="admin-dialog" title="Insert a link" open={linkOpen} onCancel={() => setLinkOpen(false)} onOk={insertLink} okText="Insert link"><div className="space-y-4 py-3"><label className="block space-y-2 text-sm">Link text<Input value={linkText} onChange={e => setLinkText(e.target.value)} placeholder="Register for the event" /></label><label className="block space-y-2 text-sm">Destination URL<Input value={linkUrl} onChange={e => setLinkUrl(e.target.value)} placeholder="https://example.com/register" onPressEnter={insertLink} /></label></div></Modal>
+      <Modal rootClassName="admin-dialog" width={760} title="Review your campaign" open={Boolean(review)} onCancel={() => { if (!busy) setReview(null); }} closable={!busy} maskClosable={!busy} footer={<div className="flex flex-wrap justify-end gap-3"><Button disabled={Boolean(busy)} onClick={() => setReview(null)}>Back to editing</Button><Button type="primary" loading={busy === "send"} disabled={Boolean(busy)} icon={<Send size={16} />} onClick={() => run("send", async () => { if (!review) return; const result = await api<{ queueFailed: boolean; totalRecipients: number }>({ action: "send", id: review.id, revision: review.revision }); setReview(null); newCampaign(); void mutate(); if (result.queueFailed) toast.warning("Campaign saved, but some batches could not be queued. Use Retry unsent in history."); else toast.success(`Campaign queued for ${result.totalRecipients} recipients`); })}>Send campaign</Button></div>}>
+        <p className="mb-2 font-semibold text-slate-900">{subject}</p><p className="mb-4 text-sm text-slate-500">Sending to approximately {review?.total} approved recipients. The list is finalized when you send. This action cannot be undone.</p><iframe title="Final email preview" sandbox="" referrerPolicy="no-referrer" srcDoc={previewDocument(review?.preview || "")} className="h-[400px] w-full rounded-lg border border-slate-200 bg-white" />
+      </Modal>
     </div>
   );
 }

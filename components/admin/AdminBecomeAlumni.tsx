@@ -243,7 +243,7 @@ export default function AdminBecomeAlumniPage() {
 
 
   return (
-    <div className="flex-1 flex flex-col bg-[#f8fafc] min-h-screen p-1 md:p-2">
+    <div className="flex-1 flex flex-col bg-[#f8fafc] min-h-0 p-1 md:p-2">
       <div className="max-w-[1400px] mx-auto w-full">
         
         {/* Header */}
@@ -380,6 +380,7 @@ export default function AdminBecomeAlumniPage() {
 
       {/* 1. Detailed View Modal (Original Design) */}
       <Modal
+        rootClassName="admin-dialog"
         title="Request Details"
         open={isDetailsModalOpen}
         onCancel={() => setIsDetailsModalOpen(false)}
@@ -555,6 +556,7 @@ export default function AdminBecomeAlumniPage() {
 
       {/* 2. Action Confirmation Modal (Approve/Cancel) */}
       <Modal
+        rootClassName="admin-dialog"
         open={isActionModalOpen.open}
         onCancel={() => setIsActionModalOpen({ open: false, type: null })}
         footer={null}

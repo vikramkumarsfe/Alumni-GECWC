@@ -245,7 +245,7 @@ const AdminAnnouncements = () => {
             </TableBody>
           </Table>
 
-          <div className="flex items-center justify-between p-4 bg-white border-t border-slate-100">
+          <div className="flex flex-wrap gap-4 items-center justify-between p-4 bg-white border-t border-slate-100">
             <span className="text-sm text-slate-500 font-medium">
               Showing {announcements.length} results
             </span>

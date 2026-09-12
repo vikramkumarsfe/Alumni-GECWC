@@ -1,0 +1,74 @@
+/* Admin-only geometry: existing component colors remain authoritative. */
+.admin-content {
+  width: 100%;
+  max-width: 1480px;
+  margin-inline: auto;
+  padding: 24px 32px 48px;
+  min-width: 0;
+}
+
+.admin-content h1 {
+  font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+.admin-content h1 + p { margin-top: 8px; line-height: 1.6; }
+.admin-content :where([data-slot="card"]) { border-radius: 16px; }
+.admin-content :where(table) { font-size: 14px; }
+.admin-content :where(th) { white-space: nowrap; }
+.admin-content :where(td) { vertical-align: middle; }
+.admin-content .ant-pagination { padding-inline: 16px; gap: 4px; flex-wrap: wrap; }
+
+:is(.admin-content, .admin-dialog) :is(.ant-btn, [data-slot="button"]) {
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+:is(.admin-content, .admin-dialog) :is(.ant-btn-icon-only, [data-size^="icon"]) {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+:is(.admin-content, .admin-dialog) :is([data-slot="input"], [data-slot="select-trigger"], select) {
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+:is(.admin-content, .admin-dialog) :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.admin-dialog .ant-modal-content { border-radius: 16px; padding: 24px; }
+.admin-dialog .ant-modal-header { margin-bottom: 24px; }
+.admin-dialog .ant-modal-footer { margin-top: 24px; }
+.admin-dialog .ant-form-item-label > label { font-weight: 500; }
+.admin-dialog .ProseMirror { min-height: 180px; padding: 16px; line-height: 1.7; }
+.admin-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+
+@media (max-width: 639px) {
+  .admin-content { padding: 20px 16px 32px; }
+  .admin-toolbar > * { flex: 1 1 100%; min-width: 0; }
+  .admin-content .ant-pagination { padding-inline: 8px; }
+  .admin-content .ant-pagination-total-text { width: 100%; height: auto; }
+  .admin-dialog .ant-modal-content { padding: 20px; }
+}
+
+/* Restore rich-text formatting removed by the global CSS reset. */
+.campaign-visual-editor .tiptap p { margin-block: 0.75rem; }
+.campaign-visual-editor .tiptap ul { list-style: disc; padding-left: 1.5rem; }
+.campaign-visual-editor .tiptap ol { list-style: decimal; padding-left: 1.5rem; }
+.campaign-visual-editor .tiptap h1 { font-size: 1.75rem; }
+.campaign-visual-editor .tiptap h2 { font-size: 1.5rem; }
+.campaign-visual-editor .tiptap h3 { font-size: 1.25rem; }
+.campaign-visual-editor .tiptap :is(h1, h2, h3) { font-weight: 600; margin-block: 1rem; }
+.campaign-visual-editor .tiptap blockquote { border-left: 3px solid var(--border); padding-left: 1rem; }
+.campaign-visual-editor .tiptap a { color: #2563eb; text-decoration: underline; }

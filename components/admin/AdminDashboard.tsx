@@ -11,10 +11,10 @@ import Link from 'next/link';
 const StatCard = ({ title, value }: any) => {
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
-      <div className="flex items-center justify-center items-start">
+      <div className="flex items-start">
             <div className='space-y-2'>
                 <h3 className="text-4xl font-bold text-slate-900 tracking-tight">{value}</h3>
-                <p className="text-[14px] font-semibold text-slate-400 uppercase tracking-wider">{title}</p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{title}</p>
             </div>
       </div>
     </div>
@@ -113,7 +113,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <StatCard title="New Members" value={ AlumniNewData && AlumniNewData.total}  icon={<Users size={20}/>} trend="+8%" color="grey" />
           <StatCard title="Active Events" value= { EventData && EventData.total} icon={<Calendar size={20}/>} description="4 starting this week" color="green" />
           <StatCard title="Pending Review" value={AlumniPendingData && AlumniPendingData.total} icon={<Clock size={20}/>} trend="+12" color="orange" />

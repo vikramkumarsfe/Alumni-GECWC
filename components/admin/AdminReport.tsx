@@ -112,7 +112,7 @@ const AdminReports = () => {
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap gap-4 justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold">Reports & Insights</h1>
           <p className="text-muted-foreground text-sm">
@@ -154,12 +154,13 @@ const AdminReports = () => {
 
       {/* Alumni Report */}
       <Card>
-        <CardHeader className="flex flex-row justify-between items-center overfolw-x-auto">
+        <CardHeader className="flex flex-row flex-wrap gap-4 justify-between items-center">
           <CardTitle>Alumni Directory Report</CardTitle>
           <Button icon={<FileSpreadsheet />} onClick={handleAlumniDownload}>Export CSV</Button>
         </CardHeader>
         <CardContent>
           <Table
+            scroll={{ x: 640 }}
             columns={alumniColumns}
             dataSource={alumniData}
             pagination={false}
@@ -169,12 +170,13 @@ const AdminReports = () => {
 
       {/* Event Report */}
       <Card className="overflow-x-auto">
-        <CardHeader className="flex flex-row justify-between items-center">
+        <CardHeader className="flex flex-row flex-wrap gap-4 justify-between items-center">
           <CardTitle>Event Attendance Summary</CardTitle>
           <Button icon={<PrinterOutlined />} onClick={handleEventDownload}>Print Report</Button>
         </CardHeader>
         <CardContent>
           <Table
+            scroll={{ x: 640 }}
             columns={eventColumns}
             dataSource={eventData}
             pagination={false}

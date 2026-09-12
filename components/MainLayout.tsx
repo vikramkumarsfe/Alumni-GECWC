@@ -26,6 +26,7 @@ import { DialogTitle } from './ui/dialog';
 import { MobileAuthSection, MobileLoginSignup } from './mobileAuthSection';
 import AdminAppSidebar from './public/adminAppSidebar';
 import AdminDashboardHeader from './public/adminDashboardHeader';
+import AdminUIProvider from './admin/AdminUIProvider';
 import { AppSidebar } from './public/AppSidebar';
 import StudentAppSidebar from './public/studentAppSidebar';
 import StudentDashboardHeader from './public/studentDashboardHeader';
@@ -113,6 +114,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
   if (isAdminSystem) {
     return (
       <SessionProvider>
+        <AdminUIProvider>
         <SidebarProvider defaultOpen>
           <div className="flex min-h-screen w-full overflow-hidden">
             <AdminAppSidebar />
@@ -121,16 +123,17 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               <AdminDashboardHeader />
 
               {/* Breadcrumb */}
-              <div className="px-6 pt-4 bg-slate-50">
+              <div className="w-full max-w-[1480px] mx-auto px-4 sm:px-8 pt-5 bg-slate-50">
                 <Breadcrumb items={generateBreadcrumbs()} />
               </div>
 
-              <main className="flex-1 p-6 bg-slate-50 overflow-auto">
+              <main className="admin-content flex-1 bg-slate-50">
                 {children}
               </main>
             </SidebarInset>
           </div>
         </SidebarProvider>
+        </AdminUIProvider>
       </SessionProvider>
     )
   }
