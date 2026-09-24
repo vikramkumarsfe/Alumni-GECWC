@@ -1,17 +1,20 @@
 "use client";
 import { useState } from 'react';
-import { Table,  Button, Tooltip, Select as AntSelect,Input as AntInput, Skeleton, message, Popconfirm } from 'antd';
-import { Search, Filter, Eye, Check, Trash2, Ban, Loader2} from 'lucide-react';
+import { Table, Button, Tooltip, Select as AntSelect, Input as AntInput, Skeleton, message } from 'antd';
+import { Search, Filter, Eye, Check, Trash2, Ban } from 'lucide-react';
 import useSWR, { mutate } from 'swr';
 import { fetcher } from '@/utils/fetcher';
 import ErrorState from '../shared/Errorstate';
 import Link from 'next/link';
 import clientCatchError from '@/utils/clientCatchError';
 import axios from 'axios';
-import { Select, Space } from 'antd';
+import { Select } from 'antd';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import RejectUserModal from './RejectUserModal';
 
 interface Alumni {
+  _id: string;
+  fullname: string;
   key: string;
   name: string;
   email: string;
@@ -22,6 +25,7 @@ interface Alumni {
 }
 
 const AdminStudent = () => {
+  const [rejectionUser, setRejectionUser] = useState<Alumni | null>(null)
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -37,8 +41,6 @@ const AdminStudent = () => {
 
   const total = SWRData?.pagination.total || 10
   const data = SWRData?.data || []
-
-  console.log(data)
 
   const handleRoleChange = async (id: string, value : string, email:string) => {
     try {
@@ -184,21 +186,17 @@ const AdminStudent = () => {
             </Tooltip>
           )}
 
-          <Popconfirm
-            title="Delete Alumni"
-            description="This action cannot be undone."
-            okText="Delete"
-            okType="danger"
-            cancelText="Cancel"
-            onConfirm={() => deleteAlumni(_._id)}
-          >
+          <Tooltip title="Reject account">
               <Button 
                 size="small" 
                 danger 
                 icon={<Trash2 size={14} />} 
+                aria-label={`Reject ${record.fullname}`}
+                disabled={loading}
+                onClick={() => setRejectionUser(record)}
                 className="flex items-center justify-center border-red-100"
               />
-          </Popconfirm>
+          </Tooltip>
         </div>
       ),
     },
@@ -215,22 +213,6 @@ const AdminStudent = () => {
       const { data } = await axios.put(`/api/admin/users/${id}`,payload )
 
       message.success("Alumni approved")
-      mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
-    }
-    catch(err)
-    {
-      return clientCatchError(err)
-    }
-    finally{
-      setLoading(false)
-    }
-  }
-
-  const deleteAlumni = async (id: string) => {
-    try {
-      setLoading(true)
-      await axios.delete(`/api/admin/users/${id}` )
-      message.success("Alumni Deleted")
       mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
     }
     catch(err)
@@ -265,6 +247,17 @@ const AdminStudent = () => {
   }
   return (
     <div className="space-y-6">
+      {rejectionUser && (
+        <RejectUserModal
+          key={rejectionUser._id}
+          user={rejectionUser}
+          onCancel={() => setRejectionUser(null)}
+          onRejected={() => {
+            setRejectionUser(null)
+            void mutate(`/api/admin/users?page=${page}&limit=${pageSize}&student=true`)
+          }}
+        />
+      )}
       {/* --- Page Header --- */}
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Manage Students</h1>

@@ -1,0 +1,1 @@
+export const MAX_REJECTION_REMARK_LENGTH = 2000;

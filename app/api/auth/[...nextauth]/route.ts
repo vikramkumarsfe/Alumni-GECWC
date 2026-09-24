@@ -4,8 +4,7 @@ import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcrypt"
 import UserModel from "@/models/user.model"
 import { connectDB } from "@/lib/mongodb"
-
-await connectDB();
+import { ACCOUNT_INACTIVE_ERROR } from "@/lib/auth-errors"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,6 +18,7 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) 
             return null
 
+        await connectDB();
         const user = await UserModel.findOne({ email: credentials.email })
         if (!user) 
             return null
@@ -30,10 +30,9 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) 
             return null
 
-        const isVerified = (user.isActive === "approved" ? true : false)
-            
-        if(!isVerified)
-            return null
+        if (user.isActive !== "approved") {
+          throw new Error(ACCOUNT_INACTIVE_ERROR)
+        }
 
         return {
           id: user._id.toString(),
@@ -83,6 +82,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        await connectDB();
         const existingUser = await UserModel.findOne({ email: user.email })
 
         if (!existingUser) {
