@@ -66,7 +66,7 @@
  *         description: User not found
  *
  *   delete:
- *     summary: Delete user by ID (Admin only)
+ *     summary: Reject an account and email the admin remark (Admin only)
  *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
@@ -77,13 +77,31 @@
  *         schema:
  *           type: string
  *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [remark]
+ *             properties:
+ *               remark:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 2000
  *     responses:
  *       200:
  *         description: User deleted successfully
+ *       400:
+ *         description: Invalid user ID or missing/invalid remark
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Administrator access required
  *       404:
  *         description: User not found
+ *       502:
+ *         description: Email could not be sent; the account was not rejected
  */
 
 
@@ -103,6 +121,8 @@ import { connectDB } from "@/lib/mongodb"
 import ExperienceModel from "@/models/experience.model"
 import { roleUpgradedToAlumniTemplate } from "@/utils/emailTemplates/accountUpgraded.mail.templete"
 import { roleDowngradedToStudentTemplate } from "@/utils/emailTemplates/roleDowngrade.mail.template"
+import { isValidObjectId } from "mongoose"
+import { MAX_REJECTION_REMARK_LENGTH } from "@/lib/account-rejection"
 
 
 
@@ -186,35 +206,56 @@ export const PUT = async( req: NextRequest, { params }: ContextInterface) =>{
 
 export const DELETE = async(req: NextRequest, {params} : ContextInterface) => {
     try {
-        await connectDB();
         const session = await getServerSession(authOptions)
 
         if(!session)
-            return res.json({ message : "Unauthorized User"}, { status : 404})
+            return res.json({ message : "Please sign in"}, { status : 401})
         
         if( session.user.role !== "admin")
-            return res.json({ message : "Unauthorized user"}, { status : 404})
+            return res.json({ message : "Administrator access required"}, { status : 403})
 
         const param = await params
         const { id } = param
 
-        if(!id)
-             return res.json({ message : "id not found"}, { status : 404})
+        if(!id || !isValidObjectId(id))
+             return res.json({ message : "A valid user ID is required"}, { status : 400})
 
-        const user = await UserModel.findByIdAndDelete(id)
+        const body = await req.json().catch(() => null)
+        const remark = typeof body?.remark === "string" ? body.remark.trim() : ""
 
-        await sendMail({
-            email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
-            sendTo: user.email,
-            subject: "Account Rejected",
-            text: `Reset your password using this link: `,
-            html: accountRejectedTemplate( user.fullname)
-          })
+        if (!remark || remark.length > MAX_REJECTION_REMARK_LENGTH) {
+            return res.json({
+                message: `A rejection remark between 1 and ${MAX_REJECTION_REMARK_LENGTH} characters is required`,
+            }, { status: 400 })
+        }
 
+        await connectDB();
+        const user = await UserModel.findById(id)
         if(!user)
-            return res.json({ message : "Failed to delete the user"}, { status : 404})
+            return res.json({ message : "User not found"}, { status : 404})
+
+        if (user.role !== "student" && user.role !== "alumni") {
+            return res.json({ message: "Only student and alumni accounts can be rejected" }, { status: 403 })
+        }
+
+        // Keep the account available for retry if the mail provider fails.
+        try {
+            await sendMail({
+                email: `"Alumni Portal" <${process.env.SMTP_SERVER_USERNAME}>`,
+                sendTo: user.email,
+                subject: "Account Rejected",
+                text: `Hello ${user.fullname},\n\nYour registration for the Alumni GECWC Portal has not been approved.\n\nAdmin remark:\n${remark}\n\nPlease contact the administration office if you need further assistance.`,
+                html: accountRejectedTemplate(user.fullname, remark)
+            })
+        } catch {
+            return res.json({
+                message: "The rejection email could not be sent. The account has not been rejected. Please try again.",
+            }, { status: 502 })
+        }
+
+        await UserModel.findByIdAndDelete(id)
         
-        return res.json({ message : "deleted Succesfully"})
+        return res.json({ message : "Account rejected and remark emailed to the user"})
     }
     catch(err)
     {

@@ -6,12 +6,13 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import clientCatchError from '@/utils/clientCatchError'
+import { getLoginErrorMessage } from '@/lib/auth-errors'
 
 const Signup = () => {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
-  const Login = async (values: any) => {
+  const Login = async (values: { email: string; password: string }) => {
     try {
       setLoading(true)
       const res = await signIn("credentials", {
@@ -19,8 +20,8 @@ const Signup = () => {
         password: values.password,
         redirect: false,
       })
-      if (res?.error) {
-        message.error("Invalid email or password, or your account may not be active.")
+      if (!res?.ok || res.error) {
+        message.error(getLoginErrorMessage(res?.error))
         return
       }
       message.success("Login successful")
@@ -79,7 +80,7 @@ const Signup = () => {
         </Form>
 
         <div className='flex items-center justify-center gap-2'>
-          <label>Don't have an account?</label>
+          <label>Don&apos;t have an account?</label>
           <Link href='/signup' className='text-blue-600 font-medium'>
             Register now
           </Link>
